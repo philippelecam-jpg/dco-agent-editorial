@@ -1,0 +1,44 @@
+name: Agent Éditorial D&Co
+
+on:
+  schedule:
+    # Tous les jours de semaine à 7h00 heure de Paris (6h UTC en hiver, 5h UTC en été)
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch:
+    # Permet de déclencher manuellement depuis GitHub
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Pour pusher docs/package.json
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib
+
+      - name: Lancer l'agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python agent.py
+
+      - name: Commit et push du package
+        run: |
+          git config user.name "Agent Editorial DCo"
+          git config user.email "agent@decisionsandco.com"
+          git add docs/package.json
+          git diff --staged --quiet || git commit -m "Package éditorial $(date '+%Y-%m-%d')"
+          git push
