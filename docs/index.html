@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Éditorial — Décisions & Co</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f8f8f6; min-height: 100vh; color: #1f2937; }
+  .header { background: #1a1a2e; color: #fff; padding: 16px 24px; }
+  .header-inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .header-eyebrow { font-size: 11px; color: #9ca3af; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+  .header-date { font-size: 14px; font-weight: 600; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
+  .section { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 24px; margin-bottom: 20px; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #9ca3af; text-transform: uppercase; margin-bottom: 12px; }
+  .topic { font-size: 20px; font-weight: 700; color: #111827; line-height: 1.3; }
+  .block { margin-bottom: 20px; }
+  .block:last-child { margin-bottom: 0; }
+  .block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .block-title { font-weight: 600; font-size: 13px; color: #374151; }
+  .block-content { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.7; color: #1f2937; white-space: pre-wrap; }
+  .char-count { font-size: 11px; color: #6b7280; }
+  .btn-copy { padding: 4px 12px; font-size: 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; color: #374151; cursor: pointer; font-family: inherit; }
+  .btn-copy.ok { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+  .loading { text-align: center; padding: 60px 24px; color: #6b7280; font-size: 14px; }
+  .empty { text-align: center; padding: 60px 24px; }
+  .empty-title { font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+  .empty-sub { font-size: 13px; color: #9ca3af; }
+  .generated-at { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-eyebrow">Décisions & Co — Agent éditorial</div>
+      <div class="header-date" id="header-date">Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap">
+  <div class="loading">Chargement du package du jour...</div>
+</div>
+
+<script>
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copié ✓';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+function block(label, content, maxChars) {
+  const charInfo = maxChars ? `<span class="char-count">${content.length}/${maxChars}</span>` : '';
+  return `
+    <div class="block">
+      <div class="block-header">
+        <span class="block-title">${label}</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          ${charInfo}
+          <button class="btn-copy" onclick="copyText(${JSON.stringify(content)}, this)">Copier</button>
+        </div>
+      </div>
+      <div class="block-content">${content.replace(/</g,'&lt;')}</div>
+    </div>`;
+}
+
+async function load() {
+  try {
+    const resp = await fetch('package.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('Pas de package');
+    const pkg = await resp.json();
+
+    document.getElementById('header-date').textContent = pkg.date || '';
+
+    document.getElementById('wrap').innerHTML = `
+      <div class="section">
+        <div class="section-label">Sujet du jour</div>
+        <div class="topic">${pkg.sujet || ''}</div>
+        ${pkg.generated_at ? `<div class="generated-at">Généré le ${new Date(pkg.generated_at).toLocaleString('fr-FR')}</div>` : ''}
+      </div>
+      <div class="section">
+        <div class="section-label">Contenus du jour</div>
+        ${block('Post X (Twitter)', pkg.post_x || '', 280)}
+        ${block('Post LinkedIn', pkg.post_linkedin || '')}
+        ${block('Fragment newsletter', pkg.newsletter || '')}
+      </div>`;
+  } catch(e) {
+    document.getElementById('wrap').innerHTML = `
+      <div class="empty">
+        <div class="empty-title">Aucun package disponible</div>
+        <div class="empty-sub">L'agent tourne chaque matin à 7h en semaine.<br>Déclenche-le manuellement depuis GitHub Actions si besoin.</div>
+      </div>`;
+    document.getElementById('header-date').textContent = 'En attente';
+  }
+}
+
+load();
+</script>
+</body>
+</html>
