@@ -5,14 +5,22 @@ on:
     # Tous les jours de semaine à 7h00 heure de Paris (6h UTC en hiver, 5h UTC en été)
     - cron: '0 6 * * 1-5'
   workflow_dispatch:
-    # Permet de déclencher manuellement depuis GitHub
+    inputs:
+      test_mode:
+        description: 'Mode test (publie 5 tweets espacés de 60s)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Pour pusher docs/package.json
+      contents: write
 
     steps:
       - name: Checkout
@@ -26,7 +34,8 @@ jobs:
       - name: Installer les dépendances
         run: pip install requests requests-oauthlib
 
-      - name: Lancer l'agent
+      - name: Lancer l'agent (mode normal)
+        if: ${{ github.event.inputs.test_mode != 'true' }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
@@ -35,10 +44,28 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
         run: python agent.py
 
+      - name: Lancer l'agent (mode test — 5 tweets x 60s)
+        if: ${{ github.event.inputs.test_mode == 'true' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: |
+          for i in 1 2 3 4 5; do
+            echo "=== Run $i/5 ==="
+            python agent.py
+            if [ $i -lt 5 ]; then
+              echo "Pause 60s avant le run suivant..."
+              sleep 60
+            fi
+          done
+
       - name: Commit et push du package
         run: |
           git config user.name "Agent Editorial DCo"
           git config user.email "agent@decisionsandco.com"
           git add docs/package.json
-          git diff --staged --quiet || git commit -m "Package éditorial $(date '+%Y-%m-%d')"
+          git diff --staged --quiet || git commit -m "Package éditorial $(date '+%Y-%m-%d-%H%M')"
           git push
