@@ -67,36 +67,22 @@ Mots interdits : révolution, disruptif, écosystème, synergies,
 "Dans un monde où", "L'IA change tout".
 Mots D&Co : matière, connaissance, gouvernance, structurer, codifier, ancrer.
 
-## Actualité juillet 2026
-AI Act deadline 2 août 2026.
-Angle D&Co : ce n'est pas une contrainte, c'est une occasion de structurer ce qui aurait dû l'être.
-Angles éditoriaux : KB comme infrastructure, AI Act sans panique,
-fossé enthousiasme/transformation réelle, dogfooding D&Co, Entreprise OS.
+## Angles éditoriaux disponibles
+1. AI Act et conformité PME
+2. L'Entreprise OS — concept et applications
+3. Dogfooding D&Co — on pratique ce qu'on prêche
+4. Fossé enthousiasme IA / transformation réelle
+5. La connaissance comme infrastructure avant l'IA
+6. Cartographier → Éliciter → Codifier en pratique
+7. Gouvernance IA sans jargon
+8. Retours terrain de missions clients (anonymisés)
+9. Ce que l'IA ne peut pas faire sans préparation
+10. La formation IA qui change vraiment les pratiques
 
 ## Règle d'or
 Avant de publier : "Est-ce que quelqu'un apprend quelque chose d'utile
 ou change sa façon de voir les choses ?" Si non, on ne publie pas.
 """
-
-SYSTEM_PROMPT = f"""Tu es l'agent éditorial de Décisions & Co (D&Co),
-cabinet de conseil en transformation IA pour PME/ETI françaises.
-
-{KB}
-
----
-
-Génère UNIQUEMENT un objet JSON valide, sans markdown, sans texte avant ou après.
-Structure exacte :
-
-{{"sujet":"...","post_x":"...","post_linkedin":"...","newsletter":"..."}}
-
-Règles :
-- post_x : max 280 caractères, une idée tranchée, 0-2 hashtags, pas d'émojis
-- post_linkedin : 600-900 caractères, accroche forte, paragraphes courts séparés par \\n\\n
-- newsletter : 100-180 mots, ton personnel, signé Philippe Le Cam
-- Jamais de mots interdits
-- Jamais de promotion directe des offres
-- Dans les valeurs JSON, échapper les guillemets avec \\" et les sauts de ligne avec \\n"""
 
 
 def today_label():
@@ -104,10 +90,106 @@ def today_label():
     return f"{DAYS_FR[d.weekday()]} {d.day} {MONTHS_FR[d.month-1]} {d.year}"
 
 
-def generate_content():
-    """Appelle Claude pour générer le package éditorial."""
-    user_msg = f"Génère le package éditorial du jour. Date : {today_label()}. Choisis le meilleur sujet selon la KB et l'actualité du moment."
+def load_historique():
+    """Charge l'historique des posts déjà publiés."""
+    try:
+        with open("docs/historique.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
 
+
+def save_historique(historique, new_entry):
+    """Sauvegarde le nouvel entry dans l'historique (max 30 entrées)."""
+    historique.append(new_entry)
+    historique = historique[-30:]  # Garder les 30 derniers
+    os.makedirs("docs", exist_ok=True)
+    with open("docs/historique.json", "w", encoding="utf-8") as f:
+        json.dump(historique, f, ensure_ascii=False, indent=2)
+
+
+def get_news_ia():
+    """Récupère les actualités IA du jour via l'API Claude avec web search."""
+    try:
+        resp = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "Content-Type": "application/json",
+                "anthropic-version": "2023-06-01",
+                "x-api-key": ANTHROPIC_API_KEY,
+            },
+            json={
+                "model": "claude-sonnet-4-6",
+                "max_tokens": 500,
+                "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+                "messages": [{
+                    "role": "user",
+                    "content": f"Donne-moi en 5 bullet points les actualités IA les plus importantes du jour ({today_label()}) pertinentes pour les PME et ETI françaises. Focus : réglementation, outils, transformation organisationnelle. Sois factuel et concis."
+                }]
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        news = " ".join(
+            b["text"] for b in data.get("content", []) if b.get("type") == "text"
+        ).strip()
+        return news[:1000] if news else "Pas d'actualité disponible."
+    except Exception as e:
+        print(f"Veille actualité indisponible : {e}")
+        return "Pas d'actualité disponible."
+
+
+def build_system_prompt(historique, news):
+    """Construit le prompt système avec historique et actualité."""
+
+    # Résumé des sujets récents
+    if historique:
+        recents = "\n".join([
+            f"- {h.get('date', '?')} : {h.get('sujet', '?')} | Post : {h.get('post_x', '')[:80]}..."
+            for h in historique[-10:]
+        ])
+        historique_txt = f"""
+## Posts déjà publiés (NE PAS répéter ces sujets ni ces angles)
+{recents}
+"""
+    else:
+        historique_txt = "\n## Aucun post publié encore — c'est le premier.\n"
+
+    return f"""Tu es l'agent éditorial de Décisions & Co (D&Co),
+cabinet de conseil en transformation IA pour PME/ETI françaises.
+
+{KB}
+
+{historique_txt}
+
+## Actualité IA du jour
+{news}
+
+---
+
+RÈGLES ABSOLUES :
+1. Choisis un sujet DIFFÉRENT de tous les posts déjà publiés listés ci-dessus
+2. Si l'actualité du jour est pertinente pour les PME/ETI, exploite-la avec l'angle D&Co
+3. Si aucune actualité n'est pertinente, pioche dans les angles éditoriaux disponibles
+4. Varie les formats : parfois une affirmation courte, parfois une question, parfois un constat en 3 lignes
+5. Jamais les mots interdits : révolution, disruptif, écosystème, synergies
+6. Jamais "Dans un monde où", "L'IA change tout", "Il est essentiel de"
+7. Jamais de promotion directe des offres D&Co
+
+Génère UNIQUEMENT un objet JSON valide, sans markdown, sans texte avant ou après :
+
+{{"sujet":"...","post_x":"...","post_linkedin":"...","newsletter":"..."}}
+
+Contraintes :
+- post_x : max 280 caractères, une idée tranchée, 0-2 hashtags
+- post_linkedin : 600-900 caractères, accroche forte, paragraphes courts séparés par \\n\\n
+- newsletter : 100-180 mots, ton personnel, signé Philippe Le Cam
+- Dans les valeurs JSON, échapper les guillemets avec \\" et les sauts de ligne avec \\n"""
+
+
+def generate_content(historique, news):
+    """Appelle Claude pour générer le package éditorial."""
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -118,8 +200,8 @@ def generate_content():
         json={
             "model": "claude-sonnet-4-6",
             "max_tokens": 2000,
-            "system": SYSTEM_PROMPT,
-            "messages": [{"role": "user", "content": user_msg}],
+            "system": build_system_prompt(historique, news),
+            "messages": [{"role": "user", "content": f"Génère le package éditorial. Date : {today_label()}."}],
         },
         timeout=60,
     )
@@ -157,21 +239,41 @@ def save_package(package):
 
 def main():
     print(f"Agent éditorial D&Co — {today_label()}")
+
+    # Charger l'historique
+    historique = load_historique()
+    print(f"Historique : {len(historique)} posts déjà publiés")
+
+    # Veille actualité
+    print("Veille actualité IA du jour...")
+    news = get_news_ia()
+    print(f"Actualité : {news[:150]}...")
+
+    # Générer le contenu
     print("Génération du contenu...")
-
-    package = generate_content()
+    package = generate_content(historique, news)
     print(f"Sujet : {package.get('sujet', 'N/A')}")
-    print(f"Post X ({len(package.get('post_x', ''))} car.) : {package.get('post_x', '')[:80]}...")
+    print(f"Post X ({len(package.get('post_x', ''))} car.) : {package.get('post_x', '')}")
 
-    # Sauvegarder pour l'interface web
+    # Sauvegarder le package
     save_package(package)
 
     # Publier sur X
     print("Publication sur X...")
     result = publish_to_x(package["post_x"])
     tweet_id = result.get("data", {}).get("id", "unknown")
-    print(f"Tweet publié : https://twitter.com/DecisionsAndco/status/{tweet_id}")
+    tweet_url = f"https://twitter.com/DecisionsAndco/status/{tweet_id}"
+    print(f"Tweet publié : {tweet_url}")
 
+    # Sauvegarder dans l'historique
+    save_historique(historique, {
+        "date": today_label(),
+        "timestamp": datetime.now().isoformat(),
+        "sujet": package.get("sujet", ""),
+        "post_x": package.get("post_x", ""),
+        "tweet_url": tweet_url,
+    })
+    print("Historique mis à jour.")
     print("Terminé.")
 
 
