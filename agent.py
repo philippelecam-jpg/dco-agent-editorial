@@ -18,6 +18,30 @@ DAYS_FR = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanch
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
              "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 
+# Rotation forcée par jour de semaine — 0=Lundi, 4=Vendredi
+AGENDA_HEBDO = {
+    0: {  # Lundi
+        "theme": "L'Entreprise OS",
+        "instruction": "Traite exclusivement le concept d'Entreprise OS de D&Co — ce que c'est, pourquoi c'est le nouveau système d'exploitation de l'organisation, une de ses trois fonctions (Stocker / Traiter / Diffuser), ou un exemple concret d'application."
+    },
+    1: {  # Mardi
+        "theme": "Terrain et missions clients",
+        "instruction": "Traite un retour terrain anonymisé d'une mission D&Co, ou une situation concrète observée chez un client PME/ETI face à l'IA. Sois concret, factuel, sans nommer le client."
+    },
+    2: {  # Mercredi
+        "theme": "Méthode Cartographier → Éliciter → Codifier",
+        "instruction": "Traite exclusivement la méthodologie D&Co — une des trois étapes, un exemple de ce qu'on trouve quand on cartographie, ce que ça change d'éliciter avant de déployer, ou pourquoi codifier n'est pas du développement logiciel."
+    },
+    3: {  # Jeudi
+        "theme": "Gouvernance et réglementation IA",
+        "instruction": "Traite la gouvernance IA, la conformité, ou la réglementation (AI Act, RGPD) avec l'angle D&Co : pas de panique, pas de jargon, juste ce que ça change concrètement pour une PME. Si une actualité réglementaire du jour est pertinente, exploite-la."
+    },
+    4: {  # Vendredi
+        "theme": "Formation et culture IA",
+        "instruction": "Traite la formation IA, la culture IA en entreprise, ou le fossé entre l'enthousiasme IA et la transformation réelle. Ce que la formation change — ou ne change pas — quand elle est mal conçue."
+    },
+}
+
 KB = """# Knowledge Base — Décisions & Co
 
 ## Qui est D&Co
@@ -66,28 +90,18 @@ Phrases courtes. Une idée par phrase.
 Mots interdits : révolution, disruptif, écosystème, synergies,
 "Dans un monde où", "L'IA change tout".
 Mots D&Co : matière, connaissance, gouvernance, structurer, codifier, ancrer.
-
-## Angles éditoriaux disponibles
-1. AI Act et conformité PME
-2. L'Entreprise OS — concept et applications
-3. Dogfooding D&Co — on pratique ce qu'on prêche
-4. Fossé enthousiasme IA / transformation réelle
-5. La connaissance comme infrastructure avant l'IA
-6. Cartographier → Éliciter → Codifier en pratique
-7. Gouvernance IA sans jargon
-8. Retours terrain de missions clients (anonymisés)
-9. Ce que l'IA ne peut pas faire sans préparation
-10. La formation IA qui change vraiment les pratiques
-
-## Règle d'or
-Avant de publier : "Est-ce que quelqu'un apprend quelque chose d'utile
-ou change sa façon de voir les choses ?" Si non, on ne publie pas.
 """
 
 
 def today_label():
     d = datetime.now()
     return f"{DAYS_FR[d.weekday()]} {d.day} {MONTHS_FR[d.month-1]} {d.year}"
+
+
+def get_agenda_du_jour():
+    """Retourne le thème imposé pour aujourd'hui."""
+    jour = datetime.now().weekday()  # 0=Lundi, 4=Vendredi
+    return AGENDA_HEBDO.get(jour, AGENDA_HEBDO[0])
 
 
 def load_historique():
@@ -102,14 +116,14 @@ def load_historique():
 def save_historique(historique, new_entry):
     """Sauvegarde le nouvel entry dans l'historique (max 30 entrées)."""
     historique.append(new_entry)
-    historique = historique[-30:]  # Garder les 30 derniers
+    historique = historique[-30:]
     os.makedirs("docs", exist_ok=True)
     with open("docs/historique.json", "w", encoding="utf-8") as f:
         json.dump(historique, f, ensure_ascii=False, indent=2)
 
 
 def get_news_ia():
-    """Récupère les actualités IA du jour via l'API Claude avec web search."""
+    """Récupère les actualités IA du jour via web search."""
     try:
         resp = requests.post(
             "https://api.anthropic.com/v1/messages",
@@ -124,7 +138,7 @@ def get_news_ia():
                 "tools": [{"type": "web_search_20250305", "name": "web_search"}],
                 "messages": [{
                     "role": "user",
-                    "content": f"Donne-moi en 5 bullet points les actualités IA les plus importantes du jour ({today_label()}) pertinentes pour les PME et ETI françaises. Focus : réglementation, outils, transformation organisationnelle. Sois factuel et concis."
+                    "content": f"Donne-moi en 5 bullet points les actualités IA les plus importantes du jour ({today_label()}) pertinentes pour les PME et ETI françaises. Focus : outils, usages métier, transformation organisationnelle. Évite de te concentrer uniquement sur la réglementation. Sois factuel et concis."
                 }]
             },
             timeout=30,
@@ -140,55 +154,68 @@ def get_news_ia():
         return "Pas d'actualité disponible."
 
 
-def build_system_prompt(historique, news):
-    """Construit le prompt système avec historique et actualité."""
+def build_system_prompt(historique, news, agenda):
+    """Construit le prompt système avec agenda, historique et actualité."""
 
-    # Résumé des sujets récents
-    if historique:
-        recents = "\n".join([
-            f"- {h.get('date', '?')} : {h.get('sujet', '?')} | Post : {h.get('post_x', '')[:80]}..."
-            for h in historique[-10:]
+    # Posts de la même semaine sur le même thème
+    posts_semaine = [
+        h for h in historique[-10:]
+        if h.get("theme") == agenda["theme"]
+    ]
+
+    if posts_semaine:
+        recents_theme = "\n".join([
+            f"- {h.get('date', '?')} : {h.get('post_x', '')[:100]}..."
+            for h in posts_semaine
         ])
-        historique_txt = f"""
-## Posts déjà publiés (NE PAS répéter ces sujets ni ces angles)
-{recents}
+        historique_theme_txt = f"""
+## Posts déjà publiés sur ce thème cette semaine (NE PAS répéter ces angles)
+{recents_theme}
 """
     else:
-        historique_txt = "\n## Aucun post publié encore — c'est le premier.\n"
+        historique_theme_txt = "\n## Premier post sur ce thème cette semaine.\n"
 
     return f"""Tu es l'agent éditorial de Décisions & Co (D&Co),
 cabinet de conseil en transformation IA pour PME/ETI françaises.
 
 {KB}
 
-{historique_txt}
+---
 
-## Actualité IA du jour
+## THÈME IMPOSÉ DU JOUR : {agenda["theme"]}
+
+{agenda["instruction"]}
+
+Tu NE PEUX PAS sortir de ce thème aujourd'hui, sauf si une actualité du jour s'y rattache directement.
+
+{historique_theme_txt}
+
+## Actualité IA du jour (à exploiter SI elle touche au thème imposé)
 {news}
 
 ---
 
 RÈGLES ABSOLUES :
-1. Choisis un sujet DIFFÉRENT de tous les posts déjà publiés listés ci-dessus
-2. Si l'actualité du jour est pertinente pour les PME/ETI, exploite-la avec l'angle D&Co
-3. Si aucune actualité n'est pertinente, pioche dans les angles éditoriaux disponibles
-4. Varie les formats : parfois une affirmation courte, parfois une question, parfois un constat en 3 lignes
-5. Jamais les mots interdits : révolution, disruptif, écosystème, synergies
-6. Jamais "Dans un monde où", "L'IA change tout", "Il est essentiel de"
+1. Reste sur le thème imposé du jour
+2. Angle différent des posts déjà publiés sur ce thème
+3. Si l'actualité touche au thème, exploite-la — sinon ignore-la
+4. Varie les formats : affirmation, question, constat en 2-3 lignes
+5. Jamais : révolution, disruptif, écosystème, synergies
+6. Jamais : "Dans un monde où", "L'IA change tout", "Il est essentiel de"
 7. Jamais de promotion directe des offres D&Co
 
 Génère UNIQUEMENT un objet JSON valide, sans markdown, sans texte avant ou après :
 
 {{"sujet":"...","post_x":"...","post_linkedin":"...","newsletter":"..."}}
 
-Contraintes :
+Contraintes format :
 - post_x : max 280 caractères, une idée tranchée, 0-2 hashtags
 - post_linkedin : 600-900 caractères, accroche forte, paragraphes courts séparés par \\n\\n
 - newsletter : 100-180 mots, ton personnel, signé Philippe Le Cam
-- Dans les valeurs JSON, échapper les guillemets avec \\" et les sauts de ligne avec \\n"""
+- Échapper guillemets avec \\" et sauts de ligne avec \\n"""
 
 
-def generate_content(historique, news):
+def generate_content(historique, news, agenda):
     """Appelle Claude pour générer le package éditorial."""
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
@@ -200,8 +227,8 @@ def generate_content(historique, news):
         json={
             "model": "claude-sonnet-4-6",
             "max_tokens": 2000,
-            "system": build_system_prompt(historique, news),
-            "messages": [{"role": "user", "content": f"Génère le package éditorial. Date : {today_label()}."}],
+            "system": build_system_prompt(historique, news, agenda),
+            "messages": [{"role": "user", "content": f"Génère le package éditorial. Date : {today_label()}. Thème du jour : {agenda['theme']}."}],
         },
         timeout=60,
     )
@@ -225,12 +252,13 @@ def publish_to_x(post_text):
     return resp.json()
 
 
-def save_package(package):
+def save_package(package, agenda):
     """Sauvegarde le package du jour en JSON pour l'interface web."""
     os.makedirs("docs", exist_ok=True)
     with open("docs/package.json", "w", encoding="utf-8") as f:
         json.dump({
             "date": today_label(),
+            "theme": agenda["theme"],
             "generated_at": datetime.now().isoformat(),
             **package
         }, f, ensure_ascii=False, indent=2)
@@ -239,6 +267,10 @@ def save_package(package):
 
 def main():
     print(f"Agent éditorial D&Co — {today_label()}")
+
+    # Agenda du jour
+    agenda = get_agenda_du_jour()
+    print(f"Thème du jour : {agenda['theme']}")
 
     # Charger l'historique
     historique = load_historique()
@@ -251,12 +283,12 @@ def main():
 
     # Générer le contenu
     print("Génération du contenu...")
-    package = generate_content(historique, news)
+    package = generate_content(historique, news, agenda)
     print(f"Sujet : {package.get('sujet', 'N/A')}")
     print(f"Post X ({len(package.get('post_x', ''))} car.) : {package.get('post_x', '')}")
 
     # Sauvegarder le package
-    save_package(package)
+    save_package(package, agenda)
 
     # Publier sur X
     print("Publication sur X...")
@@ -269,6 +301,7 @@ def main():
     save_historique(historique, {
         "date": today_label(),
         "timestamp": datetime.now().isoformat(),
+        "theme": agenda["theme"],
         "sujet": package.get("sujet", ""),
         "post_x": package.get("post_x", ""),
         "tweet_url": tweet_url,
