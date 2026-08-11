@@ -32,7 +32,7 @@ jobs:
           python-version: '3.11'
 
       - name: Installer les dépendances
-        run: pip install requests requests-oauthlib
+        run: pip install requests requests-oauthlib Pillow
 
       - name: Lancer l'agent (mode normal)
         if: ${{ github.event.inputs.test_mode != 'true' }}
