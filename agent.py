@@ -191,8 +191,8 @@ Génère UNIQUEMENT un JSON valide sans markdown :
 
 - post_x : max 240 caractères (sans hashtags, ceux-ci sont dans le champ hashtags), une idée tranchée
 - hashtags : 1-2 hashtags pertinents pour le thème
-- post_linkedin : 600-900 caractères, accroche forte, paragraphes séparés par \\n\\n
-- newsletter : 100-180 mots, signé Philippe Le Cam
+- post_linkedin : 600-900 caractères, accroche forte, paragraphes séparés par \\n\\n, terminer par la signature "@Décisions & Co" sur une ligne séparée
+- newsletter : 100-180 mots, signé @Décisions & Co
 - Échapper guillemets avec \\" et sauts de ligne avec \\n"""
 
 
