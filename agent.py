@@ -320,6 +320,27 @@ def publish_to_x(post_text, hashtags="", media_id=None):
     return resp.json()
 
 
+def notify_make_linkedin(package, agenda):
+    """Envoie le post LinkedIn à Make pour publication automatique."""
+    webhook_url = "https://hook.eu2.make.com/y4lqsrwkq4h6d82t7f6qhf6hhnbcgamh"
+    try:
+        resp = requests.post(
+            webhook_url,
+            json={
+                "sujet": package.get("sujet", ""),
+                "post_linkedin": package.get("post_linkedin", ""),
+                "post_x": package.get("post_x", ""),
+                "theme": agenda["theme"],
+                "date": today_label(),
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+        print(f"LinkedIn notifié via Make : {resp.status_code}")
+    except Exception as e:
+        print(f"Erreur notification Make LinkedIn : {e}")
+
+
 def save_package(package, agenda):
     os.makedirs("docs", exist_ok=True)
     with open("docs/package.json", "w", encoding="utf-8") as f:
@@ -375,6 +396,10 @@ def main():
     tweet_id = result.get("data", {}).get("id", "unknown")
     tweet_url = f"https://twitter.com/DecisionsAndco/status/{tweet_id}"
     print(f"Tweet publié : {tweet_url}")
+
+    # Notifier Make pour publication LinkedIn
+    print("Envoi vers Make LinkedIn...")
+    notify_make_linkedin(package, agenda)
 
     save_historique(historique, {
         "date": today_label(),
