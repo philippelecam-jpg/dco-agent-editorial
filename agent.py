@@ -8,7 +8,7 @@ import textwrap
 import requests
 from datetime import datetime
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from requests_oauthlib import OAuth1
 
 # --- Config ---
@@ -235,34 +235,73 @@ def wrap_text(draw, text, font, max_width):
     return lines
 
 
+THEME_PALETTES = {
+    "L'Entreprise OS":                              {"accent": "#c8a96e", "tag_bg": "#c8a96e", "tag_fg": "#0d0d1a", "overlay": (13, 13, 26, 200)},
+    "Terrain et missions clients":                  {"accent": "#4db8d4", "tag_bg": "#4db8d4", "tag_fg": "#0a1628", "overlay": (10, 22, 40, 195)},
+    "Méthode Cartographier → Éliciter → Codifier":  {"accent": "#5cb85c", "tag_bg": "#5cb85c", "tag_fg": "#0d1f0d", "overlay": (13, 31, 13, 200)},
+    "Gouvernance et réglementation IA":             {"accent": "#d45c5c", "tag_bg": "#d45c5c", "tag_fg": "#1f0d0d", "overlay": (31, 13, 13, 195)},
+    "Formation et culture IA":                      {"accent": "#9b6ed4", "tag_bg": "#9b6ed4", "tag_fg": "#13082a", "overlay": (19, 8, 42, 195)},
+}
+
+THEME_LABELS = {
+    "L'Entreprise OS":                              "ENTREPRISE OS",
+    "Terrain et missions clients":                  "TERRAIN CLIENT",
+    "Méthode Cartographier → Éliciter → Codifier":  "MÉTHODE D&CO",
+    "Gouvernance et réglementation IA":             "GOUVERNANCE IA",
+    "Formation et culture IA":                      "FORMATION IA",
+}
+
+THEME_ASSETS = {
+    "L'Entreprise OS":                              "assets/entreprise_os.jpg",
+    "Terrain et missions clients":                  "assets/terrain_clients.jpg",
+    "Méthode Cartographier → Éliciter → Codifier":  "assets/methode.jpg",
+    "Gouvernance et réglementation IA":             "assets/gouvernance.jpg",
+    "Formation et culture IA":                      "assets/formation.jpg",
+}
+
+def hex_to_rgb(h):
+    h = h.lstrip('#')
+    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
 def generate_visual(post_x, theme, hashtags=""):
-    """Génère un visuel 1200x675 branded D&Co."""
+    """Génère un visuel 1200x675 branded D&Co — photo + typographie bold."""
     W, H = 1200, 675
-    style = THEME_STYLES.get(theme, {"accent": "#c8a96e", "label_color": "#c8a96e"})
-    ACCENT = style["accent"]
+    palette = THEME_PALETTES.get(theme, THEME_PALETTES["L'Entreprise OS"])
+    asset_path = THEME_ASSETS.get(theme, THEME_ASSETS["L'Entreprise OS"])
 
-    img = Image.new("RGB", (W, H), "#0d0d1a")
+    # Charger et redimensionner la photo
+    try:
+        photo = Image.open(asset_path).convert("RGBA")
+    except Exception:
+        photo = Image.new("RGBA", (W, H), (20, 20, 40, 255))
+    photo = photo.resize((W, H), Image.LANCZOS)
+    photo = photo.filter(ImageFilter.GaussianBlur(radius=2))
+
+    # Overlay coloré sombre
+    r, g, b, a = palette["overlay"]
+    overlay = Image.new("RGBA", (W, H), (r, g, b, a))
+    img = Image.alpha_composite(photo, overlay).convert("RGB")
+
+    # Gradient sombre sur la moitié gauche pour lisibilité du texte
+    gradient = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    g_draw = ImageDraw.Draw(gradient)
+    for x in range(W // 2 + 100):
+        alpha = int(140 * (1 - x / (W // 2 + 100)))
+        g_draw.line([(x, 0), (x, H)], fill=(0, 0, 0, alpha))
+    img = Image.alpha_composite(img.convert("RGBA"), gradient).convert("RGB")
+
     draw = ImageDraw.Draw(img)
-
-    # Barre verticale signature
-    draw.rectangle([0, 0, 8, H], fill=ACCENT)
-
-    # Header panel
-    draw.rectangle([0, 0, W, 110], fill="#13132b")
-    draw.rectangle([0, 108, W, 110], fill="#252545")
 
     # Fonts
     try:
-        font_logo  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 24)
-        font_theme = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
-        font_body  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 34)
-        font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
-        font_url   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+        font_huge  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 54)
+        font_large = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
+        font_med   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
+        font_logo  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
+        font_tag   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+        font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 15)
     except:
-        font_logo = font_theme = font_body = font_small = font_url = ImageFont.load_default()
-
-    draw.text((40, 30), "DÉCISIONS & CO", fill=ACCENT, font=font_logo)
-    draw.text((40, 64), f"— {theme.upper()}", fill="#7070a0", font=font_theme)
+        font_huge = font_large = font_med = font_logo = font_tag = font_small = ImageFont.load_default()
 
     # Nettoyer hashtags du texte
     clean = post_x
@@ -270,19 +309,47 @@ def generate_visual(post_x, theme, hashtags=""):
         clean = clean.replace(tag, "").strip()
     clean = clean.strip(" ,.")
 
-    lines = wrap_text(draw, clean, font_body, W - 120)
-    y = 155
-    for line in lines[:7]:
-        draw.text((50, y), line, fill="#eeeef5", font=font_body)
-        y += 56
+    # Taille de font selon longueur
+    if len(clean) < 80:
+        font_body, max_w, line_h = font_huge, 680, 72
+    elif len(clean) < 150:
+        font_body, max_w, line_h = font_large, 680, 58
+    else:
+        font_body, max_w, line_h = font_med, 680, 48
 
-    # Footer
-    draw.rectangle([40, H-110, W-40, H-109], fill="#252545")
-    draw.text((50, H-80), "decisionsandco.com", fill="#7070a0", font=font_url)
+    lines = wrap_text(draw, clean, font_body, max_w)
+    total_h = len(lines) * line_h
+    y_start = (H - total_h) // 2 - 20
 
-    tags = hashtags if hashtags else "#IA #PME"
-    bbox = draw.textbbox((0, 0), tags, font=font_small)
-    draw.text((W - (bbox[2]-bbox[0]) - 50, H-82), tags, fill=ACCENT, font=font_small)
+    # Ligne d'accent à gauche
+    accent_rgb = hex_to_rgb(palette["accent"])
+    draw.rectangle([40, y_start - 16, 47, y_start + total_h + 16], fill=accent_rgb)
+
+    # Texte avec ombre
+    for i, line in enumerate(lines[:7]):
+        y = y_start + i * line_h
+        draw.text((73, y + 2), line, fill=(0, 0, 0, 180), font=font_body)
+        draw.text((70, y), line, fill="#ffffff", font=font_body)
+
+    # Pill thème haut à droite
+    label = THEME_LABELS.get(theme, theme[:20].upper())
+    tag_bbox = draw.textbbox((0, 0), label, font=font_tag)
+    tag_w = tag_bbox[2] - tag_bbox[0] + 28
+    tag_h_px = tag_bbox[3] - tag_bbox[1] + 14
+    tag_x = W - tag_w - 40
+    tag_bg_rgb = hex_to_rgb(palette["tag_bg"])
+    draw.rounded_rectangle([tag_x, 32, tag_x + tag_w, 32 + tag_h_px], radius=6, fill=tag_bg_rgb)
+    tag_fg_rgb = hex_to_rgb(palette["tag_fg"])
+    draw.text((tag_x + 14, 39), label, fill=tag_fg_rgb, font=font_tag)
+
+    # Logo bas à gauche
+    draw.text((50, H - 52), "DÉCISIONS & CO", fill=accent_rgb, font=font_logo)
+    draw.text((50, H - 30), "decisionsandco.com", fill=(220, 220, 220), font=font_small)
+
+    # Hashtags bas à droite
+    tags = hashtags if hashtags else "#IA"
+    tag_b = draw.textbbox((0, 0), tags, font=font_small)
+    draw.text((W - (tag_b[2] - tag_b[0]) - 50, H - 38), tags, fill=accent_rgb, font=font_small)
 
     buf = BytesIO()
     img.save(buf, format="PNG")
