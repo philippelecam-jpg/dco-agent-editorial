@@ -23,6 +23,10 @@ MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
 
 SIGNATURE = "Décisions & Co"
 
+# Base publique GitHub Pages, utilisée pour exposer le visuel à LinkedIn via Make
+PAGES_BASE = "https://philippelecam-jpg.github.io/dco-agent-editorial"
+VISUELS_DIR = "docs/visuels"
+
 # Rotation forcée par jour de semaine
 AGENDA_HEBDO = {
     0: {
@@ -419,6 +423,76 @@ def generate_visual(post_x, theme, hashtags=""):
     return buf
 
 
+def save_visual(image_buf, date_slug):
+    """Écrit le visuel dans docs/visuels/ et retourne (chemin_local, chemin_relatif)."""
+    os.makedirs(VISUELS_DIR, exist_ok=True)
+    rel = f"visuels/{date_slug}.png"
+    path = os.path.join("docs", rel)
+    image_buf.seek(0)
+    with open(path, "wb") as f:
+        f.write(image_buf.read())
+    image_buf.seek(0)
+    print(f"Visuel écrit : {path}")
+    return path, rel
+
+
+def git_commit_push(paths, message):
+    """Committe et pousse les fichiers indiqués, pour déclencher le déploiement Pages.
+
+    Nécessaire parce que Make a besoin d'une URL publique : le commit de fin de
+    workflow arriverait trop tard. Retourne True si un push a eu lieu.
+    """
+    try:
+        import subprocess
+
+        def run(*args):
+            return subprocess.run(args, check=True, capture_output=True, text=True)
+
+        run("git", "config", "user.name", "agent-editorial-dco")
+        run("git", "config", "user.email", "agent@decisionsandco.com")
+        run("git", "add", *paths)
+
+        statut = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"], capture_output=True
+        )
+        if statut.returncode == 0:
+            print("Rien à committer.")
+            return False
+
+        run("git", "commit", "-m", message)
+        run("git", "push")
+        print("Commit poussé, déploiement Pages déclenché.")
+        return True
+    except Exception as e:
+        detail = getattr(e, "stderr", "") or str(e)
+        print(f"Commit/push impossible : {detail}")
+        return False
+
+
+def attendre_url(url, timeout=150, intervalle=10):
+    """Attend que l'URL réponde 200 avec une image. Retourne True si disponible.
+
+    GitHub Pages met 40 à 60 secondes à déployer. Sans cette attente, Make
+    récupérerait un 404 et le post LinkedIn partirait sans visuel.
+    """
+    debut = datetime.now()
+    tentative = 0
+    while (datetime.now() - debut).total_seconds() < timeout:
+        tentative += 1
+        try:
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200 and r.headers.get("Content-Type", "").startswith("image"):
+                print(f"Visuel en ligne après {int((datetime.now() - debut).total_seconds())}s.")
+                return True
+            print(f"Tentative {tentative} : statut {r.status_code}, on attend.")
+        except Exception as e:
+            print(f"Tentative {tentative} : {e}")
+        import time
+        time.sleep(intervalle)
+    print(f"Visuel toujours indisponible après {timeout}s.")
+    return False
+
+
 def upload_media_to_x(image_buf):
     """Upload une image sur X via l'API v1.1 et retourne le media_id."""
     auth = OAuth1(X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET)
@@ -452,8 +526,12 @@ def publish_to_x(post_text, hashtags="", media_id=None):
     return resp.json()
 
 
-def notify_make_linkedin(package, agenda):
-    """Envoie le post LinkedIn à Make pour publication automatique."""
+def notify_make_linkedin(package, agenda, image_url="", has_image=False):
+    """Envoie le post LinkedIn à Make pour publication automatique.
+
+    image_url pointe vers le visuel déployé sur GitHub Pages. has_image permet
+    à Make de router vers un post texte si le visuel n'a pas pu être déployé.
+    """
     webhook_url = "https://hook.eu2.make.com/y4lqsrwkq4h6d82t7f6qhf6hhnbcgamh"
     try:
         resp = requests.post(
@@ -464,11 +542,13 @@ def notify_make_linkedin(package, agenda):
                 "post_x": package.get("post_x", ""),
                 "theme": agenda["theme"],
                 "date": today_label(),
+                "image_url": image_url,
+                "has_image": has_image,
             },
             timeout=15,
         )
         resp.raise_for_status()
-        print(f"LinkedIn notifié via Make : {resp.status_code}")
+        print(f"LinkedIn notifié via Make : {resp.status_code} (image : {has_image})")
     except Exception as e:
         print(f"Erreur notification Make LinkedIn : {e}")
 
@@ -503,22 +583,36 @@ def main():
     print(f"Sujet : {package.get('sujet')}")
     print(f"Post X : {package.get('post_x')}")
 
-    save_package(package, agenda)
-
-    # Générer le visuel
+    # Générer le visuel et l'écrire sur disque
     print("Génération du visuel...")
+    date_slug = datetime.now().strftime("%Y-%m-%d")
     image_buf = generate_visual(
         post_x=package.get("post_x", ""),
         theme=agenda["theme"],
         hashtags=package.get("hashtags", "#IA"),
     )
+    visuel_path, visuel_rel = save_visual(image_buf, date_slug)
 
-    # Uploader l'image
+    # URL versionnée : contourne le cache CDN de Pages sur un éventuel 404
+    version = datetime.now().strftime("%H%M%S")
+    visuel_url = f"{PAGES_BASE}/{visuel_rel}?v={version}"
+
+    package["visuel_url"] = visuel_url
+    save_package(package, agenda)
+
+    # Pousser le visuel maintenant : Pages met 40 à 60s à déployer, et Make a
+    # besoin d'une URL publique. Le commit de fin de workflow arriverait trop tard.
+    print("Commit du visuel et du package...")
+    git_commit_push(
+        ["docs/package.json", visuel_path],
+        f"Visuel et package du {date_slug}",
+    )
+
+    # Publier sur X pendant que Pages se déploie
     print("Upload de l'image sur X...")
     media_id = upload_media_to_x(image_buf)
     print(f"Media ID : {media_id}")
 
-    # Publier le tweet avec image
     print("Publication sur X...")
     result = publish_to_x(
         post_text=package["post_x"],
@@ -529,9 +623,17 @@ def main():
     tweet_url = f"https://twitter.com/DecisionsAndco/status/{tweet_id}"
     print(f"Tweet publié : {tweet_url}")
 
-    # Notifier Make pour publication LinkedIn
+    # Attendre que le visuel soit servi par Pages, puis notifier Make
+    print(f"Attente du déploiement de {visuel_url}")
+    image_ok = attendre_url(visuel_url)
+
     print("Envoi vers Make LinkedIn...")
-    notify_make_linkedin(package, agenda)
+    notify_make_linkedin(
+        package,
+        agenda,
+        image_url=visuel_url if image_ok else "",
+        has_image=image_ok,
+    )
 
     save_historique(historique, {
         "date": today_label(),
@@ -540,6 +642,7 @@ def main():
         "sujet": package.get("sujet", ""),
         "post_x": package.get("post_x", ""),
         "tweet_url": tweet_url,
+        "visuel_url": visuel_url,
     })
     print("Terminé.")
 
