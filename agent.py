@@ -4,7 +4,6 @@
 import os
 import json
 import re
-import textwrap
 import requests
 from datetime import datetime
 from io import BytesIO
@@ -21,6 +20,8 @@ X_ACCESS_SECRET = os.environ["X_ACCESS_SECRET"]
 DAYS_FR = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
              "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+
+SIGNATURE = "Décisions & Co"
 
 # Rotation forcée par jour de semaine
 AGENDA_HEBDO = {
@@ -54,14 +55,14 @@ Fondateurs : Philippe Le Cam (président) et Christophe Rozuel.
 Équipe : Mélanie Nauleau (formation), Thomas Royer (ingénieur IA), Nolan Deïs (consultant).
 
 ## Raison d'être
-Aider les PME et ETI françaises (50–2000 collaborateurs) à traverser la transformation IA
+Aider les PME et ETI françaises (50 à 2000 collaborateurs) à traverser la transformation IA
 sans se perdre dans les outils. On ne vend pas de l'IA.
 On prépare les organisations à l'accueillir.
 
 ## Conviction centrale
 L'IA est un amplificateur. Elle amplifie ce qui existe.
 Une organisation qui déploie l'IA sans avoir structuré sa connaissance
-n'accélère pas sa performance — elle accélère son désordre.
+n'accélère pas sa performance, elle accélère son désordre.
 La préparation précède le déploiement. Toujours.
 
 ## L'Entreprise OS
@@ -70,17 +71,17 @@ Trois fonctions : Stocker (connaissance métier gouvernée), Traiter (décisions
 Diffuser (livrables et communications). Remplace progressivement le SI traditionnel.
 
 ## Méthodologie : Cartographier → Éliciter → Codifier
-1. Cartographier — comprendre avant de toucher à quoi que ce soit
-2. Éliciter — faire sortir la connaissance implicite des têtes
-3. Codifier — ancrer la connaissance dans des systèmes durables
+1. Cartographier : comprendre avant de toucher à quoi que ce soit
+2. Éliciter : faire sortir la connaissance implicite des têtes
+3. Codifier : ancrer la connaissance dans des systèmes durables
 C'est une boucle, pas une ligne droite.
 
-## Offre — 4 piliers
+## Offre en 4 piliers
 1. Conseil en transformation IA (1 150€/j)
 2. Formation (Mélanie Nauleau)
 3. Développement de solutions IA (Thomas Royer)
 4. Gouvernance IA (chartes, AI Act, RGPD)
-Produits : Diagnostic IA (5–15k€), Charte IA, Copilot Décisionnel v8cockpit (8 500€ + 900€/mois/15 users)
+Produits : Diagnostic IA (5 à 15k€), Charte IA, Copilot Décisionnel v8cockpit (8 500€ + 900€/mois/15 users)
 
 ## Cibles
 DG/Dirigeant (interlocuteur idéal), DAF, DRH, DSI.
@@ -89,19 +90,11 @@ Secteurs : industrie, transport, services, secteur public.
 ## Ton
 Direct. Ancré. Concret. Exigeant sans être arrogant.
 Phrases courtes. Une idée par phrase.
+Ponctuation sobre : virgule, point, deux-points. Jamais de tiret cadratin.
 Mots interdits : révolution, disruptif, écosystème, synergies,
 "Dans un monde où", "L'IA change tout".
 Mots D&Co : matière, connaissance, gouvernance, structurer, codifier, ancrer.
 """
-
-# --- Palettes visuelles par thème ---
-THEME_STYLES = {
-    "L'Entreprise OS":                    {"accent": "#c8a96e", "label_color": "#c8a96e"},
-    "Terrain et missions clients":         {"accent": "#6eb5c8", "label_color": "#6eb5c8"},
-    "Méthode Cartographier → Éliciter → Codifier": {"accent": "#6ec88a", "label_color": "#6ec88a"},
-    "Gouvernance et réglementation IA":    {"accent": "#c86e6e", "label_color": "#c86e6e"},
-    "Formation et culture IA":             {"accent": "#a06ec8", "label_color": "#a06ec8"},
-}
 
 
 def today_label():
@@ -112,6 +105,61 @@ def today_label():
 def get_agenda_du_jour():
     jour = datetime.now().weekday()
     return AGENDA_HEBDO.get(jour, AGENDA_HEBDO[0])
+
+
+# --- Nettoyage des sorties ---
+CHAMPS_A_NETTOYER = ("sujet", "titre", "post_x", "post_linkedin", "newsletter", "article")
+
+
+def nettoyer_texte(txt):
+    """Retire le markdown, les tirets cadratin et l'arobase de signature.
+
+    Filet de sécurité : le prompt interdit déjà ces éléments, cette fonction
+    garantit qu'ils ne partent jamais en publication même si le modèle dérive.
+    """
+    if not isinstance(txt, str) or not txt:
+        return txt
+
+    # 1. Markdown de mise en forme (LinkedIn et X affichent les astérisques en clair)
+    txt = re.sub(r"\*\*(.+?)\*\*", r"\1", txt, flags=re.S)
+    txt = re.sub(r"__(.+?)__", r"\1", txt, flags=re.S)
+    txt = re.sub(r"(?<!\*)\*(?!\*)([^*\n]+?)\*(?!\*)", r"\1", txt)
+    txt = txt.replace("*", "")
+    # Titres markdown en début de ligne. Le "#" suivi d'un espace uniquement,
+    # pour ne pas toucher aux hashtags du type #IA.
+    txt = re.sub(r"(?m)^[ \t]*#{1,6}[ \t]+", "", txt)
+
+    # 2. Signature : retire l'arobase et normalise la casse
+    txt = re.sub(r"(?:@[ \t]*)?d[ée]cisions[ \t]*&[ \t]*co\b", SIGNATURE, txt, flags=re.I)
+
+    # 3. Tiret cadratin en début de ligne (signature) : on le supprime
+    #    Le trait d'union simple est préservé pour ne pas casser les listes.
+    txt = re.sub(r"(?m)^[ \t]*[—–][ \t]*", "", txt)
+
+    # 4. Tiret cadratin ou demi-cadratin dans le corps du texte
+    txt = re.sub(r"\s*[—–]\s*", ", ", txt)
+
+    # 5. Nettoyage des artefacts produits par les substitutions
+    txt = re.sub(r",[\s,]*,", ",", txt)
+    txt = re.sub(r"([.!?;:])[ \t]*,[ \t]*", r"\1 ", txt)
+    # Espace parasite avant virgule ou point uniquement.
+    # L'espace avant : ; ! ? est correct en typographie française, on le préserve.
+    txt = re.sub(r"[ \t]+([,.])", r"\1", txt)
+    txt = re.sub(r"[ \t]{2,}", " ", txt)
+    txt = re.sub(r"\n{3,}", "\n\n", txt)
+    txt = re.sub(r"[ \t]+\n", "\n", txt)
+
+    return txt.strip()
+
+
+def nettoyer_package(package):
+    for champ in CHAMPS_A_NETTOYER:
+        if champ in package:
+            avant = package[champ]
+            package[champ] = nettoyer_texte(avant)
+            if avant != package[champ]:
+                print(f"Nettoyage appliqué sur '{champ}'")
+    return package
 
 
 def load_historique():
@@ -179,20 +227,31 @@ def build_system_prompt(historique, news, agenda):
 ## Actualité IA du jour
 {news}
 
-RÈGLES :
+RÈGLES ÉDITORIALES :
 1. Reste sur le thème imposé
 2. Angle différent des posts déjà publiés
 3. Exploite l'actualité si elle touche au thème
 4. Jamais : révolution, disruptif, écosystème, synergies, "Dans un monde où"
 5. Pas de promotion directe des offres D&Co
 
+CONTRAINTES DE FORMAT STRICTES (non négociables) :
+6. AUCUN markdown dans les textes publiés : ni **gras**, ni *italique*, ni _souligné_,
+   ni titres avec #. LinkedIn et X n'interprètent pas le markdown et affichent
+   les astérisques en clair, ce qui décrédibilise le post.
+   Pour mettre en valeur une idée, utilise une phrase courte isolée par un saut de ligne.
+7. AUCUN tiret cadratin (—) ni demi-cadratin (–). C'est une signature d'écriture
+   générée par IA, immédiatement reconnaissable. Utilise une virgule, un deux-points,
+   un point, ou coupe la phrase en deux.
+8. Signature exacte, sans arobase : "{SIGNATURE}"
+   L'arobase ne crée aucun lien sur LinkedIn, il s'affiche tel quel.
+
 Génère UNIQUEMENT un JSON valide sans markdown :
 {{"sujet":"...","post_x":"...","post_linkedin":"...","newsletter":"...","hashtags":"#tag1 #tag2"}}
 
 - post_x : max 240 caractères (sans hashtags, ceux-ci sont dans le champ hashtags), une idée tranchée
 - hashtags : 1-2 hashtags pertinents pour le thème
-- post_linkedin : 600-900 caractères, accroche forte, paragraphes séparés par \\n\\n, terminer par la signature "@Décisions & Co" sur une ligne séparée
-- newsletter : 100-180 mots, signé @Décisions & Co
+- post_linkedin : 600-900 caractères, accroche forte, paragraphes séparés par \\n\\n, terminer par la signature "{SIGNATURE}" sur une ligne séparée
+- newsletter : 100-180 mots, signé {SIGNATURE}
 - Échapper guillemets avec \\" et sauts de ligne avec \\n"""
 
 
@@ -216,7 +275,8 @@ def generate_content(historique, news, agenda):
     data = resp.json()
     raw = next((b["text"] for b in data["content"] if b["type"] == "text"), "")
     raw = raw.replace("```json", "").replace("```", "").strip()
-    return json.loads(raw)
+    package = json.loads(raw)
+    return nettoyer_package(package)
 
 
 def wrap_text(draw, text, font, max_width):
@@ -259,9 +319,11 @@ THEME_ASSETS = {
     "Formation et culture IA":                      "assets/formation.jpg",
 }
 
+
 def hex_to_rgb(h):
     h = h.lstrip('#')
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
 
 def generate_visual(post_x, theme, hashtags=""):
     """Génère un visuel 1200x675 branded D&Co — photo + typographie bold."""
@@ -300,7 +362,7 @@ def generate_visual(post_x, theme, hashtags=""):
         font_logo  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
         font_tag   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
         font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 15)
-    except:
+    except Exception:
         font_huge = font_large = font_med = font_logo = font_tag = font_small = ImageFont.load_default()
 
     # Nettoyer hashtags du texte
@@ -374,6 +436,9 @@ def publish_to_x(post_text, hashtags="", media_id=None):
     """Publie un tweet avec image optionnelle."""
     auth = OAuth1(X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET)
     full_text = f"{post_text}\n\n{hashtags}".strip() if hashtags else post_text
+    if len(full_text) > 280:
+        print(f"ATTENTION : texte X à {len(full_text)} caractères, troncature à 280.")
+        full_text = full_text[:279].rstrip() + "…"
     payload = {"text": full_text}
     if media_id:
         payload["media"] = {"media_ids": [media_id]}
