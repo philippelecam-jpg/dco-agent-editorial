@@ -66,6 +66,6 @@ jobs:
         run: |
           git config user.name "Agent Editorial DCo"
           git config user.email "agent@decisionsandco.com"
-          git add docs/package.json
+          git add docs/
           git diff --staged --quiet || git commit -m "Package éditorial $(date '+%Y-%m-%d-%H%M')"
           git push
