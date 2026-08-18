@@ -16,6 +16,8 @@ X_API_KEY = os.environ["X_API_KEY"]
 X_API_SECRET = os.environ["X_API_SECRET"]
 X_ACCESS_TOKEN = os.environ["X_ACCESS_TOKEN"]
 X_ACCESS_SECRET = os.environ["X_ACCESS_SECRET"]
+MAKE_WEBHOOK_URL = os.environ["MAKE_WEBHOOK_URL"]
+MAKE_API_KEY = os.environ["MAKE_API_KEY"]
 
 DAYS_FR = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
@@ -532,10 +534,11 @@ def notify_make_linkedin(package, agenda, image_url="", has_image=False):
     image_url pointe vers le visuel déployé sur GitHub Pages. has_image permet
     à Make de router vers un post texte si le visuel n'a pas pu être déployé.
     """
-    webhook_url = "https://hook.eu2.make.com/y4lqsrwkq4h6d82t7f6qhf6hhnbcgamh"
+    webhook_url = MAKE_WEBHOOK_URL
     try:
         resp = requests.post(
             webhook_url,
+            headers={"x-make-apikey": MAKE_API_KEY},
             json={
                 "sujet": package.get("sujet", ""),
                 "post_linkedin": package.get("post_linkedin", ""),
