@@ -110,7 +110,14 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "theme": {"type": "string"},
+                "theme": {
+                    "type": "string",
+                    "enum": ["Regard de fond", "Conviction D&Co", "Actualité décryptée", "Terrain & pratique"],
+                    "description": (
+                        "Label court affiché sur le visuel (badge). Le sujet réel, lui, "
+                        "reste totalement libre dans le champ 'sujet' ci-dessous."
+                    ),
+                },
                 "sujet": {"type": "string"},
                 "post_x": {"type": "string", "description": "Max 260 caractères, hashtags exclus."},
                 "post_linkedin": {"type": "string", "description": "600-900 caractères."},
