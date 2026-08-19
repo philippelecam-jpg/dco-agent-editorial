@@ -363,6 +363,20 @@ def hex_to_rgb(h):
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
 
+LOGO_PATH = "assets/logo_decisions_co.png"
+
+
+def recolor_logo(logo_rgba, rgb):
+    """Reteinte un logo RGBA à une couleur donnée, en conservant son canal
+    alpha comme pochoir (silhouette et anti-aliasing des bords préservés).
+    Le fichier source (logo blanc sur fond transparent) sert uniquement de
+    masque de forme ; sa couleur d'origine n'a pas d'importance."""
+    alpha = logo_rgba.split()[3]
+    solid = Image.new("RGBA", logo_rgba.size, rgb + (255,))
+    solid.putalpha(alpha)
+    return solid
+
+
 def generate_visual(post_x, theme, hashtags=""):
     """Génère un visuel 1200x675 branded D&Co — photo + typographie bold."""
     W, H = 1200, 675
@@ -442,9 +456,23 @@ def generate_visual(post_x, theme, hashtags=""):
     tag_fg_rgb = hex_to_rgb(palette["tag_fg"])
     draw.text((tag_x + 14, 39), label, fill=tag_fg_rgb, font=font_tag)
 
-    # Logo bas à gauche
-    draw.text((50, H - 52), "DÉCISIONS & CO", fill=accent_rgb, font=font_logo)
-    draw.text((50, H - 30), "decisionsandco.com", fill=(220, 220, 220), font=font_small)
+    # Logo bas à gauche — image réelle, recolorée à la teinte du thème
+    # (remplace l'ancien texte "DÉCISIONS & CO" peint en font_logo)
+    try:
+        logo_raw = Image.open(LOGO_PATH).convert("RGBA")
+        logo_w = 150
+        logo_h = int(logo_w * logo_raw.size[1] / logo_raw.size[0])
+        logo_tinted = recolor_logo(logo_raw, accent_rgb).resize((logo_w, logo_h), Image.LANCZOS)
+        logo_y = H - logo_h - 24
+        img.paste(logo_tinted, (50, logo_y), logo_tinted)
+        url_bbox = draw.textbbox((0, 0), "decisionsandco.com", font=font_small)
+        url_y = logo_y + (logo_h - (url_bbox[3] - url_bbox[1])) // 2
+        draw.text((50 + logo_w + 16, url_y), "decisionsandco.com", fill=(220, 220, 220), font=font_small)
+    except Exception:
+        # Filet de sécurité : si le fichier logo est absent ou illisible,
+        # on retombe sur l'ancien rendu texte plutôt que de planter le run.
+        draw.text((50, H - 52), "DÉCISIONS & CO", fill=accent_rgb, font=font_logo)
+        draw.text((50, H - 30), "decisionsandco.com", fill=(220, 220, 220), font=font_small)
 
     # Hashtags bas à droite
     tags = hashtags if hashtags else "#IA"
