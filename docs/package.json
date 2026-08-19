@@ -1,10 +1,10 @@
 {
   "date": "Mercredi 19 août 2026",
-  "theme": "Regard de fond",
-  "generated_at": "2026-08-19T15:17:52.980024",
-  "sujet": "ROI de l'IA générative dans les ETI françaises : 77% l'utilisent, 17% le mesurent",
-  "post_x": "77 % des ETI françaises utilisent l'IA générative. 17 % mesurent ce que ça leur rapporte. Ce n'est pas un problème de tableau de bord. C'est un problème de fondations.",
-  "post_linkedin": "77 % des ETI françaises utilisent l'IA générative en 2026. Seulement 17 % sont capables d'en mesurer le ROI.\n\nCe chiffre ne dit pas que les organisations sont mauvaises en reporting. Il dit qu'elles ont déployé avant de savoir ce qu'elles voulaient mesurer.\n\nOn ne peut pas mesurer l'impact d'un outil sur un processus qu'on n'a pas documenté. On ne peut pas évaluer un gain si on n'a pas établi de référence avant.\n\nDéployer sans structurer, c'est accélérer dans le brouillard. L'IA produit. Mais personne ne sait si la direction est bonne.\n\nLa question n'est pas \"quel outil choisir ?\". Elle est : \"sur quelle base allons-nous juger que ça fonctionne ?\"\n\nCette base, c'est la connaissance gouvernée. Les processus cartographiés. Les décisions tracées. Sans ça, le ROI reste une intuition habillée en indicateur.\n\n83 % des ETI ne peuvent pas répondre à cette question. Ce week-end, c'est peut-être le bon moment pour se la poser.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #Gouvernance #ETI #TransformationIA #ROI",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-151752-weekend.png?v=151752"
+  "theme": "Actualité décryptée",
+  "generated_at": "2026-08-19T15:24:11.541493",
+  "sujet": "DeepSeek triple ses prix API : ce que ça dit sur la dépendance des PME/ETI à un seul fournisseur IA",
+  "post_x": "DeepSeek vient de tripler ses prix API. Du jour au lendemain. Ceux qui avaient tout construit dessus reconstruisent aujourd'hui. Choisir un fournisseur IA, c'est un acte de gouvernance. Pas un achat de fournitures.",
+  "post_linkedin": "DeepSeek a augmenté ses prix API de plus de 300 % au 16 août. Du jour au lendemain.\n\nPour les équipes qui avaient construit leurs flux sur ce seul modèle, c'est une remise en question brutale. Pas une catastrophe. Mais un signal clair.\n\nChoisir un fournisseur IA n'est pas un achat de fournitures de bureau.\n\nC'est un acte de gouvernance.\n\nQuand on choisit un seul modèle, un seul fournisseur, une seule infrastructure, on crée une dépendance. Pas forcément visible au départ. Très visible le jour où les tarifs bougent, où l'API change, où le service est suspendu.\n\nLa question à poser avant de déployer n'est pas \"quel outil est le moins cher aujourd'hui ?\". C'est : \"que se passe-t-il si ce fournisseur change ses conditions demain ?\"\n\nGouverner ses choix IA, c'est anticiper ces ruptures. Documenter les dépendances. Prévoir les alternatives. Structurer pour ne pas subir.\n\nL'agilité technologique ne s'improvise pas. Elle se prépare.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#IA #Gouvernance #PME #ETI #DeepSeek #TransformationIA",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-152411-weekend.png?v=152411"
 }
