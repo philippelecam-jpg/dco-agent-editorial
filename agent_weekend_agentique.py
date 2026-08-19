@@ -190,6 +190,13 @@ def _preparer_contenu(theme, sujet, post_x, post_linkedin, hashtags):
     }
     package = nettoyer_package(package)
 
+    longueur_avant_mention = len(package.get("post_linkedin", ""))
+    if not (600 <= longueur_avant_mention <= 900):
+        print(
+            f"[ALERTE] post_linkedin hors cible : {longueur_avant_mention} caractères "
+            f"(attendu 600-900). Contenu publié quand même — à surveiller si ça se répète."
+        )
+
     # Ajout déterministe de la mention de transparence après la signature,
     # même logique que le patch validé pour agent.py (section 7, Annexe 1).
     post = package.get("post_linkedin", "")
@@ -328,7 +335,8 @@ Procédure obligatoire, dans cet ordre :
 3. Si sensibilité élevée : escalader_revue_humaine, puis terminer_execution. Ne publie jamais seul un sujet sensible.
 4. Si sensibilité faible : preparer_contenu, puis generer_et_deployer_visuel, puis publier_x, puis publier_linkedin, puis terminer_execution.
 
-Le texte LinkedIn doit toujours se terminer par la signature "Décisions & Co"
+Le texte LinkedIn doit faire 600 à 900 caractères (hors mention de transparence,
+qui est ajoutée automatiquement après ce total), et toujours se terminer par la signature "Décisions & Co"
 (la mention de transparence est ajoutée automatiquement par le système,
 ne l'écris pas toi-même).
 """
