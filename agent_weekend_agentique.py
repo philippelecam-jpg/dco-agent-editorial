@@ -39,6 +39,13 @@ from agent import (
 )
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+
+# Mode test : quand DRY_RUN=true, l'agent déroule tout le pipeline normalement
+# (génération, visuel, git push du package) mais n'appelle PAS les API externes
+# irréversibles (publication réelle sur X et LinkedIn). Permet d'observer le
+# comportement complet de l'agent — choix du thème, évaluation de sensibilité,
+# séquence d'outils — sans aucun effet visible publiquement.
+DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 MODEL = "claude-sonnet-4-6"
 MAX_TOURS = 8
 
@@ -223,6 +230,13 @@ def _generer_et_deployer_visuel():
 
 def _publier_x():
     package = ETAT["package"]
+
+    if DRY_RUN:
+        tweet_url = "[DRY_RUN] Aucune publication réelle — X non appelé."
+        print(f"[DRY_RUN] publier_x aurait publié : {package['post_x'][:120]}...")
+        ETAT["tweet_url"] = tweet_url
+        return {"tweet_url": tweet_url, "dry_run": True}
+
     media_id = upload_media_to_x(ETAT["image_buf"])
     result = publish_to_x(
         post_text=package["post_x"],
@@ -236,6 +250,10 @@ def _publier_x():
 
 
 def _publier_linkedin():
+    if DRY_RUN:
+        print("[DRY_RUN] publier_linkedin aurait notifié Make.com — appel réel ignoré.")
+        return {"statut": "notifié (dry_run)", "dry_run": True}
+
     notify_make_linkedin(
         ETAT["package"],
         ETAT["agenda"],
@@ -253,7 +271,9 @@ def _escalader_revue_humaine(raison):
 
 def _terminer_execution(resume):
     package = ETAT.get("package") or {}
-    if package.get("sujet"):
+    if DRY_RUN:
+        print(f"[DRY_RUN] terminer_execution — historique.json non modifié (test).")
+    elif package.get("sujet"):
         save_historique(ETAT["historique"], {
             "date": today_label(),
             "timestamp": datetime.now().isoformat(),
@@ -330,6 +350,7 @@ def call_claude(messages):
 
 def main():
     print(f"Agent éditorial D&Co (week-end, agentique) — {today_label()}")
+    print(f"Mode : {'DRY RUN (aucune publication réelle)' if DRY_RUN else 'PRODUCTION (publication réelle)'}")
     print("Veille actualité...")
     news = get_news_ia()
     print(f"Actualité : {news[:100]}...")
