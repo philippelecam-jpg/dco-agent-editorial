@@ -6,7 +6,13 @@ on:
     # Volontairement plus tard que la semaine (6h UTC) : usage LinkedIn/X
     # différent le week-end, on ne vise pas le pic professionnel du matin.
     - cron: '0 9 * * 6,0'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Mode test (aucune publication réelle sur X/LinkedIn)'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   publish-weekend:
@@ -36,6 +42,9 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          # Sur déclenchement manuel : valeur choisie dans l'interface (true par défaut).
+          # Sur déclenchement cron (week-end réel) : toujours false, jamais de test en prod.
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: python agent_weekend_agentique.py
 
       - name: Commit et push du package
