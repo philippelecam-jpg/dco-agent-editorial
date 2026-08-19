@@ -236,6 +236,9 @@ def get_news_ia():
             },
             timeout=30,
         )
+        if resp.status_code >= 400:
+            print(f"[ERREUR API] Statut HTTP {resp.status_code} sur get_news_ia")
+            print(f"[ERREUR API] Corps de la réponse : {resp.text[:2000]}")
         resp.raise_for_status()
         data = resp.json()
         news = " ".join(b["text"] for b in data.get("content", []) if b.get("type") == "text").strip()
@@ -309,6 +312,9 @@ def generate_content(historique, news, agenda):
         },
         timeout=60,
     )
+    if resp.status_code >= 400:
+        print(f"[ERREUR API] Statut HTTP {resp.status_code} sur generate_content")
+        print(f"[ERREUR API] Corps de la réponse : {resp.text[:2000]}")
     resp.raise_for_status()
     data = resp.json()
     raw = next((b["text"] for b in data["content"] if b["type"] == "text"), "")
