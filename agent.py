@@ -168,6 +168,38 @@ def nettoyer_package(package):
     return package
 
 
+MENTION_TRANSPARENCE = (
+    "Ce post est produit par notre propre agent IA éditorial, "
+    "parce qu'on applique à nous-mêmes ce qu'on recommande à nos clients."
+)
+
+
+def ajouter_mention_transparence(package):
+    """Insère la mention de transparence IA juste après la signature D&Co.
+
+    Ajout déterministe, indépendant du prompt : garantit la présence de la
+    mention même si le modèle omet la signature ou en change la formulation.
+    Cf. Annexe 1 Charte IA D&Co, section 7 (Art. 50(4) AI Act).
+    """
+    post = package.get("post_linkedin", "")
+    if not post:
+        return package
+
+    if SIGNATURE in post:
+        post = re.sub(
+            rf"({re.escape(SIGNATURE)})",
+            rf"\1\n\n{MENTION_TRANSPARENCE}",
+            post,
+            count=1,
+        )
+    else:
+        # Filet de sécurité : signature absente du texte généré, on l'ajoute quand même
+        post = f"{post.rstrip()}\n\n{SIGNATURE}\n\n{MENTION_TRANSPARENCE}"
+
+    package["post_linkedin"] = post
+    return package
+
+
 def load_historique():
     try:
         with open("docs/historique.json", "r", encoding="utf-8") as f:
@@ -282,7 +314,7 @@ def generate_content(historique, news, agenda):
     raw = next((b["text"] for b in data["content"] if b["type"] == "text"), "")
     raw = raw.replace("```json", "").replace("```", "").strip()
     package = json.loads(raw)
-    return nettoyer_package(package)
+    return ajouter_mention_transparence(nettoyer_package(package))
 
 
 def wrap_text(draw, text, font, max_width):
