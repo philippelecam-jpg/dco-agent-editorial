@@ -648,7 +648,15 @@ def main():
 
     # Générer le visuel et l'écrire sur disque
     print("Génération du visuel...")
-    date_slug = datetime.now().strftime("%Y-%m-%d")
+    # Nom de fichier unique par EXÉCUTION, pas seulement par jour. Le CDN de
+    # GitHub Pages met en cache par chemin de fichier et ignore le paramètre
+    # de requête (?v=...) utilisé pour le cache-busting plus bas — donc deux
+    # runs le même jour (ex. un test manuel après un cron du matin) écrasent
+    # le même fichier, et Make.com/LinkedIn peut récupérer l'image mise en
+    # cache d'un run précédent plutôt que la nouvelle. Même correctif que
+    # celui appliqué à agent_weekend_agentique.py le 19/08/2026, suite à un
+    # incident identique constaté en production sur ce pipeline.
+    date_slug = datetime.now().strftime("%Y-%m-%d-%H%M%S")
     image_buf = generate_visual(
         post_x=package.get("post_x", ""),
         theme=agenda["theme"],
