@@ -50,6 +50,14 @@ DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 MODEL = "claude-sonnet-4-6"
 MAX_TOURS = 8
 
+# Notification d'escalade : création d'une issue GitHub assignée, pour obtenir
+# un vrai mail de notification sans nouveau secret ni service tiers.
+# GITHUB_TOKEN et GITHUB_REPOSITORY sont fournis automatiquement par GitHub
+# Actions (le premier doit être explicitement mappé dans le workflow yml).
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "")
+GITHUB_ISSUE_ASSIGNEE = "philippelecam-jpg"
+
 MENTION_TRANSPARENCE = (
     "Ce post est rédigé, illustré et publié de façon autonome par notre "
     "agent IA éditorial, avec supervision humaine déclenchée en cas de "
@@ -293,9 +301,47 @@ def _publier_linkedin():
 
 
 def _escalader_revue_humaine(raison):
-    # À brancher sur une notification réelle (mail, Slack) si souhaité.
     print(f"[ESCALADE WEEK-END] {raison}")
-    return {"statut": "escalade envoyée, en attente de validation humaine"}
+
+    if not (GITHUB_TOKEN and GITHUB_REPOSITORY):
+        print(
+            "[ESCALADE] GITHUB_TOKEN ou GITHUB_REPOSITORY absent — issue non créée. "
+            "Vérifier que le workflow yml passe bien GITHUB_TOKEN en variable d'environnement."
+        )
+        return {"statut": "escalade envoyée (log uniquement — notification GitHub non configurée)"}
+
+    try:
+        resp = requests.post(
+            f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues",
+            headers={
+                "Authorization": f"Bearer {GITHUB_TOKEN}",
+                "Accept": "application/vnd.github+json",
+            },
+            json={
+                "title": f"[Escalade week-end] Validation requise — {today_label()}",
+                "body": (
+                    "L'agent éditorial week-end a évalué le sujet envisagé comme sensible "
+                    "et a suspendu la publication avant tout appel à X ou LinkedIn.\n\n"
+                    f"**Raison transmise par l'agent :**\n{raison}\n\n"
+                    "Aucune publication n'a eu lieu. Options : valider et publier le contenu "
+                    "manuellement, ajuster puis relancer le workflow, ou fermer cette issue "
+                    "sans suite si le sujet doit être abandonné.\n\n"
+                    "_Cf. Annexe 1 Charte IA D&Co, section 6.2 (Art. 50(4) AI Act)._"
+                ),
+                "assignees": [GITHUB_ISSUE_ASSIGNEE],
+                "labels": ["escalade-ia", "week-end"],
+            },
+            timeout=15,
+        )
+        if resp.status_code >= 300:
+            print(f"[ESCALADE] Échec de la création d'issue GitHub : {resp.status_code} — {resp.text[:300]}")
+            return {"statut": "escalade en log — échec de la notification GitHub"}
+        issue_url = resp.json().get("html_url", "")
+        print(f"[ESCALADE] Issue GitHub créée et assignée : {issue_url}")
+        return {"statut": "escalade envoyée", "issue_url": issue_url}
+    except Exception as e:
+        print(f"[ESCALADE] Erreur lors de la création d'issue GitHub : {e}")
+        return {"statut": "escalade en log — exception lors de la notification"}
 
 
 def _terminer_execution(resume):
