@@ -1,1 +1,42 @@
+name: Test — Notification d'escalade
 
+on:
+  workflow_dispatch:
+    inputs:
+      assignee:
+        description: 'Compte GitHub à assigner (destinataire du mail de test)'
+        required: true
+        default: 'philippelecam-jpg'
+      cleanup:
+        description: 'Fermer automatiquement l''issue de test après création'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  test-escalade:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests
+
+      - name: Lancer le test de notification d'escalade
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 scripts/test_escalade_notification.py \
+            --assignee "${{ inputs.assignee }}" \
+            $([ "${{ inputs.cleanup }}" = "true" ] && echo "--cleanup")
