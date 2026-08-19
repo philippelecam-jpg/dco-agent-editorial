@@ -16,6 +16,7 @@ la couche de décision change.
 
 import os
 import json
+import re
 import requests
 from datetime import datetime
 
@@ -168,8 +169,14 @@ def _consulter_historique():
 
 
 def _evaluer_sensibilite_sujet(sujet, resume_angle):
+    # Recherche par limites de mots (\b) : "loi" ne doit matcher que le mot
+    # "loi" isolé, pas la sous-chaîne à l'intérieur de "déploiement". Cf.
+    # faux positif constaté en test dry-run le 19/08/2026 — un angle
+    # éditorial anodin sur "la lenteur organisationnelle" avait été classé
+    # sensible uniquement parce que "déploiement" contient "loi".
     mots_sensibles = ["réglementation", "ai act", "politique", "sanction", "loi", "élection"]
-    niveau = "élevé" if any(m in resume_angle.lower() for m in mots_sensibles) else "faible"
+    texte = resume_angle.lower()
+    niveau = "élevé" if any(re.search(rf"\b{re.escape(m)}\b", texte) for m in mots_sensibles) else "faible"
     return {"niveau_sensibilite": niveau, "sujet": sujet}
 
 
