@@ -374,6 +374,13 @@ def call_claude(messages):
         },
         timeout=60,
     )
+    if resp.status_code >= 400:
+        # Le message d'erreur détaillé d'Anthropic (dans le corps JSON) est
+        # ce qui manquait pour diagnostiquer l'incident du 19/08/2026 —
+        # resp.raise_for_status() seul ne montre que le code, pas la raison.
+        print(f"[ERREUR API] Statut HTTP {resp.status_code}")
+        print(f"[ERREUR API] Corps de la réponse : {resp.text[:3000]}")
+        print(f"[ERREUR API] Nombre de messages dans la conversation : {len(messages)}")
     resp.raise_for_status()
     return resp.json()
 
