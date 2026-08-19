@@ -20,6 +20,7 @@ jobs:
 
     permissions:
       contents: write
+      issues: write
 
     steps:
       - name: Checkout
@@ -42,6 +43,9 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          # Jeton fourni automatiquement par GitHub Actions — aucun secret à
+          # créer. Sert uniquement à créer l'issue de notification d'escalade.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Sur déclenchement manuel : valeur choisie dans l'interface (true par défaut).
           # Sur déclenchement cron (week-end réel) : toujours false, jamais de test en prod.
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
