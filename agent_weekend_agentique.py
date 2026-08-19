@@ -213,7 +213,15 @@ def _preparer_contenu(theme, sujet, post_x, post_linkedin, hashtags):
 
 def _generer_et_deployer_visuel():
     package = ETAT["package"]
-    date_slug = datetime.now().strftime("%Y-%m-%d") + "-weekend"
+    # Nom de fichier unique par EXÉCUTION, pas seulement par jour. Le CDN de
+    # GitHub Pages met en cache par chemin de fichier et ignore le paramètre
+    # de requête (?v=...) utilisé pour le cache-busting — donc deux runs le
+    # même jour écrasaient le même fichier, et Make.com/LinkedIn récupérait
+    # l'image mise en cache d'un run précédent plutôt que la nouvelle.
+    # Constaté en production le 19/08/2026 (image "catalogue DGE" livrée sur
+    # un post "IBM + OpenAI"). L'heure précise dans le nom rend cette
+    # collision impossible.
+    date_slug = datetime.now().strftime("%Y-%m-%d-%H%M%S") + "-weekend"
 
     image_buf = generate_visual(
         post_x=package.get("post_x", ""),
