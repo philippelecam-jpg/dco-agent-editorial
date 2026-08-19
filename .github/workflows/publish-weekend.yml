@@ -1,0 +1,47 @@
+name: Agent Éditorial D&Co — Week-end (agentique)
+
+on:
+  schedule:
+    # Samedi et dimanche à 9h UTC (10h Paris hiver / 11h Paris été).
+    # Volontairement plus tard que la semaine (6h UTC) : usage LinkedIn/X
+    # différent le week-end, on ne vise pas le pic professionnel du matin.
+    - cron: '0 9 * * 6,0'
+  workflow_dispatch: {}
+
+jobs:
+  publish-weekend:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib Pillow
+
+      - name: Lancer l'agent week-end (agentique)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+        run: python agent_weekend_agentique.py
+
+      - name: Commit et push du package
+        run: |
+          git config user.name "Agent Editorial DCo Weekend"
+          git config user.email "agent@decisionsandco.com"
+          git add docs/
+          git diff --staged --quiet || git commit -m "Package éditorial week-end $(date '+%Y-%m-%d-%H%M')"
+          git push
