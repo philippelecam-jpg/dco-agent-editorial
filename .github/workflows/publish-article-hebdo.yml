@@ -1,0 +1,63 @@
+name: Agent Éditorial D&Co — Article hebdo (brouillon)
+
+on:
+  schedule:
+    # Tous les mercredis à 7h00 heure de Paris (6h UTC en hiver, 5h UTC en été,
+    # comme publish.yml : on accepte un décalage d'une heure l'été plutôt que
+    # de gérer le changement d'heure dans le cron).
+    - cron: '0 6 * * 3'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Mode test (génère tout, mais n’envoie pas l’email)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib Pillow
+
+      - name: Générer le brouillon d'article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Réutilisés : ce script importe agent.py, dont les variables de
+          # module (X_API_KEY etc.) sont lues à l'import même si elles ne
+          # servent pas ici — même convention que agent_weekend_agentique.py.
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          # Nouveau secret dédié, distinct du webhook LinkedIn des posts
+          # quotidiens : pointe vers le scénario Make "email article".
+          ARTICLE_MAKE_WEBHOOK_URL: ${{ secrets.ARTICLE_MAKE_WEBHOOK_URL }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: python agent_article_hebdo.py
+
+      - name: Commit et push du brouillon
+        run: |
+          git config user.name "Agent Editorial DCo"
+          git config user.email "agent@decisionsandco.com"
+          git add articles/
+          git diff --staged --quiet || git commit -m "Brouillon article et historique du $(date '+%Y-%m-%d')"
+          git push
