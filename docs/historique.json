@@ -250,5 +250,14 @@
     "post_x": "82,5 % des projets IA réussissent quand le périmètre est défini avant de commencer. Le frein n'est pas technologique. Il est décisionnel. Définir le périmètre, c'est déjà diriger.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2091094580104204354",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-22-092527-weekend.png?v=092527"
+  },
+  {
+    "date": "Dimanche 23 août 2026",
+    "timestamp": "2026-08-23T09:27:20.774528",
+    "theme": "Regard de fond",
+    "sujet": "Architectures multi-agents : quand l'automatisation amplifie le désordre plutôt que la performance",
+    "post_x": "Un agent lit les mails. Un autre met à jour le CRM. Un troisième signale les exceptions. Sauf que si la connaissance n'est pas structurée en amont, ces agents ne s'organisent pas. Ils s'agitent.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091457218835349798",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-23-092628-weekend.png?v=092629"
   }
 ]
