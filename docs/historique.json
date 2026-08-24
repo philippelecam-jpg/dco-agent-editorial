@@ -1,15 +1,6 @@
 [
   {
     "date": "Lundi 17 août 2026",
-    "timestamp": "2026-08-17T19:25:53.981827",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation à l'ère de l'IA",
-    "post_x": "Votre SI stocke des données. L'Entreprise OS stocke de la connaissance. Ce n'est pas la même chose. Et cette différence, l'IA la révèle brutalement.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089433383629668703",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-17.png?v=192511"
-  },
-  {
-    "date": "Lundi 17 août 2026",
     "timestamp": "2026-08-17T19:43:34.399604",
     "theme": "L'Entreprise OS",
     "sujet": "L'Entreprise OS : la fonction Traiter",
@@ -268,5 +259,14 @@
     "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart ne vient pas des outils. Il vient de l'organisation elle-même. Un OS défaillant ne s'améliore pas en ajoutant des applications.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2091785696168050761",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-071225.png?v=071226"
+  },
+  {
+    "date": "Lundi 24 août 2026",
+    "timestamp": "2026-08-24T09:59:08.974878",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation",
+    "post_x": "Votre SI stocke des données. L'Entreprise OS stocke de la connaissance. Ce n'est pas le même actif. Ce n'est pas le même avenir.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091827429191147678",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-095815.png?v=095816"
   }
 ]
