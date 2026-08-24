@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 17 août 2026",
-    "timestamp": "2026-08-17T19:55:08.406894",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : la fonction Traiter, des processus qui décident, pas seulement qui exécutent",
-    "post_x": "62 % des entreprises testent des agents IA. Peu passent en production. Raison : leurs processus ne sont pas codifiés. L'Entreprise OS traite la connaissance. Pas seulement les données.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089440910840914288",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-17.png?v=195506"
-  },
-  {
     "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T06:56:37.682997",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "Un SI stocke des données. Un Entreprise OS traite de la connaissance. Ce n'est pas le même moteur. Ce n'est pas le même résultat.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2091898376929636413",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-144010.png?v=144010"
+  },
+  {
+    "date": "Lundi 24 août 2026",
+    "timestamp": "2026-08-24T14:48:29.157338",
+    "theme": "Conviction D&Co",
+    "sujet": "Slack Code et l'industrialisation des agents IA : pourquoi 80 % des organisations ne sont pas prêtes, et ce que ça change vraiment",
+    "post_x": "Slack intègre des agents IA dans les workflows. Deloitte dit que 80 % des orgas ne sont pas prêtes. Ces deux infos se répondent. L'outil arrive. La structure, elle, n'attend pas qu'on la construise.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091900430582202821",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-144736-weekend.png?v=144736"
   }
 ]
