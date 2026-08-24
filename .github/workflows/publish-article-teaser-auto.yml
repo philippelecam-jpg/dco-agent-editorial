@@ -1,0 +1,40 @@
+name: Agent Éditorial D&Co — Teaser LinkedIn (auto)
+
+on:
+  schedule:
+    # Tous les jours à 9h Paris (8h UTC hiver / 7h UTC été) — détecte tout
+    # article publié depuis le dernier passage, quel que soit le jour.
+    - cron: '0 8 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  detect-and-teaser:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib Pillow
+
+      - name: Détecter les nouveaux articles et publier le teaser
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Réutilisés : ce script importe agent.py (mêmes contraintes que
+          # les autres scripts du repo).
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+        run: python agent_article_teaser_auto.py
