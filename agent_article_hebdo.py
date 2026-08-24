@@ -49,7 +49,12 @@ from agent import (
 
 # --- Config ---
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
-ARTICLE_MAKE_WEBHOOK_URL = os.environ["ARTICLE_MAKE_WEBHOOK_URL"]
+# Réutilise le webhook LinkedIn existant (même secret que agent.py) plutôt
+# qu'un webhook dédié : un seul scénario Make gère les deux flux, distingués
+# en aval par un Router sur la présence du champ "titre" (propre aux
+# articles) vs "post_linkedin" (propre aux posts quotidiens). Évite de
+# consommer un 2e/3e scénario actif sur un plan Make à quota limité.
+MAKE_WEBHOOK_URL = os.environ["MAKE_WEBHOOK_URL"]
 MAKE_API_KEY = os.environ["MAKE_API_KEY"]
 
 MODEL = "claude-sonnet-4-6"
@@ -362,12 +367,16 @@ def git_commit_push(paths, message):
 
 
 def notify_make_email(package, theme, image_buf, dossier):
-    """Envoie le brouillon complet par email via Make — titre, chapo, corps,
-    hashtags, et le visuel de couverture en pièce jointe (base64).
+    """Envoie le brouillon complet par email via le webhook Make existant —
+    titre, chapo, corps, hashtags, et le visuel de couverture en pièce jointe
+    (base64). Le champ "titre" est ce qui permet au Router du scénario Make
+    de distinguer ce payload de celui des posts quotidiens (qui portent
+    "post_linkedin" mais jamais "titre") et de le router vers la branche email
+    plutôt que vers la branche de publication LinkedIn.
 
-    Contrairement au webhook LinkedIn des posts quotidiens (notify_make_linkedin
-    dans agent.py), celui-ci n'a besoin d'aucune URL publique : l'image voyage
-    directement dans le payload, donc pas d'attente de déploiement GitHub Pages.
+    Contrairement au webhook des posts quotidiens, celui-ci n'a besoin
+    d'aucune URL publique pour l'image : elle voyage directement dans le
+    payload, donc pas d'attente de déploiement GitHub Pages.
     """
     image_buf.seek(0)
     image_b64 = base64.b64encode(image_buf.read()).decode("utf-8")
@@ -390,7 +399,7 @@ def notify_make_email(package, theme, image_buf, dossier):
         return
 
     resp = requests.post(
-        ARTICLE_MAKE_WEBHOOK_URL,
+        MAKE_WEBHOOK_URL,
         headers={"x-make-apikey": MAKE_API_KEY},
         json=payload,
         timeout=30,
