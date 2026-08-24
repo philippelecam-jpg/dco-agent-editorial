@@ -259,5 +259,14 @@
     "post_x": "Un agent lit les mails. Un autre met à jour le CRM. Un troisième signale les exceptions. Sauf que si la connaissance n'est pas structurée en amont, ces agents ne s'organisent pas. Ils s'agitent.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2091457218835349798",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-23-092628-weekend.png?v=092629"
+  },
+  {
+    "date": "Lundi 24 août 2026",
+    "timestamp": "2026-08-24T07:13:08.900832",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation à l'ère de l'IA",
+    "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart ne vient pas des outils. Il vient de l'organisation elle-même. Un OS défaillant ne s'améliore pas en ajoutant des applications.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091785696168050761",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-071225.png?v=071226"
   }
 ]
