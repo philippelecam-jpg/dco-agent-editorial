@@ -383,6 +383,7 @@ def notify_make_email(package, theme, image_buf, dossier):
     image_buf.seek(0)
 
     payload = {
+        "type": "article",
         "date": today_label(),
         "theme": theme["theme"],
         "titre": package.get("titre", ""),
