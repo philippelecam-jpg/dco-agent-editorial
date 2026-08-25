@@ -327,7 +327,16 @@ def slugify(titre):
     slug = re.sub(r"[ùûü]", "u", slug)
     slug = re.sub(r"ç", "c", slug)
     slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
-    return slug[:60]
+    if len(slug) <= 60:
+        return slug
+    # Coupe au dernier tiret complet avant la limite, jamais en plein
+    # milieu d'un mot (bug constaté en prod : plusieurs slugs publiés
+    # tronqués à 60 caractères pile, l'un se terminant même par un tiret).
+    tronque = slug[:60]
+    dernier_tiret = tronque.rfind("-")
+    if dernier_tiret > 0:
+        tronque = tronque[:dernier_tiret]
+    return tronque.strip("-")
 
 
 def write_draft_files(package, image_buf, date_slug, slug):
