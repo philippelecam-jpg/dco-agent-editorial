@@ -450,7 +450,8 @@ def main():
     try:
         pr_url = publish_to_site(package, theme, slug, date_slug)
     except Exception as e:
-        print(f"Publication site impossible (brouillon LinkedIn intact) : {e}")
+        detail = getattr(e, "stderr", "") or str(e)
+        print(f"Publication site impossible (brouillon LinkedIn intact) : {detail}")
 
     save_historique(historique, {
         "date": today_label(),
