@@ -46,7 +46,6 @@ from agent import (
     THEME_LABELS,
     THEME_ASSETS,
 )
-from site_publisher import publish_to_site
 
 # --- Config ---
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
@@ -118,29 +117,20 @@ ARTICLE_THEMES = [
 
 
 def get_theme_semaine(historique):
-    """Rotation déterministe sur le nombre d'articles déjà générés.
-
-    Pourquoi pas le numéro de semaine ISO (ancienne logique) : ce numéro est
-    identique pour tous les runs d'une même semaine, donc un seul pas de
-    garde-fou (idx+1) en cas de conflit fait osciller indéfiniment entre
-    2 thèmes adjacents dès qu'on relance plusieurs fois le même mercredi
-    (rattrapage manuel, tests) — observé en pratique lors du test&learn.
-    Baser idx sur len(historique) fait avancer la rotation à CHAQUE
-    génération, quel que soit le nombre de runs dans la semaine.
+    """Rotation déterministe sur le numéro de semaine ISO.
 
     Garde-fou : si le thème calculé a déjà été traité lors des deux derniers
-    articles, on cherche le prochain thème libre sur tout le cycle (et non
-    plus un seul pas en avant), pour ne jamais boucler entre 2 thèmes.
+    articles (semaine sautée, rattrapage manuel...), on passe au suivant du
+    cycle plutôt que de répéter.
     """
-    n = len(ARTICLE_THEMES)
-    idx = len(historique) % n
+    semaine = datetime.now().isocalendar()[1]
+    idx = semaine % len(ARTICLE_THEMES)
+    theme = ARTICLE_THEMES[idx]
     recents = {h.get("theme") for h in historique[-2:]}
-    for _ in range(n):
+    if theme["theme"] in recents:
+        idx = (idx + 1) % len(ARTICLE_THEMES)
         theme = ARTICLE_THEMES[idx]
-        if theme["theme"] not in recents:
-            return theme
-        idx = (idx + 1) % n
-    return ARTICLE_THEMES[idx]
+    return theme
 
 
 def load_historique():
@@ -188,15 +178,19 @@ RÈGLES ÉDITORIALES :
 6. Pas de promotion directe des offres D&Co : un article installe la confiance, il ne vend pas.
 7. AUCUN markdown : pas de **gras**, pas de #titres. Les titres de section sont de simples lignes courtes isolées par un saut de ligne — LinkedIn n'interprète pas le markdown et afficherait les astérisques en clair.
 8. Signature en toute fin d'article, sur sa propre ligne : "{SIGNATURE}"
+9. Pour toute citation ou dialogue dans le texte, utilise des guillemets français « » — jamais de guillemets droits ("").
 
-Génère UNIQUEMENT un JSON valide, sans markdown autour :
-{{"titre":"...","chapo":"...","corps":"...","hashtags":"#tag1 #tag2 #tag3"}}
+Génère la réponse EXACTEMENT dans ce format, avec ces balises en majuscules sur leur propre ligne, sans rien d'autre autour (pas de JSON, pas de markdown, pas de préambule) :
 
-- titre : 6 à 12 mots, percutant, sans point final
-- chapo : 1 à 2 phrases d'accroche (150 caractères max), affichées sous le titre
-- corps : texte complet de l'article, paragraphes et sections séparés par \\n\\n
-- hashtags : 3 à 5 hashtags pertinents pour le thème
-- Échapper les guillemets avec \\" et les sauts de ligne avec \\n"""
+###TITRE###
+titre de 6 à 12 mots, percutant, sans point final
+###CHAPO###
+1 à 2 phrases d'accroche (150 caractères max)
+###CORPS###
+texte complet de l'article, sections séparées par une ligne vide
+###HASHTAGS###
+3 à 5 hashtags pertinents séparés par des espaces
+###FIN###"""
 
 
 def generate_article(historique, theme):
@@ -224,11 +218,31 @@ def generate_article(historique, theme):
     resp.raise_for_status()
     data = resp.json()
     raw = next((b["text"] for b in data["content"] if b["type"] == "text"), "")
-    raw = raw.replace("```json", "").replace("```", "").strip()
-    package = json.loads(raw)
+    package = parse_balises(raw)
     for champ in ("titre", "chapo", "corps"):
         if champ in package:
             package[champ] = nettoyer_texte(package[champ])
+    return package
+
+
+def parse_balises(raw):
+    """Extrait titre/chapo/corps/hashtags d'une réponse structurée par
+    balises ###NOM### plutôt que du JSON — immunisé contre les guillemets,
+    apostrophes ou sauts de ligne non échappés dans un texte long, qui
+    cassent régulièrement le parsing JSON strict sur ce genre de contenu
+    éditorial (incident constaté en production le 25/08/2026)."""
+    champs = {"titre": "TITRE", "chapo": "CHAPO", "corps": "CORPS", "hashtags": "HASHTAGS"}
+    package = {}
+    for cle, balise in champs.items():
+        m = re.search(
+            rf"###{balise}###\s*\n(.*?)(?=\n###[A-Z]+###|\Z)", raw, re.DOTALL
+        )
+        if not m:
+            raise ValueError(
+                f"Balise ###{balise}### introuvable dans la réponse du modèle. "
+                f"Début de la réponse reçue : {raw[:300]!r}"
+            )
+        package[cle] = m.group(1).strip()
     return package
 
 
@@ -327,16 +341,7 @@ def slugify(titre):
     slug = re.sub(r"[ùûü]", "u", slug)
     slug = re.sub(r"ç", "c", slug)
     slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
-    if len(slug) <= 60:
-        return slug
-    # Coupe au dernier tiret complet avant la limite, jamais en plein
-    # milieu d'un mot (bug constaté en prod : plusieurs slugs publiés
-    # tronqués à 60 caractères pile, l'un se terminant même par un tiret).
-    tronque = slug[:60]
-    dernier_tiret = tronque.rfind("-")
-    if dernier_tiret > 0:
-        tronque = tronque[:dernier_tiret]
-    return tronque.strip("-")
+    return slug[:60]
 
 
 def write_draft_files(package, image_buf, date_slug, slug):
@@ -459,29 +464,14 @@ def main():
     print("Envoi du brouillon par email via Make...")
     notify_make_email(package, theme, image_buf, dossier)
 
-    # Publication sur decisionsandco.com : n'importe quel échec ici (secrets
-    # absents, API OpenAI en erreur, PR déjà existante...) ne doit jamais
-    # remonter et casser le flux LinkedIn ci-dessus, qui fonctionne déjà et
-    # reste la sortie de référence tant que la PR n'est pas mergée.
-    print("Publication de la version site (Pull Request)...")
-    pr_url = None
-    try:
-        pr_url = publish_to_site(package, theme, slug, date_slug)
-    except Exception as e:
-        detail = getattr(e, "stderr", "") or str(e)
-        print(f"Publication site impossible (brouillon LinkedIn intact) : {detail}")
-
     save_historique(historique, {
         "date": today_label(),
         "timestamp": datetime.now().isoformat(),
         "theme": theme["theme"],
         "titre": package.get("titre", ""),
         "dossier": dossier,
-        "pr_site": pr_url,
     })
     print("Terminé. Aucune publication LinkedIn effectuée — brouillon en attente de votre validation.")
-    if pr_url:
-        print(f"PR site en attente de merge : {pr_url}")
 
 
 if __name__ == "__main__":
