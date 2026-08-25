@@ -77,6 +77,34 @@ CATEGORIES = [
 
 DEFAULT_CATEGORY = "Transformation IA"
 
+# Styles visuels parmi lesquels le modèle choisit celui qui convient le
+# mieux à chaque article — évite que toutes les couvertures se ressemblent
+# (ce qui arrivait quand un seul style était imposé en dur).
+STYLES_VISUELS = {
+    "abstrait_conceptuel": (
+        "Clean abstract conceptual illustration, dark background, minimal geometric "
+        "shapes (circles, triangles, grids, connecting lines) representing the idea. "
+        "No text, no human figures."
+    ),
+    "photo_realiste": (
+        "Realistic editorial photography style, professional office or meeting scene, "
+        "natural lighting, generic anonymous people shown from a distance, from behind, "
+        "or with faces not in sharp focus — never a close-up identifiable face. "
+        "Stock-photography feel."
+    ),
+    "schema_technique": (
+        "Clean technical schema/diagram on a light background, icons connected by "
+        "arrows or flow lines, professional color palette, information-design feel. "
+        "No text labels."
+    ),
+    "grille_icones": (
+        "Colorful grid or collage of simple flat icons representing key concepts of "
+        "the article, light background, professional and modern, organized in a "
+        "clear grid layout. No text."
+    ),
+}
+DEFAULT_STYLE = "abstrait_conceptuel"
+
 
 def _echapper(texte):
     return (texte or "").replace('"', '\\"')
@@ -97,10 +125,15 @@ CE QU'IL FAUT PRODUIRE :
 3. "description" : résumé de l'article en 2 phrases maximum, 600 caractères MAX — respecte strictement cette limite.
 4. "category" : choisis EXACTEMENT une valeur parmi cette liste fermée, aucune autre valeur n'est acceptée : {json.dumps(CATEGORIES, ensure_ascii=False)}
 5. "coverAlt" : description factuelle et accessible de l'image de couverture, une phrase, sans mentionner qu'elle est générée par IA.
-6. "image_prompt" : en anglais, 1 à 2 phrases, pour générer une illustration abstraite et professionnelle sur le thème "{theme['theme']}" — style épuré et conceptuel, cohérent avec des couvertures d'articles déjà publiées sur un site de conseil en IA. Pas de texte incrusté dans l'image, pas de visage humain reconnaissable.
+6. "style_visuel" : choisis EXACTEMENT une valeur parmi cette liste fermée, celle qui convient le mieux au contenu de CET article précis (varie le choix d'un article à l'autre, ne reste pas systématiquement sur la même valeur) : {json.dumps(list(STYLES_VISUELS.keys()), ensure_ascii=False)}
+   - "abstrait_conceptuel" : illustration abstraite épurée, fond sombre, formes géométriques
+   - "photo_realiste" : photographie professionnelle réaliste (bureau, réunion), personnes anonymes non identifiables
+   - "schema_technique" : schéma/diagramme technique propre, icônes et flèches, fond clair
+   - "grille_icones" : collage d'icônes colorées représentant les concepts clés, fond clair
+7. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan — uniquement des scènes génériques, de loin ou de dos.
 
 Réponds UNIQUEMENT en JSON valide, sans markdown autour :
-{{"corps_html":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","image_prompt":"..."}}
+{{"corps_html":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"..."}}
 Échappe les guillemets avec \\" et les sauts de ligne avec \\n."""
 
 
@@ -132,6 +165,11 @@ def generate_site_content(package, theme):
         data["category"] = DEFAULT_CATEGORY
         data["_category_fallback"] = True
 
+    if data.get("style_visuel") not in STYLES_VISUELS:
+        print(f"Style visuel renvoyé invalide ({data.get('style_visuel')!r}) — repli sur {DEFAULT_STYLE!r}.")
+        data["style_visuel"] = DEFAULT_STYLE
+        data["_style_fallback"] = True
+
     if len(data.get("description", "")) > 600:
         data["description"] = data["description"][:597].rstrip() + "..."
         data["_description_truncated"] = True
@@ -161,6 +199,10 @@ def detect_anomalies(site_data, package):
     if site_data.get("_category_fallback"):
         anomalies.append(
             f"Catégorie renvoyée par le modèle invalide — repli automatique sur {DEFAULT_CATEGORY!r}, à vérifier."
+        )
+    if site_data.get("_style_fallback"):
+        anomalies.append(
+            f"Style visuel renvoyé par le modèle invalide — repli automatique sur {DEFAULT_STYLE!r}, à vérifier."
         )
     if site_data.get("_description_truncated"):
         anomalies.append("Description tronquée automatiquement (dépassait 600 caractères) — relecture recommandée.")
@@ -410,6 +452,7 @@ def publish_to_site(package, theme, slug, date_slug):
     corps_pr = (
         f"Article généré automatiquement — thème « {theme['theme']} ».\n\n"
         f"**Catégorie proposée :** {site_data.get('category')}\n\n"
+        f"**Style visuel :** {site_data.get('style_visuel')}\n\n"
     )
     if anomalies:
         corps_pr += (
