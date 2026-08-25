@@ -51,6 +51,13 @@ jobs:
           # le contenu du payload (voir notify_make_email dans le script).
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          # Nouveaux secrets pour la publication automatique sur
+          # decisionsandco.com (voir site_publisher.py). Si l'un des trois
+          # est absent, cette étape est silencieusement sautée — le flux
+          # LinkedIn ci-dessus continue de fonctionner normalement.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SITE_REPO: ${{ secrets.SITE_REPO }}
+          SITE_REPO_PAT: ${{ secrets.SITE_REPO_PAT }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: python agent_article_hebdo.py
 
