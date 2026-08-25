@@ -105,6 +105,37 @@ STYLES_VISUELS = {
 }
 DEFAULT_STYLE = "abstrait_conceptuel"
 
+# Encadré "À propos" — texte identique sur tous les articles existants du
+# site (vérifié sur plusieurs exemples), donc figé en dur : jamais généré
+# par le modèle, zéro risque de variation ou de HTML mal formé.
+ABOUT_BOX = (
+    '<div class="article-about-section">\n'
+    "<p><strong>À propos de Decisions & Co :</strong> Cabinet de conseil spécialisé dans "
+    "l'accompagnement des dirigeants sur les enjeux d'intelligence artificielle, nous "
+    "proposons des diagnostics IA ROIste, des missions de gouvernance IA et des "
+    "programmes d'acculturation pour les équipes dirigeantes.</p>\n"
+    "</div>"
+)
+
+
+def build_cta_box(cta_titre, cta_texte):
+    """Construit l'encadré CTA bleu de fin d'article.
+
+    Seuls cta_titre et cta_texte varient (générés par le modèle, adaptés au
+    sujet de l'article) — toute la structure HTML autour (balises, classe
+    CSS, paragraphe de présentation, lien) est fixe et écrite ici, jamais
+    produite par le modèle.
+    """
+    return (
+        '<div class="cta-box">\n'
+        f"<h2>{cta_titre}</h2>\n"
+        f"<p>{cta_texte}</p>\n"
+        "<p>Chez <strong>Decisions & Co</strong>, nous accompagnons les dirigeants dans "
+        "l'adoption raisonnée et performante de ces nouvelles technologies IA.</p>\n"
+        '<p><a href="https://www.decisionsandco.com/offres">Découvrez notre diagnostic IA ROIste →</a></p>\n'
+        "</div>"
+    )
+
 
 def _echapper(texte):
     return (texte or "").replace('"', '\\"')
@@ -131,9 +162,11 @@ CE QU'IL FAUT PRODUIRE :
    - "schema_technique" : schéma/diagramme technique propre, icônes et flèches, fond clair
    - "grille_icones" : collage d'icônes colorées représentant les concepts clés, fond clair
 7. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan — uniquement des scènes génériques, de loin ou de dos.
+8. "cta_titre" : une accroche courte (5 à 10 mots), avec un emoji au début, reliant le sujet précis de cet article à l'IA — formulée comme une question ou une invitation. Exemples de ton (ne pas copier) : "🚀 Vos processus sont-ils prêts pour l'IA agentique ?", "🚀 L'IA Agent : votre prochain avantage concurrentiel ?"
+9. "cta_texte" : 1 à 2 phrases qui relient le sujet précis de cet article à l'accompagnement Decisions & Co, SANS répéter mot à mot une phrase déjà présente dans le corps.
 
 Réponds UNIQUEMENT en JSON valide, sans markdown autour :
-{{"corps_html":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"..."}}
+{{"corps_html":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"...","cta_titre":"...","cta_texte":"..."}}
 Échappe les guillemets avec \\" et les sauts de ligne avec \\n."""
 
 
@@ -211,6 +244,8 @@ def detect_anomalies(site_data, package):
         anomalies.append("Subtitle manquant ou vide.")
     if not site_data.get("description", "").strip():
         anomalies.append("Description manquante ou vide.")
+    if not site_data.get("cta_titre", "").strip() or not site_data.get("cta_texte", "").strip():
+        anomalies.append("Titre ou texte du CTA de fin d'article manquant ou vide.")
 
     corps = site_data.get("corps_html", "")
     if len(corps) < 400:
@@ -285,7 +320,14 @@ def build_markdown(package, site_data, slug, date_slug):
         "---",
         "",
     ]
-    return "\n".join(lignes) + site_data.get("corps_html", "")
+    corps_complet = (
+        site_data.get("corps_html", "")
+        + "\n\n"
+        + build_cta_box(site_data.get("cta_titre", ""), site_data.get("cta_texte", ""))
+        + "\n\n"
+        + ABOUT_BOX
+    )
+    return "\n".join(lignes) + corps_complet
 
 
 def notify_make_alerte(pr_url, anomalies, package, theme, date_slug):
