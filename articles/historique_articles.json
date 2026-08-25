@@ -1,99 +1,5 @@
 [
   {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T10:26:49.515221",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que fait vraiment notre méthode, étape par étape",
-    "dossier": "articles/drafts/2026-08-24-ce-que-fait-vraiment-notre-methode-etape-par-etape"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T11:39:00.550205",
-    "theme": "L'Entreprise OS",
-    "titre": "Ce que votre organisation doit devenir avant de déployer l'IA",
-    "dossier": "articles/drafts/2026-08-24-ce-que-votre-organisation-doit-devenir-avant-de-deployer-l-i"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T12:32:31.642948",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que vos experts savent et que personne n'a jamais écrit",
-    "dossier": "articles/drafts/2026-08-24-ce-que-vos-experts-savent-et-que-personne-n-a-jamais-ecrit"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T12:43:25.592245",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que cachent les trois étapes de notre méthode",
-    "dossier": "articles/drafts/2026-08-24-ce-que-cachent-les-trois-etapes-de-notre-methode"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T12:49:57.440257",
-    "theme": "L'Entreprise OS",
-    "titre": "L'Entreprise OS : le nouveau système d'exploitation de votre organisation",
-    "dossier": "articles/drafts/2026-08-24-l-entreprise-os-le-nouveau-systeme-d-exploitation-de-votre-o"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T13:57:02.445418",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que personne ne vous dit avant de structurer la connaissance",
-    "dossier": "articles/drafts/2026-08-24-ce-que-personne-ne-vous-dit-avant-de-structurer-la-connaissa"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T14:18:40.392835",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que la méthode exige vraiment de votre organisation",
-    "dossier": "articles/drafts/2026-08-24-ce-que-la-methode-exige-vraiment-de-votre-organisation"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T14:51:37.424178",
-    "theme": "L'Entreprise OS",
-    "titre": "Trois fonctions pour piloter l'IA sans perdre le contrôle",
-    "dossier": "articles/drafts/2026-08-24-trois-fonctions-pour-piloter-l-ia-sans-perdre-le-controle"
-  },
-  {
-    "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T18:41:28.384962",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Pourquoi l'ordre des trois étapes n'est pas négociable",
-    "dossier": "articles/drafts/2026-08-24-pourquoi-l-ordre-des-trois-etapes-n-est-pas-negociable"
-  },
-  {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T08:11:01.478485",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que chaque étape de notre méthode exige concrètement",
-    "dossier": "articles/drafts/2026-08-25-ce-que-chaque-etape-de-notre-methode-exige-concretement"
-  },
-  {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T08:16:42.973028",
-    "theme": "L'Entreprise OS",
-    "titre": "Votre SI stocke des données. Votre entreprise a besoin d'autre chose",
-    "dossier": "articles/drafts/2026-08-25-votre-si-stocke-des-donnees-votre-entreprise-a-besoin-d-autr",
-    "pr_site": null
-  },
-  {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T08:21:50.614164",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que vos experts savent et que personne n'a jamais écrit",
-    "dossier": "articles/drafts/2026-08-25-ce-que-vos-experts-savent-et-que-personne-n-a-jamais-ecrit",
-    "pr_site": null
-  },
-  {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T08:31:13.988362",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Ce que la méthode fait à votre organisation, concrètement",
-    "dossier": "articles/drafts/2026-08-25-ce-que-la-methode-fait-a-votre-organisation-concretement",
-    "pr_site": null
-  },
-  {
     "date": "Mardi 25 août 2026",
     "timestamp": "2026-08-25T09:12:49.963704",
     "theme": "L'Entreprise OS",
@@ -132,13 +38,6 @@
     "titre": "Votre entreprise a un OS. Vous ne le savez pas encore",
     "dossier": "articles/drafts/2026-08-25-votre-entreprise-a-un-os-vous-ne-le-savez-pas-encore",
     "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/5"
-  },
-  {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T16:32:05.507106",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Pourquoi l'ordre des trois étapes n'est pas négociable",
-    "dossier": "articles/drafts/2026-08-25-pourquoi-l-ordre-des-trois-etapes-n-est-pas-negociable"
   },
   {
     "date": "Mardi 25 août 2026",
