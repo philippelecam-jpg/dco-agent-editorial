@@ -118,8 +118,46 @@ ABOUT_BOX = (
 )
 
 
+def build_faq_yaml(faq_items):
+    """Bloc YAML `faq:` du frontmatter, à partir de la liste de Q/R.
+
+    Retourne une chaîne vide si la liste est vide (le champ est alors omis
+    du frontmatter, ce qui est valide selon le schéma).
+    """
+    if not faq_items:
+        return ""
+    lignes = ["faq:"]
+    for item in faq_items:
+        q = _echapper(item.get("question", ""))
+        r = _echapper(item.get("answer", ""))
+        lignes.append(f'  - question: "{q}"')
+        lignes.append(f'    answer: "{r}"')
+    return "\n".join(lignes)
+
+
+def build_faq_html(faq_items):
+    """Bloc HTML `.faq-section` visible, à partir de la MÊME liste que
+    build_faq_yaml — jamais deux textes générés séparément par le modèle,
+    pour garantir une duplication frontmatter/corps toujours identique
+    (c'est précisément le piège que la spec signale explicitement : des
+    données structurées invisibles dans le corps sont contraires aux
+    guidelines Google).
+    """
+    if not faq_items:
+        return ""
+    parties = ['<div class="faq-section">', "<h4>❓ Questions fréquentes</h4>"]
+    for item in faq_items:
+        parties.append('<div class="faq-item">')
+        parties.append(f'<div class="faq-question">{item.get("question", "")}</div>')
+        parties.append(f'<div class="faq-answer">{item.get("answer", "")}</div>')
+        parties.append("</div>")
+    parties.append("</div>")
+    return "\n".join(parties)
+
+
 def build_cta_box(cta_titre, cta_texte):
-    """Construit l'encadré CTA bleu de fin d'article.
+    """Construit l'encadré CTA bleu de fin d'article, conforme à la classe
+    CSS `cta-section` (spec août 2026) — pas l'ancienne `cta-box`.
 
     Seuls cta_titre et cta_texte varient (générés par le modèle, adaptés au
     sujet de l'article) — toute la structure HTML autour (balises, classe
@@ -127,12 +165,12 @@ def build_cta_box(cta_titre, cta_texte):
     produite par le modèle.
     """
     return (
-        '<div class="cta-box">\n'
-        f"<h2>{cta_titre}</h2>\n"
+        '<div class="cta-section">\n'
+        f"<h3>{cta_titre}</h3>\n"
         f"<p>{cta_texte}</p>\n"
         "<p>Chez <strong>Decisions & Co</strong>, nous accompagnons les dirigeants dans "
         "l'adoption raisonnée et performante de ces nouvelles technologies IA.</p>\n"
-        '<p><a href="https://www.decisionsandco.com/offres">Découvrez notre diagnostic IA ROIste →</a></p>\n'
+        '<p><a href="/offres" class="internal-link">Découvrez notre diagnostic IA ROIste →</a></p>\n'
         "</div>"
     )
 
@@ -151,22 +189,30 @@ Corps :
 {package.get('corps', '')}
 
 CE QU'IL FAUT PRODUIRE :
-1. "corps_html" : le corps ci-dessus reformaté en HTML (pas de Markdown). Chaque ligne de titre de section devient <h2>...</h2>, chaque paragraphe devient <p>...</p>. Tu peux transformer AU MAXIMUM une section clé en encart <div class="definition-box"><h3>...</h3><p>...</p></div> si le contenu s'y prête naturellement (une définition, un point de méthode) — sinon n'en mets aucun. N'invente aucun fait, aucun chiffre, aucune section nouvelle.
-2. "subtitle" : une phrase de valeur qui complète le titre, ton éditorial site web (pas une redite du chapo LinkedIn).
-3. "description" : résumé de l'article en 2 phrases maximum, 600 caractères MAX — respecte strictement cette limite.
-4. "category" : choisis EXACTEMENT une valeur parmi cette liste fermée, aucune autre valeur n'est acceptée : {json.dumps(CATEGORIES, ensure_ascii=False)}
-5. "coverAlt" : description factuelle et accessible de l'image de couverture, une phrase, sans mentionner qu'elle est générée par IA.
-6. "style_visuel" : choisis EXACTEMENT une valeur parmi cette liste fermée, celle qui convient le mieux au contenu de CET article précis (varie le choix d'un article à l'autre, ne reste pas systématiquement sur la même valeur) : {json.dumps(list(STYLES_VISUELS.keys()), ensure_ascii=False)}
+1. "corps_html" : le corps ci-dessus reformaté en HTML (pas de Markdown, pas de "#", pas de "**gras**" Markdown). Pas de <h1> (généré automatiquement par le site à partir du titre). Sections principales en <h2>, sous-sections éventuelles en <h3>. Paragraphes en <p>, emphase en <strong>/<em>. Guillemets français « » pour les citations ou expressions, apostrophes typographiques ' acceptées telles quelles.
+   Tu peux utiliser AU MAXIMUM 2 encarts stylés au total parmi cette liste, et seulement s'ils s'imposent naturellement (jamais pour remplir) :
+   - <div class="highlight-box"><p><strong>🎯 En bref :</strong> ...</p></div> — résumé d'ouverture, juste après le premier paragraphe
+   - <div class="definition-box"><h4>💡 Définition : ...</h4><p>...</p></div> — pour définir un terme clé
+   - <div class="expert-tip"><h4>💡 ...</h4><p>...</p></div> — conseil ou point d'attention
+   - <div class="case-study"><h4>🎯 ...</h4><p>...</p></div> — exemple concret ou cas pratique
+   N'invente aucun fait, aucun chiffre, aucune section nouvelle qui ne soit pas déjà dans le corps source.
+2. "titre_site" : le titre "{package.get('titre', '')}" repris tel quel SAUF s'il dépasse 120 caractères, auquel cas raccourcis-le en préservant le sens (sinon renvoie-le identique).
+3. "subtitle" : une phrase de valeur qui complète le titre, ton éditorial site web (pas une redite du chapo LinkedIn).
+4. "description" : résumé de l'article en 2 phrases maximum, 600 caractères MAX — respecte strictement cette limite.
+5. "category" : choisis EXACTEMENT une valeur parmi cette liste fermée, aucune autre valeur n'est acceptée : {json.dumps(CATEGORIES, ensure_ascii=False)}
+6. "coverAlt" : description factuelle et accessible de l'image de couverture, une phrase, sans mentionner qu'elle est générée par IA.
+7. "style_visuel" : choisis EXACTEMENT une valeur parmi cette liste fermée, celle qui convient le mieux au contenu de CET article précis (varie le choix d'un article à l'autre, ne reste pas systématiquement sur la même valeur) : {json.dumps(list(STYLES_VISUELS.keys()), ensure_ascii=False)}
    - "abstrait_conceptuel" : illustration abstraite épurée, fond sombre, formes géométriques
    - "photo_realiste" : photographie professionnelle réaliste (bureau, réunion), personnes anonymes non identifiables
    - "schema_technique" : schéma/diagramme technique propre, icônes et flèches, fond clair
    - "grille_icones" : collage d'icônes colorées représentant les concepts clés, fond clair
-7. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan — uniquement des scènes génériques, de loin ou de dos.
-8. "cta_titre" : une accroche courte (5 à 10 mots), avec un emoji au début, reliant le sujet précis de cet article à l'IA — formulée comme une question ou une invitation. Exemples de ton (ne pas copier) : "🚀 Vos processus sont-ils prêts pour l'IA agentique ?", "🚀 L'IA Agent : votre prochain avantage concurrentiel ?"
-9. "cta_texte" : 1 à 2 phrases qui relient le sujet précis de cet article à l'accompagnement Decisions & Co, SANS répéter mot à mot une phrase déjà présente dans le corps.
+8. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan — uniquement des scènes génériques, de loin ou de dos.
+9. "cta_titre" : une accroche courte (5 à 10 mots), avec un emoji au début, reliant le sujet précis de cet article à l'IA — formulée comme une question ou une invitation. Exemples de ton (ne pas copier) : "🚀 Vos processus sont-ils prêts pour l'IA agentique ?", "🚀 L'IA Agent : votre prochain avantage concurrentiel ?"
+10. "cta_texte" : 1 à 2 phrases qui relient le sujet précis de cet article à l'accompagnement Decisions & Co, SANS répéter mot à mot une phrase déjà présente dans le corps.
+11. "faq" : une liste de 0 à 3 paires question/réponse SEULEMENT si le sujet de l'article s'y prête vraiment naturellement (questions qu'un dirigeant se poserait concrètement en lisant cet article précis) — sinon renvoie une liste vide []. Format : [{{"question":"...","answer":"..."}}]. Ne réponds jamais par une évidence ou une reformulation du titre.
 
 Réponds UNIQUEMENT en JSON valide, sans markdown autour :
-{{"corps_html":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"...","cta_titre":"...","cta_texte":"..."}}
+{{"corps_html":"...","titre_site":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"...","cta_titre":"...","cta_texte":"...","faq":[]}}
 Échappe les guillemets avec \\" et les sauts de ligne avec \\n."""
 
 
@@ -207,6 +253,24 @@ def generate_site_content(package, theme):
         data["description"] = data["description"][:597].rstrip() + "..."
         data["_description_truncated"] = True
 
+    if len(data.get("titre_site", "")) > 120:
+        data["titre_site"] = data["titre_site"][:117].rstrip() + "..."
+        data["_titre_truncated"] = True
+
+    faq_brute = data.get("faq", [])
+    if not isinstance(faq_brute, list):
+        print(f"Champ faq renvoyé invalide (pas une liste) — ignoré, aucune FAQ pour cet article.")
+        data["faq"] = []
+        data["_faq_malformee"] = True
+    else:
+        faq_valides = [
+            item for item in faq_brute
+            if isinstance(item, dict) and item.get("question", "").strip() and item.get("answer", "").strip()
+        ]
+        if len(faq_valides) != len(faq_brute):
+            data["_faq_malformee"] = True
+        data["faq"] = faq_valides[:3]
+
     return data
 
 
@@ -239,6 +303,10 @@ def detect_anomalies(site_data, package):
         )
     if site_data.get("_description_truncated"):
         anomalies.append("Description tronquée automatiquement (dépassait 600 caractères) — relecture recommandée.")
+    if site_data.get("_titre_truncated"):
+        anomalies.append("Titre tronqué automatiquement (dépassait 120 caractères) — relecture recommandée.")
+    if site_data.get("_faq_malformee"):
+        anomalies.append("Au moins une entrée FAQ renvoyée par le modèle était malformée — ignorée, à vérifier si la FAQ restante a du sens.")
 
     if not site_data.get("subtitle", "").strip():
         anomalies.append("Subtitle manquant ou vide.")
@@ -308,7 +376,7 @@ def generate_cover_openai(image_prompt):
 def build_markdown(package, site_data, slug, date_slug):
     lignes = [
         "---",
-        f'title: "{_echapper(package.get("titre", ""))}"',
+        f'title: "{_echapper(site_data.get("titre_site") or package.get("titre", ""))}"',
         f'subtitle: "{_echapper(site_data.get("subtitle", ""))}"',
         f'description: "{_echapper(site_data.get("description", ""))}"',
         f"publishedAt: {date_slug}",
@@ -317,12 +385,19 @@ def build_markdown(package, site_data, slug, date_slug):
         f'coverAlt: "{_echapper(site_data.get("coverAlt", ""))}"',
         "featured: false",
         "draft: false",
-        "---",
-        "",
     ]
-    corps_complet = (
-        site_data.get("corps_html", "")
-        + "\n\n"
+    faq_items = site_data.get("faq", [])
+    faq_yaml = build_faq_yaml(faq_items)
+    if faq_yaml:
+        lignes.append(faq_yaml)
+    lignes += ["---", ""]
+
+    faq_html = build_faq_html(faq_items)
+    corps_complet = site_data.get("corps_html", "")
+    if faq_html:
+        corps_complet += "\n\n" + faq_html
+    corps_complet += (
+        "\n\n"
         + build_cta_box(site_data.get("cta_titre", ""), site_data.get("cta_texte", ""))
         + "\n\n"
         + ABOUT_BOX
