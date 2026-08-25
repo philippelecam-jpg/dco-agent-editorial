@@ -46,6 +46,7 @@ from agent import (
     THEME_LABELS,
     THEME_ASSETS,
 )
+from site_publisher import publish_to_site
 
 # --- Config ---
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
@@ -440,14 +441,28 @@ def main():
     print("Envoi du brouillon par email via Make...")
     notify_make_email(package, theme, image_buf, dossier)
 
+    # Publication sur decisionsandco.com : n'importe quel échec ici (secrets
+    # absents, API OpenAI en erreur, PR déjà existante...) ne doit jamais
+    # remonter et casser le flux LinkedIn ci-dessus, qui fonctionne déjà et
+    # reste la sortie de référence tant que la PR n'est pas mergée.
+    print("Publication de la version site (Pull Request)...")
+    pr_url = None
+    try:
+        pr_url = publish_to_site(package, theme, slug, date_slug)
+    except Exception as e:
+        print(f"Publication site impossible (brouillon LinkedIn intact) : {e}")
+
     save_historique(historique, {
         "date": today_label(),
         "timestamp": datetime.now().isoformat(),
         "theme": theme["theme"],
         "titre": package.get("titre", ""),
         "dossier": dossier,
+        "pr_site": pr_url,
     })
     print("Terminé. Aucune publication LinkedIn effectuée — brouillon en attente de votre validation.")
+    if pr_url:
+        print(f"PR site en attente de merge : {pr_url}")
 
 
 if __name__ == "__main__":
