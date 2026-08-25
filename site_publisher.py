@@ -60,6 +60,15 @@ DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 MODEL = "claude-sonnet-4-6"
 IMAGE_MODEL = "gpt-image-1"
 
+SITE_ARTICLE_BASE = "https://www.decisionsandco.com/actualites"
+SITE_IMAGE_BASE = "https://www.decisionsandco.com/images/content"
+# Même fichier que celui géré par agent_article_teaser_auto.py (scraping
+# quotidien) — on y ajoute l'URL nous-mêmes dès qu'on la tease avec succès,
+# pour que ce scraper ne la republie pas en double le lendemain. Ce
+# scraper reste un filet de secours pour les articles mergés manuellement
+# après escalade (cas où ce module ne déclenche jamais le teaser).
+KNOWN_URLS_PATH = "articles/known_urls.json"
+
 # Liste fermée — doit rester identique à l'enum `category` de
 # src/content/config.ts sur decisionsandco.com. À resynchroniser
 # manuellement si ce schéma évolue côté site.
@@ -444,6 +453,131 @@ def notify_make_alerte(pr_url, anomalies, package, theme, date_slug):
     print(f"Alerte anomalie notifiée via Make : {resp.status_code}")
 
 
+def _load_known_urls():
+    try:
+        with open(KNOWN_URLS_PATH, "r", encoding="utf-8") as f:
+            return set(json.load(f))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return set()
+
+
+def _save_known_urls(urls):
+    os.makedirs("articles", exist_ok=True)
+    with open(KNOWN_URLS_PATH, "w", encoding="utf-8") as f:
+        json.dump(sorted(urls), f, ensure_ascii=False, indent=2)
+
+
+def _attendre_deploiement(url, tentatives=15, pause=12):
+    """Poll l'URL jusqu'à 200, jusqu'à ~3 minutes — même ordre de grandeur
+    que la latence de déploiement déjà observée en pratique (build + rsync
+    via deploy.yml)."""
+    for _ in range(tentatives):
+        try:
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200:
+                return True
+        except requests.RequestException:
+            pass
+        time.sleep(pause)
+    return False
+
+
+def generate_teaser_linkedin(titre, description, category, article_url):
+    system = f"""Tu es l'agent éditorial de Décisions & Co (D&Co). Tu rédiges un post LinkedIn COURT (pas un article) qui donne envie de lire un article déjà publié sur le site D&Co.
+
+## Article concerné
+Titre : {titre}
+Description : {description}
+Catégorie : {category}
+URL : {article_url}
+
+RÈGLES :
+1. 3 à 5 phrases maximum, format post LinkedIn (pas de titre, pas de markdown).
+2. Accroche forte dès la première phrase — pas de "Découvrez notre nouvel article".
+3. Donne un aperçu concret de l'angle de l'article, pas juste son titre reformulé.
+4. Termine par une invitation claire à cliquer sur le lien (le lien lui-même sera ajouté séparément, ne l'écris pas dans le texte).
+5. Jamais : révolution, disruptif, écosystème, synergies, "Dans un monde où".
+
+Génère UNIQUEMENT un JSON valide, sans markdown autour :
+{{"post_linkedin":"...","sujet":"..."}}
+Échappe les guillemets avec \\" et les sauts de ligne avec \\n."""
+
+    resp = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "Content-Type": "application/json",
+            "anthropic-version": "2023-06-01",
+            "x-api-key": ANTHROPIC_API_KEY,
+        },
+        json={
+            "model": MODEL,
+            "max_tokens": 1000,
+            "system": system,
+            "messages": [{"role": "user", "content": f'Génère le teaser pour l\'article "{titre}".'}],
+        },
+        timeout=60,
+    )
+    resp.raise_for_status()
+    raw = next((b["text"] for b in resp.json()["content"] if b["type"] == "text"), "")
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip())
+    package = json.loads(raw)
+    package["post_linkedin"] = f"{package.get('post_linkedin', '')}\n\n{article_url}"
+    return package
+
+
+def notify_make_teaser(package, category, image_url, date_slug):
+    """Même format de payload que agent_article_teaser_auto.py (post_x,
+    post_linkedin, image_url, has_image) — SANS champ "type", pour retomber
+    sur la route fallback déjà configurée dans le Router Make, sans rien
+    ajouter côté Make."""
+    resp = requests.post(
+        MAKE_WEBHOOK_URL,
+        headers={"x-make-apikey": MAKE_API_KEY},
+        json={
+            "sujet": package.get("sujet", ""),
+            "post_linkedin": package.get("post_linkedin", ""),
+            "post_x": "",
+            "theme": category,
+            "date": date_slug,
+            "image_url": image_url,
+            "has_image": bool(image_url),
+        },
+        timeout=15,
+    )
+    resp.raise_for_status()
+    print(f"Teaser notifié via Make : {resp.status_code}")
+
+
+def trigger_teaser_apres_publication(package, site_data, slug, date_slug):
+    """Déclenche le teaser LinkedIn juste après un merge automatique
+    réussi — pas de scraping, pas d'attente du lendemain : le slug, le
+    titre et la catégorie sont déjà connus à cet instant précis.
+    """
+    if DRY_RUN:
+        print("[DRY_RUN] Teaser LinkedIn non déclenché.")
+        return
+
+    article_url = f"{SITE_ARTICLE_BASE}/{slug}"
+    image_url = f"{SITE_IMAGE_BASE}/{slug}.webp"
+
+    print(f"Attente du déploiement de l'article ({article_url})...")
+    if not _attendre_deploiement(article_url):
+        print("Article pas encore déployé après l'attente — teaser sauté, le scraper quotidien le rattrapera demain.")
+        return
+
+    print("Article déployé — génération du teaser LinkedIn...")
+    titre = site_data.get("titre_site") or package.get("titre", "")
+    teaser_pkg = generate_teaser_linkedin(
+        titre, site_data.get("description", ""), site_data.get("category", ""), article_url
+    )
+    notify_make_teaser(teaser_pkg, site_data.get("category", ""), image_url, date_slug)
+
+    connues = _load_known_urls()
+    connues.add(article_url)
+    _save_known_urls(connues)
+    print(f"{article_url} ajouté à {KNOWN_URLS_PATH} (évite un double teaser via le scraper quotidien).")
+
+
 def merge_pr(pr_number, branch):
     """Merge la PR automatiquement (squash), puis supprime la branche.
 
@@ -623,5 +757,11 @@ def publish_to_site(package, theme, slug, date_slug):
             merge_pr(pr_number, branch)
         except Exception as e:
             print(f"Merge automatique impossible, la PR reste ouverte pour merge manuel : {e}")
+            return pr_url  # pas de teaser si le merge n'a pas eu lieu
+
+        try:
+            trigger_teaser_apres_publication(package, site_data, slug, date_slug)
+        except Exception as e:
+            print(f"Déclenchement du teaser impossible (l'article reste publié normalement) : {e}")
 
     return pr_url
