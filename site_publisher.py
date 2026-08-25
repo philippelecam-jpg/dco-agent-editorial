@@ -47,6 +47,14 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 SITE_REPO = os.environ.get("SITE_REPO", "")
 SITE_REPO_PAT = os.environ.get("SITE_REPO_PAT", "")
+# Réutilisés depuis le flux email existant (notify_make_email dans
+# agent_article_hebdo.py) : mêmes secrets, aucun nouveau à créer.
+MAKE_WEBHOOK_URL = os.environ.get("MAKE_WEBHOOK_URL", "")
+MAKE_API_KEY = os.environ.get("MAKE_API_KEY", "")
+# Désactivée par défaut : le filtre côté Router Make (type = alerte_site)
+# n'est pas encore configuré. Passer à "true" une fois ce filtre en place
+# pour réactiver l'alerte sans toucher au code.
+ALERTE_EMAIL_SITE = os.environ.get("ALERTE_EMAIL_SITE", "false").lower() == "true"
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
 MODEL = "claude-sonnet-4-6"
@@ -238,6 +246,45 @@ def build_markdown(package, site_data, slug, date_slug):
     return "\n".join(lignes) + site_data.get("corps_html", "")
 
 
+def notify_make_alerte(pr_url, anomalies, package, theme, date_slug):
+    """Envoie une alerte email via le même webhook Make que le brouillon
+    hebdo (notify_make_email dans agent_article_hebdo.py), avec un type de
+    payload distinct ("alerte_site") pour que le Router Make puisse la
+    distinguer des branches existantes.
+
+    ⚠️ Cette fonction envoie le payload ; côté Make, une branche dédiée à
+    ce type ("alerte_site") doit être ajoutée au scénario existant (filtre
+    sur type = alerte_site → email) pour qu'un email soit effectivement
+    envoyé. Tant que ce filtre n'existe pas, le webhook recevra bien le
+    payload mais aucune action Make ne se déclenchera derrière.
+    """
+    if not MAKE_WEBHOOK_URL or not MAKE_API_KEY:
+        print("MAKE_WEBHOOK_URL / MAKE_API_KEY absents — alerte non envoyée.")
+        return
+
+    payload = {
+        "type": "alerte_site",
+        "date": date_slug,
+        "theme": theme.get("theme", ""),
+        "titre": package.get("titre", ""),
+        "pr_url": pr_url,
+        "anomalies": anomalies,
+    }
+
+    if DRY_RUN:
+        print(f"[DRY_RUN] Alerte non envoyée. {len(anomalies)} anomalie(s) — PR : {pr_url}")
+        return
+
+    resp = requests.post(
+        MAKE_WEBHOOK_URL,
+        headers={"x-make-apikey": MAKE_API_KEY},
+        json=payload,
+        timeout=30,
+    )
+    resp.raise_for_status()
+    print(f"Alerte anomalie notifiée via Make : {resp.status_code}")
+
+
 def merge_pr(pr_number, branch):
     """Merge la PR automatiquement (squash), puis supprime la branche.
 
@@ -325,7 +372,14 @@ def publish_to_site(package, theme, slug, date_slug):
     branch = f"article/{date_slug}-{slug}"
 
     if DRY_RUN:
+        anomalies_preview = detect_anomalies(site_data, package)
         print(f"[DRY_RUN] Branche prévue : {branch}")
+        if anomalies_preview:
+            print("[DRY_RUN] Anomalies qui déclencheraient une escalade (PR ouverte + alerte email) :")
+            for a in anomalies_preview:
+                print(f"  - {a}")
+        else:
+            print("[DRY_RUN] Aucune anomalie — la PR aurait été mergée automatiquement.")
         print(markdown[:600] + ("..." if len(markdown) > 600 else ""))
         return None
 
@@ -396,6 +450,13 @@ def publish_to_site(package, theme, slug, date_slug):
             comment_pr(pr_number, anomalies)
         except Exception as e:
             print(f"Impossible de commenter la PR (elle reste ouverte quand même) : {e}")
+        if ALERTE_EMAIL_SITE:
+            try:
+                notify_make_alerte(pr_url, anomalies, package, theme, date_slug)
+            except Exception as e:
+                print(f"Alerte email impossible (la PR reste quand même ouverte) : {e}")
+        else:
+            print("Alerte email désactivée (ALERTE_EMAIL_SITE non activé) — le commentaire sur la PR reste le seul signal.")
     else:
         print("Aucune anomalie détectée — merge automatique...")
         try:
