@@ -1,13 +1,6 @@
 [
   {
     "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T10:18:46.963063",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "titre": "Pourquoi l'ordre de notre méthode n'est pas négociable",
-    "dossier": "articles/drafts/2026-08-24-pourquoi-l-ordre-de-notre-methode-n-est-pas-negociable"
-  },
-  {
-    "date": "Lundi 24 août 2026",
     "timestamp": "2026-08-24T10:26:49.515221",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
     "titre": "Ce que fait vraiment notre méthode, étape par étape",
@@ -146,5 +139,13 @@
     "theme": "Méthode Cartographier → Éliciter → Codifier",
     "titre": "Pourquoi l'ordre des trois étapes n'est pas négociable",
     "dossier": "articles/drafts/2026-08-25-pourquoi-l-ordre-des-trois-etapes-n-est-pas-negociable"
+  },
+  {
+    "date": "Mardi 25 août 2026",
+    "timestamp": "2026-08-25T17:15:25.028613",
+    "theme": "Gouvernance et réglementation IA",
+    "titre": "Charte IA interne : ce que votre entreprise doit décider avant de déployer",
+    "dossier": "articles/drafts/2026-08-25-charte-ia-interne-ce-que-votre-entreprise-doit-decider",
+    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/6"
   }
 ]
