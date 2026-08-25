@@ -118,20 +118,29 @@ ARTICLE_THEMES = [
 
 
 def get_theme_semaine(historique):
-    """Rotation déterministe sur le numéro de semaine ISO.
+    """Rotation déterministe sur le nombre d'articles déjà générés.
+
+    Pourquoi pas le numéro de semaine ISO (ancienne logique) : ce numéro est
+    identique pour tous les runs d'une même semaine, donc un seul pas de
+    garde-fou (idx+1) en cas de conflit fait osciller indéfiniment entre
+    2 thèmes adjacents dès qu'on relance plusieurs fois le même mercredi
+    (rattrapage manuel, tests) — observé en pratique lors du test&learn.
+    Baser idx sur len(historique) fait avancer la rotation à CHAQUE
+    génération, quel que soit le nombre de runs dans la semaine.
 
     Garde-fou : si le thème calculé a déjà été traité lors des deux derniers
-    articles (semaine sautée, rattrapage manuel...), on passe au suivant du
-    cycle plutôt que de répéter.
+    articles, on cherche le prochain thème libre sur tout le cycle (et non
+    plus un seul pas en avant), pour ne jamais boucler entre 2 thèmes.
     """
-    semaine = datetime.now().isocalendar()[1]
-    idx = semaine % len(ARTICLE_THEMES)
-    theme = ARTICLE_THEMES[idx]
+    n = len(ARTICLE_THEMES)
+    idx = len(historique) % n
     recents = {h.get("theme") for h in historique[-2:]}
-    if theme["theme"] in recents:
-        idx = (idx + 1) % len(ARTICLE_THEMES)
+    for _ in range(n):
         theme = ARTICLE_THEMES[idx]
-    return theme
+        if theme["theme"] not in recents:
+            return theme
+        idx = (idx + 1) % n
+    return ARTICLE_THEMES[idx]
 
 
 def load_historique():
