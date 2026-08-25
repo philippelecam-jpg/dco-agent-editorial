@@ -106,5 +106,13 @@
     "titre": "Ce que la méthode fait à votre organisation, concrètement",
     "dossier": "articles/drafts/2026-08-25-ce-que-la-methode-fait-a-votre-organisation-concretement",
     "pr_site": null
+  },
+  {
+    "date": "Mardi 25 août 2026",
+    "timestamp": "2026-08-25T09:12:49.963704",
+    "theme": "L'Entreprise OS",
+    "titre": "Ce que votre organisation fait sans le savoir depuis des années",
+    "dossier": "articles/drafts/2026-08-25-ce-que-votre-organisation-fait-sans-le-savoir-depuis-des-ann",
+    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/1"
   }
 ]
