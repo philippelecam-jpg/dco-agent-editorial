@@ -6,13 +6,17 @@ LinkedIn généré (package, theme, slug, date_slug). Il ne réécrit PAS le
 contenu de fond : il le restructure au format attendu par le site
 (frontmatter Astro + corps HTML), génère une couverture dédiée via l'API
 Images d'OpenAI (même style que les illustrations déjà publiées sur le
-site), puis committe le résultat sur une branche dédiée du repo
-decisionsandco.com et ouvre une Pull Request.
+site), commit le résultat sur une branche dédiée du repo
+decisionsandco.com, ouvre une Pull Request, puis :
 
-Rien n'est jamais poussé directement sur `main` : la mise en ligne reste un
-choix humain (merge de la PR). Le déploiement (npm run build + rsync) est
-ensuite automatique via le workflow deploy.yml déjà en place sur ce repo,
-dès que la PR est mergée.
+- si aucune anomalie n'est détectée (voir detect_anomalies) : merge la PR
+  automatiquement — le déploiement (build + rsync) se déclenche alors
+  immédiatement via deploy.yml, sans action humaine ;
+- si une anomalie est détectée (catégorie invalide repli sur défaut,
+  description tronquée, HTML mal formé, contenu suspect ou trop court...) :
+  la PR reste ouverte et reçoit un commentaire listant les anomalies —
+  c'est la seule situation où une relecture manuelle est nécessaire avant
+  merge.
 
 Variables d'environnement attendues :
 - ANTHROPIC_API_KEY  (déjà utilisée par agent_article_hebdo.py)
@@ -33,6 +37,7 @@ import json
 import base64
 import subprocess
 import tempfile
+import time
 from io import BytesIO
 
 import requests
@@ -117,11 +122,67 @@ def generate_site_content(package, theme):
     if data.get("category") not in CATEGORIES:
         print(f"Catégorie renvoyée invalide ({data.get('category')!r}) — repli sur {DEFAULT_CATEGORY!r}.")
         data["category"] = DEFAULT_CATEGORY
+        data["_category_fallback"] = True
 
     if len(data.get("description", "")) > 600:
         data["description"] = data["description"][:597].rstrip() + "..."
+        data["_description_truncated"] = True
 
     return data
+
+
+# Motifs qui trahissent une génération incomplète ou un texte non nettoyé.
+# Phrases longues : recherche en sous-chaîne, aucun risque de faux positif.
+PLACEHOLDER_PHRASES = [
+    "à compléter", "a completer", "lorem ipsum", "[insérer", "[insert", "placeholder",
+]
+# Tokens courts/génériques : recherche en mot entier uniquement (\b...\b),
+# sinon un mot ordinaire contenant ces lettres par hasard déclencherait un
+# faux positif (ex. "xxx" en sous-chaîne d'un mot quelconque).
+PLACEHOLDER_TOKENS = ["todo", "tbd", "xxx"]
+
+
+def detect_anomalies(site_data, package):
+    """Liste les raisons de ne PAS merger automatiquement la PR.
+
+    Liste vide = publication automatique. Sinon, la PR reste ouverte pour
+    relecture humaine et reçoit un commentaire listant ces anomalies.
+    """
+    anomalies = []
+
+    if site_data.get("_category_fallback"):
+        anomalies.append(
+            f"Catégorie renvoyée par le modèle invalide — repli automatique sur {DEFAULT_CATEGORY!r}, à vérifier."
+        )
+    if site_data.get("_description_truncated"):
+        anomalies.append("Description tronquée automatiquement (dépassait 600 caractères) — relecture recommandée.")
+
+    if not site_data.get("subtitle", "").strip():
+        anomalies.append("Subtitle manquant ou vide.")
+    if not site_data.get("description", "").strip():
+        anomalies.append("Description manquante ou vide.")
+
+    corps = site_data.get("corps_html", "")
+    if len(corps) < 400:
+        anomalies.append(f"Corps HTML anormalement court ({len(corps)} caractères) — génération probablement incomplète.")
+
+    corps_lower = corps.lower()
+    for motif in PLACEHOLDER_PHRASES:
+        if motif in corps_lower:
+            anomalies.append(f"Texte suspect détecté dans le corps : {motif!r}.")
+    for motif in PLACEHOLDER_TOKENS:
+        if re.search(rf"\b{re.escape(motif)}\b", corps_lower):
+            anomalies.append(f"Texte suspect détecté dans le corps : {motif!r}.")
+
+    for tag in ("h2", "p", "div"):
+        ouvrantes = corps.count(f"<{tag}")
+        fermantes = corps.count(f"</{tag}>")
+        if ouvrantes != fermantes:
+            anomalies.append(
+                f"Balises <{tag}> déséquilibrées ({ouvrantes} ouvrantes / {fermantes} fermantes) — HTML potentiellement invalide."
+            )
+
+    return anomalies
 
 
 def generate_cover_openai(image_prompt):
@@ -175,6 +236,63 @@ def build_markdown(package, site_data, slug, date_slug):
         "",
     ]
     return "\n".join(lignes) + site_data.get("corps_html", "")
+
+
+def merge_pr(pr_number, branch):
+    """Merge la PR automatiquement (squash), puis supprime la branche.
+
+    GitHub calcule le statut "mergeable" de façon asynchrone juste après la
+    création de la PR : un retry court absorbe le cas où l'appel arrive
+    avant que ce calcul soit terminé.
+    """
+    derniere_erreur = None
+    for tentative in range(3):
+        try:
+            resp = requests.put(
+                f"https://api.github.com/repos/{SITE_REPO}/pulls/{pr_number}/merge",
+                headers={
+                    "Authorization": f"Bearer {SITE_REPO_PAT}",
+                    "Accept": "application/vnd.github+json",
+                },
+                json={"merge_method": "squash"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            print("PR mergée automatiquement — le déploiement va se déclencher.")
+            break
+        except requests.HTTPError as e:
+            derniere_erreur = e
+            time.sleep(3)
+    else:
+        raise derniere_erreur
+
+    # Best-effort : supprime la branche mergée sans faire échouer le run si
+    # ça rate (ce n'est qu'un ménage, pas une étape critique).
+    try:
+        requests.delete(
+            f"https://api.github.com/repos/{SITE_REPO}/git/refs/heads/{branch}",
+            headers={"Authorization": f"Bearer {SITE_REPO_PAT}"},
+            timeout=15,
+        )
+    except Exception:
+        pass
+
+
+def comment_pr(pr_number, anomalies):
+    body = (
+        "⚠️ **Publication automatique interrompue avant merge** — anomalie(s) détectée(s), relecture nécessaire :\n\n"
+        + "\n".join(f"- {a}" for a in anomalies)
+    )
+    resp = requests.post(
+        f"https://api.github.com/repos/{SITE_REPO}/issues/{pr_number}/comments",
+        headers={
+            "Authorization": f"Bearer {SITE_REPO_PAT}",
+            "Accept": "application/vnd.github+json",
+        },
+        json={"body": body},
+        timeout=15,
+    )
+    resp.raise_for_status()
 
 
 def _run(*args, cwd=None):
@@ -234,6 +352,22 @@ def publish_to_site(package, theme, slug, date_slug):
         _run("git", "push", "-u", "origin", branch, cwd=tmp)
 
     print("Ouverture de la Pull Request...")
+    anomalies = detect_anomalies(site_data, package)
+    corps_pr = (
+        f"Article généré automatiquement — thème « {theme['theme']} ».\n\n"
+        f"**Catégorie proposée :** {site_data.get('category')}\n\n"
+    )
+    if anomalies:
+        corps_pr += (
+            "⚠️ Anomalie(s) détectée(s) — merge automatique désactivé pour cette PR, "
+            "relecture nécessaire avant merge manuel (voir commentaire ci-dessous)."
+        )
+    else:
+        corps_pr += (
+            "Aucune anomalie détectée — cette PR sera mergée automatiquement. "
+            "Le déploiement (build + rsync) se déclenche alors immédiatement."
+        )
+
     pr_resp = requests.post(
         f"https://api.github.com/repos/{SITE_REPO}/pulls",
         headers={
@@ -244,16 +378,29 @@ def publish_to_site(package, theme, slug, date_slug):
             "title": f"Article : {package.get('titre', '')}",
             "head": branch,
             "base": "main",
-            "body": (
-                f"Article généré automatiquement — thème « {theme['theme']} ».\n\n"
-                f"**Catégorie proposée :** {site_data.get('category')}\n\n"
-                "À relire avant merge : titre, catégorie, description, image de couverture. "
-                "Le déploiement (build + rsync) se déclenche automatiquement au merge."
-            ),
+            "body": corps_pr,
         },
         timeout=30,
     )
     pr_resp.raise_for_status()
-    pr_url = pr_resp.json().get("html_url", "")
+    pr_data = pr_resp.json()
+    pr_url = pr_data.get("html_url", "")
+    pr_number = pr_data.get("number")
     print(f"PR ouverte : {pr_url}")
+
+    if anomalies:
+        print("Anomalies détectées — la PR reste ouverte pour relecture :")
+        for a in anomalies:
+            print(f"  - {a}")
+        try:
+            comment_pr(pr_number, anomalies)
+        except Exception as e:
+            print(f"Impossible de commenter la PR (elle reste ouverte quand même) : {e}")
+    else:
+        print("Aucune anomalie détectée — merge automatique...")
+        try:
+            merge_pr(pr_number, branch)
+        except Exception as e:
+            print(f"Merge automatique impossible, la PR reste ouverte pour merge manuel : {e}")
+
     return pr_url
