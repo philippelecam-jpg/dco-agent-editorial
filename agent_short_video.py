@@ -333,24 +333,54 @@ def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
         draw.text(((VIDEO_WIDTH - w) / 2, y), line, font=font_title, fill=palette["text"])
         y += 90
 
-    # Hashtags en bas
-    tag_line = "  ".join(f"#{t}" for t in hashtags)
-    bbox = draw.textbbox((0, 0), tag_line, font=font_tags)
-    w = bbox[2] - bbox[0]
-    draw.text(
-        ((VIDEO_WIDTH - w) / 2, VIDEO_HEIGHT - 180),
-        tag_line, font=font_tags, fill=palette["subtext"],
-    )
+    # Hashtags en bas, avec retour à la ligne automatique (évite le
+    # dépassement hors cadre observé en V1 sur les listes de 4-5 tags).
+    MARGIN = 60
+    max_line_width = VIDEO_WIDTH - 2 * MARGIN
 
-    # Logo si le module de branding est disponible
+    def text_width(s, font):
+        bbox = draw.textbbox((0, 0), s, font=font)
+        return bbox[2] - bbox[0]
+
+    tags_with_hash = [f"#{t}" for t in hashtags]
+    tag_lines = []
+    current_line = ""
+    for tag in tags_with_hash:
+        candidate = f"{current_line}  {tag}".strip()
+        if text_width(candidate, font_tags) <= max_line_width:
+            current_line = candidate
+        else:
+            if current_line:
+                tag_lines.append(current_line)
+            current_line = tag
+    if current_line:
+        tag_lines.append(current_line)
+
+    y_tags = VIDEO_HEIGHT - 60 - (len(tag_lines) * 55)
+    for line in tag_lines:
+        w = text_width(line, font_tags)
+        draw.text(((VIDEO_WIDTH - w) / 2, y_tags), line, font=font_tags, fill=palette["subtext"])
+        y_tags += 55
+
+    # Logo si le module de branding est disponible — on journalise
+    # explicitement les deux cas d'échec possibles plutôt que de les avaler
+    # silencieusement, pour pouvoir diagnostiquer depuis les logs GitHub
+    # Actions sans avoir à reproduire le run en local.
     if HAS_BRANDING_MODULE:
         try:
             logo = recolor_logo("assets/logo.png", palette["text"])
             if logo:
                 logo.thumbnail((260, 260))
                 img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, 120), logo)
-        except Exception:
-            pass  # le logo est un bonus, pas un bloquant
+            else:
+                print("[build_background_image] recolor_logo() a retourné None — "
+                      "vérifier le chemin assets/logo.png dans le repo.")
+        except Exception as e:
+            print(f"[build_background_image] Logo non appliqué : {e}")
+    else:
+        print("[build_background_image] HAS_BRANDING_MODULE=False — "
+              "l'import de agent.py a échoué ou get_palette/recolor_logo "
+              "sont absents. Pas de logo sur ce run.")
 
     img.save(out_path)
     return out_path
