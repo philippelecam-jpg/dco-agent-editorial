@@ -378,6 +378,104 @@ def upload_video(video_path, titre, description, tags):
     return upload_resp.json()["id"]
 
 
+# ---------------------------------------------------------------------------
+# 5. Miniature personnalisée (photo de Rachel + titre en incrustation)
+# ---------------------------------------------------------------------------
+RACHEL_PHOTO_PATH = "assets/rachel.png"
+THUMB_W, THUMB_H = 1280, 720
+
+
+def generate_thumbnail(titre: str, out_path: Path) -> Path:
+    """Construit une miniature 1280x720 à partir de la photo de référence de
+    Rachel, avec le titre du jour en incrustation. Nécessite que
+    assets/rachel.png soit présent dans le repo (pas juste en local sur un
+    poste de travail -- le job GitHub Actions n'a que ce qui est commité)."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    photo = Image.open(RACHEL_PHOTO_PATH).convert("RGB")
+
+    # Recadrage "cover" centré pour remplir exactement 1280x720 sans déformer
+    src_ratio = photo.width / photo.height
+    target_ratio = THUMB_W / THUMB_H
+    if src_ratio > target_ratio:
+        new_width = int(photo.height * target_ratio)
+        left = (photo.width - new_width) // 2
+        photo = photo.crop((left, 0, left + new_width, photo.height))
+    else:
+        new_height = int(photo.width / target_ratio)
+        top = (photo.height - new_height) // 2
+        photo = photo.crop((0, top, photo.width, top + new_height))
+    photo = photo.resize((THUMB_W, THUMB_H), Image.LANCZOS)
+
+    draw = ImageDraw.Draw(photo, "RGBA")
+
+    # Bande sombre en bas pour la lisibilité du texte, dégradé simple
+    gradient_height = 260
+    for y in range(gradient_height):
+        alpha = int(200 * (y / gradient_height))
+        draw.line(
+            [(0, THUMB_H - gradient_height + y), (THUMB_W, THUMB_H - gradient_height + y)],
+            fill=(13, 20, 33, alpha),
+        )
+
+    try:
+        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
+    except Exception:
+        font_title = ImageFont.load_default()
+
+    # Wrap manuel simple sur la largeur utile
+    max_width = THUMB_W - 100
+    words = titre.split()
+    lines, current = [], []
+    for word in words:
+        test = " ".join(current + [word])
+        bbox = draw.textbbox((0, 0), test, font=font_title)
+        if bbox[2] > max_width and current:
+            lines.append(" ".join(current))
+            current = [word]
+        else:
+            current.append(word)
+    if current:
+        lines.append(" ".join(current))
+    lines = lines[:2]  # deux lignes maximum, sinon ça déborde visuellement
+
+    line_height = 68
+    y = THUMB_H - 40 - len(lines) * line_height
+    for line in lines:
+        draw.text((52, y + 2), line, font=font_title, fill=(0, 0, 0, 180))  # ombre
+        draw.text((50, y), line, font=font_title, fill=(255, 255, 255, 255))
+        y += line_height
+
+    # Bande d'accent turquoise en haut, cohérente avec le format fond statique
+    draw.rectangle([(0, 0), (THUMB_W, 10)], fill=(0, 168, 168, 255))
+
+    photo.save(out_path, "JPEG", quality=90)
+    return out_path
+
+
+def upload_thumbnail(video_id: str, thumbnail_path: Path):
+    """Envoie la miniature générée. Nécessite que la chaîne ait son numéro de
+    téléphone vérifié (condition YouTube pour les miniatures personnalisées) --
+    sinon l'API renvoie une erreur explicite qu'on journalise sans faire
+    échouer tout le run : la vidéo est déjà publiée à ce stade, la miniature
+    est un bonus, pas un bloquant."""
+    access_token = get_access_token()
+    with open(thumbnail_path, "rb") as f:
+        resp = requests.post(
+            "https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=%s" % video_id,
+            headers={"Authorization": "Bearer %s" % access_token, "Content-Type": "image/jpeg"},
+            data=f.read(),
+            timeout=60,
+        )
+    if resp.status_code >= 400:
+        print("[upload_thumbnail] Miniature refusée (%s) -- vérifier que le numéro de "
+              "téléphone de la chaîne est validé (Studio > Paramètres > Fonctionnalités "
+              "et éligibilité). Corps de la réponse : %s" % (resp.status_code, resp.text[:500]))
+        return False
+    print("[upload_thumbnail] Miniature personnalisée appliquée.")
+    return True
+
+
 def main():
     photo_asset_id = os.environ["RACHEL_PHOTO_ASSET_ID"]
     history = load_history()
@@ -419,6 +517,13 @@ def main():
     )
     video_id = upload_video(video_path, script_data["titre"], description, script_data["hashtags"])
     print("[6/6] Vidéo publiée : https://youtube.com/watch?v=%s" % video_id)
+
+    try:
+        thumb_path = generate_thumbnail(script_data["titre"], WORKDIR / "thumbnail.jpg")
+        upload_thumbnail(video_id, thumb_path)
+    except Exception as e:
+        print("[thumbnail] Non appliquée (%s) -- la vidéo reste publiée normalement, "
+              "juste avec la miniature auto générée par YouTube." % e)
 
     if news_item:
         history.setdefault("news_used_links", []).append(news_item["lien"])
