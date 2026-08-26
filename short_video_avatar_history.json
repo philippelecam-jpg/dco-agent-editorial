@@ -2,7 +2,8 @@
   "themes_used": [],
   "news_used_links": [
     "https://www.clubic.com/actualite-626842-claude-se-souvient-enfin-de-tout-meme-quand-vous-changez-d-outil.html",
-    "https://www.clubic.com/actualite-626869-bill-gates-veut-rapidement-rencontrer-xi-jinping-pour-reguler-les-ia-les-plus-dangereuses.html"
+    "https://www.clubic.com/actualite-626869-bill-gates-veut-rapidement-rencontrer-xi-jinping-pour-reguler-les-ia-les-plus-dangereuses.html",
+    "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/"
   ],
   "scripts": [
     {
@@ -16,6 +17,12 @@
       "source": "actualite",
       "titre": "Gates veut parler IA dangereuse avec Xi Jinping",
       "video_id": "kD4RFevuNqU"
+    },
+    {
+      "date": "2026-08-26T15:01:48.694141",
+      "source": "actualite",
+      "titre": "IA et emploi : les cadres aussi sont concernés",
+      "video_id": "Av0Yl3VEhxI"
     }
   ]
 }
