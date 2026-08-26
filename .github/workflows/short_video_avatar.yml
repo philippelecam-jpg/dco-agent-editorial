@@ -29,7 +29,7 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
           HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
-          RACHEL_TALKING_PHOTO_ID: ${{ secrets.RACHEL_TALKING_PHOTO_ID }}
+          RACHEL_PHOTO_ASSET_ID: ${{ secrets.RACHEL_PHOTO_ASSET_ID }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
