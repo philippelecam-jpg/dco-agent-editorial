@@ -381,7 +381,7 @@ def upload_video(video_path, titre, description, tags):
 # ---------------------------------------------------------------------------
 # 5. Miniature personnalisée (photo de Rachel + titre en incrustation)
 # ---------------------------------------------------------------------------
-RACHEL_PHOTO_PATH = "assets/rachel.png"
+RACHEL_PHOTO_PATH = "assets/Rachel.PNG"
 THUMB_W, THUMB_H = 1280, 720
 
 
