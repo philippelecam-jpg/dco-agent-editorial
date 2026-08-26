@@ -1,0 +1,58 @@
+name: Agent Short Video (YouTube)
+
+on:
+  schedule:
+    - cron: "0 16 * * *"   # 18h Paris en été (CEST)
+    - cron: "0 17 * * *"   # 18h Paris en hiver (CET)
+  workflow_dispatch: {}
+
+jobs:
+  short-video:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install requests feedparser pillow google-auth google-auth-oauthlib google-api-python-client
+
+      - name: Run short video agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python agent_short_video.py
+
+      - name: Commit updated history
+        run: |
+          if [ -n "$(git status --porcelain short_video_history.json)" ]; then
+            git config user.name "dco-agent-editorial"
+            git config user.email "actions@github.com"
+            git add short_video_history.json
+            git commit -m "chore: update short_video history [skip ci]"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -sS -X POST "$MAKE_WEBHOOK_URL" \
+            -H "x-make-apikey: $MAKE_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"alerte\": \"echec_short_video\", \"run_url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\", \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+        env:
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
