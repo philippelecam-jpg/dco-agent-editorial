@@ -6,7 +6,8 @@
     "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
     "https://www.actuia.com/actualite/pourquoi-la-rumeur-dun-cloud-meta-fait-plonger-les-neoclouds/",
     "https://www.clubic.com/actualite-626794-la-plateforme-francaise-avis-verifies-lance-son-reseau-de-syndication-d-avis-pour-defier-les-geants-americains.html",
-    "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/"
+    "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
+    "https://www.actuia.com/actualite/washington-retablit-fable-5-mais-le-risque-de-dependance-aux-modeles-americains-demeure-entier/"
   ],
   "scripts": [
     {
@@ -44,6 +45,12 @@
       "source": "actualite",
       "titre": "Souveraineté IA : ce que ça change vraiment pour vous",
       "video_id": "AcyptLWZqE4"
+    },
+    {
+      "date": "2026-08-26T16:48:46.205899",
+      "source": "actualite",
+      "titre": "Votre IA peut s'éteindre du jour au lendemain",
+      "video_id": "7STOTr98iQ4"
     }
   ]
 }
