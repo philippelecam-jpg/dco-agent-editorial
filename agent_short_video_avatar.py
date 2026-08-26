@@ -39,15 +39,15 @@ Variables d'environnement attendues (GitHub Actions secrets) :
         module "fond statique" -- même identité vocale Rachel/Perle)
     HEYGEN_API_KEY : clé API d'un compte HeyGen (compte séparé d'ElevenLabs,
         à créer sur heygen.com -- Settings > API)
-    RACHEL_TALKING_PHOTO_ID : l'ID de la photo de Rachel, uploadée une seule
-        fois vers HeyGen (voir upload_rachel_photo_once() en bas de fichier)
+    RACHEL_PHOTO_ASSET_ID : l'asset_id de la photo de Rachel, uploadée une seule
+        fois vers HeyGen via /v3/assets (voir upload_rachel_photo_once() en bas de fichier)
     YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REFRESH_TOKEN
         (réutilise les mêmes que le module "fond statique" -- même chaîne)
 
 IMPORTANT -- étapes manuelles uniques, non automatisables :
     1. Créer un compte HeyGen, générer une clé API (Settings > API)
     2. Exécuter upload_rachel_photo_once() en local UNE FOIS pour obtenir
-       RACHEL_TALKING_PHOTO_ID (voir fonction en bas de fichier)
+       RACHEL_PHOTO_ASSET_ID (voir fonction en bas de fichier)
     3. Premier test manuel via workflow_dispatch AVANT d'activer le cron,
        pour confirmer que les endpoints v3 fonctionnent avec ce compte
 """
@@ -279,7 +279,7 @@ def upload_audio_to_heygen(audio_path):
     return resp.json()["data"]["asset_id"]
 
 
-def generate_avatar_video(talking_photo_id, audio_asset_id, titre):
+def generate_avatar_video(photo_asset_id, audio_asset_id, titre):
     """Lance la génération HeyGen, attend sa fin, retourne l'URL de la vidéo.
     Doc : POST /v3/videos avec type='image' + audio_asset_id (mutuellement
     exclusif avec script+voice_id, puisqu'on fournit déjà l'audio ElevenLabs).
@@ -291,7 +291,7 @@ def generate_avatar_video(talking_photo_id, audio_asset_id, titre):
         headers={"x-api-key": api_key, "content-type": "application/json"},
         json={
             "type": "image",
-            "image": {"type": "talking_photo", "talking_photo_id": talking_photo_id},
+            "image": {"type": "asset_id", "asset_id": photo_asset_id},
             "audio_asset_id": audio_asset_id,
             "title": titre[:100],
             "resolution": "1080p",
@@ -379,7 +379,7 @@ def upload_video(video_path, titre, description, tags):
 
 
 def main():
-    talking_photo_id = os.environ["RACHEL_TALKING_PHOTO_ID"]
+    photo_asset_id = os.environ["RACHEL_PHOTO_ASSET_ID"]
     history = load_history()
 
     news_item = None
@@ -410,7 +410,7 @@ def main():
     print("[4/6] Audio uploadé vers HeyGen (asset %s)" % audio_asset_id)
 
     print("[5/6] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
-    video_url = generate_avatar_video(talking_photo_id, audio_asset_id, script_data["titre"])
+    video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "avatar.mp4")
     print("[5/6] Vidéo avatar générée (16:9 natif, aucun recadrage)")
 
@@ -433,10 +433,17 @@ def main():
 
 
 def upload_rachel_photo_once(photo_path="rachel.png"):
-    """À exécuter UNE SEULE FOIS, en local, pour créer la 'talking photo'
-    HeyGen à partir de la photo de référence de Rachel et obtenir son ID
-    permanent. Doc : POST /v1/talking_photo (multipart/form-data, endpoint
-    upload sur un sous-domaine différent : upload.heygen.com).
+    """À exécuter UNE SEULE FOIS, en local, pour uploader la photo de
+    référence de Rachel vers HeyGen et obtenir son asset_id permanent.
+
+    Doc : POST /v3/assets (multipart/form-data) -- LE MÊME endpoint que celui
+    utilisé pour l'audio dans upload_audio_to_heygen(). La fonctionnalité
+    "Talking Photo" de l'interface HeyGen (POST /v1/talking_photo) N'EST PAS
+    compatible avec le champ 'image' de POST /v3/videos, qui attend
+    exclusivement un objet {"type": "asset_id", "asset_id": "..."} (ou "url"
+    ou "base64") -- confirmé par le message d'erreur HeyGen lors du premier
+    test réel : "Input tag 'talking_photo' ... does not match any of the
+    expected tags: 'url', 'asset_id', 'base64'".
 
     Usage :
         python -c "from agent_short_video_avatar import upload_rachel_photo_once; upload_rachel_photo_once('rachel.png')"
@@ -444,15 +451,18 @@ def upload_rachel_photo_once(photo_path="rachel.png"):
     api_key = os.environ["HEYGEN_API_KEY"]
     with open(photo_path, "rb") as f:
         resp = requests.post(
-            "https://upload.heygen.com/v1/talking_photo",
-            headers={"x-api-key": api_key, "Content-Type": "image/png"},
-            data=f.read(),
+            "%s/assets" % HEYGEN_BASE_URL,
+            headers={"x-api-key": api_key},
+            files={"file": (photo_path, f, "image/png")},
             timeout=60,
         )
+    if resp.status_code >= 400:
+        print("[upload_rachel_photo_once] Erreur HTTP %s -- corps de la réponse :" % resp.status_code)
+        print(resp.text[:2000])
     resp.raise_for_status()
-    talking_photo_id = resp.json()["data"]["talking_photo_id"]
-    print("Talking Photo ID à copier dans le secret RACHEL_TALKING_PHOTO_ID :")
-    print(talking_photo_id)
+    photo_asset_id = resp.json()["data"]["asset_id"]
+    print("Asset ID à copier dans le secret RACHEL_PHOTO_ASSET_ID :")
+    print(photo_asset_id)
 
 
 if __name__ == "__main__":
