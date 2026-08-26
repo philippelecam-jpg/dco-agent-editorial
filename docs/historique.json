@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T08:22:46.201126",
-    "theme": "Terrain et missions clients",
-    "sujet": "Quand l'IA révèle ce que l'organisation ne sait pas d'elle-même",
-    "post_x": "Mission client cette semaine. On leur a demandé : qui détient la connaissance sur ce processus ? Silence. Trois noms différents selon les interlocuteurs. L'IA n'aurait fait qu'accélérer la confusion.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089629056757317976",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=082243"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T08:29:17.034393",
     "theme": "Terrain et missions clients",
     "sujet": "Terrain et missions clients : quand la connaissance dort dans les têtes",
@@ -268,5 +259,14 @@
     "post_x": "On est entré dans une PME industrielle de 200 personnes pour cartographier leur connaissance métier. Ce qu'on a trouvé : 80 % des process critiques dans la tête de 3 personnes. L'IA n'était pas leur problème.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2092145017330475247",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-25-070014.png?v=070015"
+  },
+  {
+    "date": "Mercredi 26 août 2026",
+    "timestamp": "2026-08-26T07:02:08.857324",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Méthode Cartographier → Éliciter → Codifier : ce qu'on trouve avant de toucher aux outils",
+    "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart, ce n'est pas un problème d'outil. C'est un problème de connaissance non structurée avant de déployer.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2092507619118158004",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-26-070105.png?v=070105"
   }
 ]
