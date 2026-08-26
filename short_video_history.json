@@ -5,7 +5,8 @@
     "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
     "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
     "https://www.actuia.com/actualite/pourquoi-la-rumeur-dun-cloud-meta-fait-plonger-les-neoclouds/",
-    "https://www.clubic.com/actualite-626794-la-plateforme-francaise-avis-verifies-lance-son-reseau-de-syndication-d-avis-pour-defier-les-geants-americains.html"
+    "https://www.clubic.com/actualite-626794-la-plateforme-francaise-avis-verifies-lance-son-reseau-de-syndication-d-avis-pour-defier-les-geants-americains.html",
+    "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/"
   ],
   "scripts": [
     {
@@ -37,6 +38,12 @@
       "source": "actualite",
       "titre": "Vos avis clients valent plus que vous ne croyez",
       "video_id": "BhIRc3PGlQE"
+    },
+    {
+      "date": "2026-08-26T12:37:29.066395",
+      "source": "actualite",
+      "titre": "Souveraineté IA : ce que ça change vraiment pour vous",
+      "video_id": "AcyptLWZqE4"
     }
   ]
 }
