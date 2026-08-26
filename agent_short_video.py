@@ -63,11 +63,13 @@ RSS_FEEDS = [
 try:
     from agent import get_palette, recolor_logo  # réutilise le module existant
     HAS_BRANDING_MODULE = True
-except Exception:
+except Exception as e:
     # Volontairement large : agent.py exécute du code au moment de l'import
     # (lecture de secrets X/Twitter notamment), donc toute erreur ici — pas
     # seulement ImportError — doit basculer sur le fallback plutôt que de
     # faire échouer tout le pipeline pour un problème de branding visuel.
+    # On journalise la cause exacte pour pouvoir la corriger précisément.
+    print(f"[import agent.py] Échec ({type(e).__name__}: {e}) — bascule en mode fallback.")
     HAS_BRANDING_MODULE = False
 
     def get_palette():
