@@ -61,7 +61,7 @@ RSS_FEEDS = [
 # Intégration branding (best effort avec agent.py existant)
 # ---------------------------------------------------------------------------
 try:
-    from agent import get_palette, recolor_logo  # réutilise le module existant
+    from agent import recolor_logo, LOGO_PATH  # réutilise le module existant
     HAS_BRANDING_MODULE = True
 except Exception as e:
     # Volontairement large : agent.py exécute du code au moment de l'import
@@ -71,18 +71,25 @@ except Exception as e:
     # On journalise la cause exacte pour pouvoir la corriger précisément.
     print(f"[import agent.py] Échec ({type(e).__name__}: {e}) — bascule en mode fallback.")
     HAS_BRANDING_MODULE = False
+    LOGO_PATH = "assets/logo_decisions_co.png"
 
-    def get_palette():
-        # Fallback si agent.py n'est pas importable dans ce contexte
-        return {
-            "bg": (13, 20, 33),
-            "accent": (0, 168, 168),
-            "text": (255, 255, 255),
-            "subtext": (170, 185, 200),
-        }
+    def recolor_logo(logo_rgba, rgb):
+        alpha = logo_rgba.split()[3]
+        solid = Image.new("RGBA", logo_rgba.size, rgb + (255,))
+        solid.putalpha(alpha)
+        return solid
 
-    def recolor_logo(logo_path, color):
-        return None  # pas de logo si le module de branding n'est pas dispo
+
+def get_palette():
+    """Palette du short — indépendante de get_palette() car agent.py n'expose
+    pas cette fonction (seulement un dict THEME_PALETTES lié aux 5 thèmes
+    hebdomadaires fixes, qui ne correspondent pas aux actus RSS du short)."""
+    return {
+        "bg": (13, 20, 33),
+        "accent": (0, 168, 168),
+        "text": (255, 255, 255),
+        "subtext": (170, 185, 200),
+    }
 
 
 HISTORY_FILE = Path("short_video_history.json")
@@ -365,24 +372,19 @@ def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
         y_tags += 55
 
     # Logo si le module de branding est disponible — on journalise
-    # explicitement les deux cas d'échec possibles plutôt que de les avaler
-    # silencieusement, pour pouvoir diagnostiquer depuis les logs GitHub
-    # Actions sans avoir à reproduire le run en local.
-    if HAS_BRANDING_MODULE:
-        try:
-            logo = recolor_logo("assets/logo.png", palette["text"])
-            if logo:
-                logo.thumbnail((260, 260))
-                img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, 120), logo)
-            else:
-                print("[build_background_image] recolor_logo() a retourné None — "
-                      "vérifier le chemin assets/logo.png dans le repo.")
-        except Exception as e:
-            print(f"[build_background_image] Logo non appliqué : {e}")
-    else:
-        print("[build_background_image] HAS_BRANDING_MODULE=False — "
-              "l'import de agent.py a échoué ou get_palette/recolor_logo "
-              "sont absents. Pas de logo sur ce run.")
+    # explicitement les cas d'échec plutôt que de les avaler silencieusement,
+    # pour pouvoir diagnostiquer depuis les logs GitHub Actions sans avoir à
+    # reproduire le run en local.
+    try:
+        logo_raw = Image.open(LOGO_PATH).convert("RGBA")
+        logo = recolor_logo(logo_raw, palette["text"])
+        logo.thumbnail((260, 260))
+        img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, 120), logo)
+    except FileNotFoundError:
+        print(f"[build_background_image] Logo non trouvé à {LOGO_PATH} — "
+              "vérifier que ce chemin existe bien dans le repo.")
+    except Exception as e:
+        print(f"[build_background_image] Logo non appliqué : {e}")
 
     img.save(out_path)
     return out_path
