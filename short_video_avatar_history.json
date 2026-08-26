@@ -1,7 +1,8 @@
 {
   "themes_used": [],
   "news_used_links": [
-    "https://www.clubic.com/actualite-626842-claude-se-souvient-enfin-de-tout-meme-quand-vous-changez-d-outil.html"
+    "https://www.clubic.com/actualite-626842-claude-se-souvient-enfin-de-tout-meme-quand-vous-changez-d-outil.html",
+    "https://www.clubic.com/actualite-626869-bill-gates-veut-rapidement-rencontrer-xi-jinping-pour-reguler-les-ia-les-plus-dangereuses.html"
   ],
   "scripts": [
     {
@@ -9,6 +10,12 @@
       "source": "actualite",
       "titre": "Claude se souvient enfin de tout, même entre deux outils",
       "video_id": "xlr8AiE8Va4"
+    },
+    {
+      "date": "2026-08-26T14:36:15.214281",
+      "source": "actualite",
+      "titre": "Gates veut parler IA dangereuse avec Xi Jinping",
+      "video_id": "kD4RFevuNqU"
     }
   ]
 }
