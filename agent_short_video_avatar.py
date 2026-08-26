@@ -276,7 +276,7 @@ def upload_audio_to_heygen(audio_path):
             timeout=60,
         )
     resp.raise_for_status()
-    return resp.json()["data"]["id"]
+    return resp.json()["data"]["asset_id"]
 
 
 def generate_avatar_video(talking_photo_id, audio_asset_id, titre):
