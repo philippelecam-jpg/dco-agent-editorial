@@ -299,6 +299,9 @@ def generate_avatar_video(talking_photo_id, audio_asset_id, titre):
         },
         timeout=30,
     )
+    if resp.status_code >= 400:
+        print("[generate_avatar_video] Erreur HTTP %s -- corps de la réponse :" % resp.status_code)
+        print(resp.text[:2000])
     resp.raise_for_status()
     video_id = resp.json()["data"]["video_id"]
 
