@@ -39,6 +39,7 @@ import os
 import json
 import base64
 import random
+import re
 import subprocess
 import textwrap
 from datetime import datetime
@@ -61,7 +62,7 @@ RSS_FEEDS = [
 # Intégration branding (best effort avec agent.py existant)
 # ---------------------------------------------------------------------------
 try:
-    from agent import recolor_logo, LOGO_PATH  # réutilise le module existant
+    from agent import recolor_logo, LOGO_PATH, nettoyer_texte  # réutilise le module existant
     HAS_BRANDING_MODULE = True
 except Exception as e:
     # Volontairement large : agent.py exécute du code au moment de l'import
@@ -78,6 +79,15 @@ except Exception as e:
         solid = Image.new("RGBA", logo_rgba.size, rgb + (255,))
         solid.putalpha(alpha)
         return solid
+
+    def nettoyer_texte(txt):
+        # Fallback minimal : retire au moins les tirets cadratins/demi-cadratins
+        # si agent.py n'est pas importable. Moins complet que la version
+        # d'agent.py (pas de nettoyage markdown), mais évite le principal
+        # signal "écrit par IA" en attendant que l'import soit rétabli.
+        if not isinstance(txt, str):
+            return txt
+        return re.sub(r"\s*[—–]\s*", ", ", txt)
 
 
 def get_palette():
@@ -241,7 +251,14 @@ def generate_script_from_news(news_item: dict) -> dict:
     resp.raise_for_status()
     raw_text = resp.json()["content"][0]["text"].strip()
     raw_text = raw_text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-    return json.loads(raw_text)
+    script_data = json.loads(raw_text)
+    # Même rigueur stylistique que les posts quotidiens et l'article hebdo :
+    # pas de tiret cadratin (signature reconnaissable d'écriture IA), pas de
+    # markdown résiduel. Les hashtags ne passent pas par nettoyer_texte()
+    # pour ne pas risquer de perdre le # initial sur un mot isolé.
+    script_data["titre"] = nettoyer_texte(script_data["titre"])
+    script_data["texte_voix"] = nettoyer_texte(script_data["texte_voix"])
+    return script_data
 
 
 def generate_script(theme: str) -> dict:
@@ -279,7 +296,10 @@ def generate_script(theme: str) -> dict:
     resp.raise_for_status()
     raw_text = resp.json()["content"][0]["text"].strip()
     raw_text = raw_text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-    return json.loads(raw_text)
+    script_data = json.loads(raw_text)
+    script_data["titre"] = nettoyer_texte(script_data["titre"])
+    script_data["texte_voix"] = nettoyer_texte(script_data["texte_voix"])
+    return script_data
 
 
 # ---------------------------------------------------------------------------
