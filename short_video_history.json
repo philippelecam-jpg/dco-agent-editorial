@@ -3,7 +3,8 @@
   "news_used_links": [
     "https://www.blogdumoderateur.com/anthropic-unifie-memoire-claude-cowork/",
     "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
-    "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/"
+    "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
+    "https://www.actuia.com/actualite/pourquoi-la-rumeur-dun-cloud-meta-fait-plonger-les-neoclouds/"
   ],
   "scripts": [
     {
@@ -23,6 +24,12 @@
       "source": "actualite",
       "titre": "IA : vos meilleurs éléments sont maintenant exposés",
       "video_id": "uJpJRtcA_cE"
+    },
+    {
+      "date": "2026-08-26T09:59:28.531690",
+      "source": "actualite",
+      "titre": "L'IA va coûter beaucoup moins cher — vite",
+      "video_id": "-4mynR7kDVg"
     }
   ]
 }
