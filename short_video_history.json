@@ -2,7 +2,8 @@
   "themes_used": [],
   "news_used_links": [
     "https://www.blogdumoderateur.com/anthropic-unifie-memoire-claude-cowork/",
-    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/"
+    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
+    "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/"
   ],
   "scripts": [
     {
@@ -16,6 +17,12 @@
       "source": "actualite",
       "titre": "IA à l'école : ce que ça change pour vous dès maintenant",
       "video_id": "TysHtBKrM4o"
+    },
+    {
+      "date": "2026-08-26T09:49:40.430380",
+      "source": "actualite",
+      "titre": "IA : vos meilleurs éléments sont maintenant exposés",
+      "video_id": "uJpJRtcA_cE"
     }
   ]
 }
