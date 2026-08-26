@@ -7,7 +7,8 @@
     "https://www.actuia.com/actualite/pourquoi-la-rumeur-dun-cloud-meta-fait-plonger-les-neoclouds/",
     "https://www.clubic.com/actualite-626794-la-plateforme-francaise-avis-verifies-lance-son-reseau-de-syndication-d-avis-pour-defier-les-geants-americains.html",
     "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
-    "https://www.actuia.com/actualite/washington-retablit-fable-5-mais-le-risque-de-dependance-aux-modeles-americains-demeure-entier/"
+    "https://www.actuia.com/actualite/washington-retablit-fable-5-mais-le-risque-de-dependance-aux-modeles-americains-demeure-entier/",
+    "https://www.clubic.com/actualite-626884-revolut-lance-son-premiere-stablecoin-adosse-a-l-euro-l-eurr.html"
   ],
   "scripts": [
     {
@@ -51,6 +52,12 @@
       "source": "actualite",
       "titre": "Votre IA peut s'éteindre du jour au lendemain",
       "video_id": "7STOTr98iQ4"
+    },
+    {
+      "date": "2026-08-26T18:47:11.491048",
+      "source": "actualite",
+      "titre": "Revolut lance un euro numérique, et alors ?",
+      "video_id": "ryzLkqN0XBQ"
     }
   ]
 }
