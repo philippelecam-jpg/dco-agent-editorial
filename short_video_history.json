@@ -1,7 +1,8 @@
 {
   "themes_used": [],
   "news_used_links": [
-    "https://www.blogdumoderateur.com/anthropic-unifie-memoire-claude-cowork/"
+    "https://www.blogdumoderateur.com/anthropic-unifie-memoire-claude-cowork/",
+    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/"
   ],
   "scripts": [
     {
@@ -9,6 +10,12 @@
       "source": "actualite",
       "titre": "Vos outils IA ont de la mémoire. Êtes-vous prêts ?",
       "video_id": "GrC8l3kscus"
+    },
+    {
+      "date": "2026-08-26T09:20:42.027118",
+      "source": "actualite",
+      "titre": "IA à l'école : ce que ça change pour vous dès maintenant",
+      "video_id": "TysHtBKrM4o"
     }
   ]
 }
