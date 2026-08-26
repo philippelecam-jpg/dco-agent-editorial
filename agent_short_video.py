@@ -346,9 +346,11 @@ def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
     try:
         font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 72)
         font_tags = ImageFont.truetype("DejaVuSans.ttf", 40)
+        font_rubrique = ImageFont.truetype("DejaVuSans-Bold.ttf", 30)
     except OSError:
         font_title = ImageFont.load_default()
         font_tags = ImageFont.load_default()
+        font_rubrique = ImageFont.load_default()
 
     # Bande d'accent en haut
     draw.rectangle([(0, 0), (VIDEO_WIDTH, 16)], fill=palette["accent"])
@@ -395,16 +397,29 @@ def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
     # explicitement les cas d'échec plutôt que de les avaler silencieusement,
     # pour pouvoir diagnostiquer depuis les logs GitHub Actions sans avoir à
     # reproduire le run en local.
+    logo_bottom_y = 120  # valeur de repli si le logo ne se charge pas, pour
+                          # que la rubrique reste correctement positionnée
     try:
         logo_raw = Image.open(LOGO_PATH).convert("RGBA")
         logo = recolor_logo(logo_raw, palette["text"])
         logo.thumbnail((260, 260))
-        img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, 120), logo)
+        logo_y = 120
+        img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, logo_y), logo)
+        logo_bottom_y = logo_y + logo.height
     except FileNotFoundError:
         print(f"[build_background_image] Logo non trouvé à {LOGO_PATH} — "
               "vérifier que ce chemin existe bien dans le repo.")
     except Exception as e:
         print(f"[build_background_image] Logo non appliqué : {e}")
+
+    # Rubrique fixe sous le logo — donne une identité de "série" reconnaissable
+    # d'un short à l'autre, indépendante du sujet du jour.
+    rubrique = "30 SECONDES, 1 ACTU IA"
+    rubrique_w = text_width(rubrique, font_rubrique)
+    draw.text(
+        ((VIDEO_WIDTH - rubrique_w) / 2, logo_bottom_y + 20),
+        rubrique, font=font_rubrique, fill=palette["accent"],
+    )
 
     img.save(out_path)
     return out_path
