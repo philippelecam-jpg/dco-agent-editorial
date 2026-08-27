@@ -6,7 +6,8 @@
     "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
     "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
     "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
-    "https://www.clubic.com/actualite-626917-openai-decouvre-une-operation-russe-qui-detournait-chatgpt-pour-influencer-les-occidentaux.html"
+    "https://www.clubic.com/actualite-626917-openai-decouvre-une-operation-russe-qui-detournait-chatgpt-pour-influencer-les-occidentaux.html",
+    "https://www.actuia.com/actualite/pourquoi-godot-ferme-la-porte-au-code-genere-par-ia/"
   ],
   "scripts": [
     {
@@ -44,6 +45,12 @@
       "source": "actualite",
       "titre": "ChatGPT utilisé comme outil de propagande russe",
       "video_id": "_PiJV1Xp_5Y"
+    },
+    {
+      "date": "2026-08-27T06:18:31.234730",
+      "source": "actualite",
+      "titre": "Godot dit non au code écrit par l'IA",
+      "video_id": "v-Lt0Lz5vZ8"
     }
   ]
 }
