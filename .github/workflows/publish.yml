@@ -2,8 +2,11 @@ name: Agent Éditorial D&Co
 
 on:
   schedule:
-    # Tous les jours de semaine à 7h00 heure de Paris (6h UTC en hiver, 5h UTC en été)
-    - cron: '0 6 * * 1-5'
+    # 7h07 heure de Paris, hiver et été (décalé de la minute 0 pour éviter
+    # la congestion documentée par GitHub aux heures rondes -- le run du
+    # 26 août a subi ~1h de retard, probablement lié à ce problème connu).
+    - cron: '7 6 * * 1-5'   # 7h07 Paris en hiver (CET, UTC+1)
+    - cron: '7 5 * * 1-5'   # 7h07 Paris en été (CEST, UTC+2)
   workflow_dispatch:
     inputs:
       test_mode:

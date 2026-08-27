@@ -2,8 +2,8 @@ name: Agent Short Video Avatar (Rachel / YouTube)
 
 on:
   schedule:
-    - cron: "0 8 * * 3"   # Mercredi 10h Paris en été (CEST, UTC+2)
-    - cron: "0 9 * * 3"   # Mercredi 10h Paris en hiver (CET, UTC+1)
+    - cron: "53 7 * * 3"   # Mercredi 9h53 Paris en été (CEST, UTC+2)
+    - cron: "53 8 * * 3"   # Mercredi 9h53 Paris en hiver (CET, UTC+1)
   workflow_dispatch: {}
 
 jobs:

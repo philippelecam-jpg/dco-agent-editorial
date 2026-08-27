@@ -2,8 +2,8 @@ name: Agent Short Video (YouTube)
 
 on:
   schedule:
-    - cron: "0 16 * * *"   # 18h Paris en été (CEST)
-    - cron: "0 17 * * *"   # 18h Paris en hiver (CET)
+    - cron: "41 16 * * *"   # 18h41 Paris en été (CEST)
+    - cron: "41 17 * * *"   # 18h41 Paris en hiver (CET)
   workflow_dispatch: {}
 
 jobs:
