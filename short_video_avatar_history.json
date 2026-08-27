@@ -5,7 +5,8 @@
     "https://www.clubic.com/actualite-626869-bill-gates-veut-rapidement-rencontrer-xi-jinping-pour-reguler-les-ia-les-plus-dangereuses.html",
     "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
     "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
-    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/"
+    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
+    "https://www.clubic.com/actualite-626917-openai-decouvre-une-operation-russe-qui-detournait-chatgpt-pour-influencer-les-occidentaux.html"
   ],
   "scripts": [
     {
@@ -37,6 +38,12 @@
       "source": "actualite",
       "titre": "IA à l'école dès la 6e : ce que ça changerait",
       "video_id": "_mTvQL6Wt6g"
+    },
+    {
+      "date": "2026-08-27T05:39:18.126371",
+      "source": "actualite",
+      "titre": "ChatGPT utilisé comme outil de propagande russe",
+      "video_id": "_PiJV1Xp_5Y"
     }
   ]
 }
