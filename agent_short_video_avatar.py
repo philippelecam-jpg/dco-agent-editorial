@@ -54,6 +54,8 @@ IMPORTANT -- étapes manuelles uniques, non automatisables :
 
 import os
 import json
+import base64
+import io
 import re
 import time
 from datetime import datetime
@@ -61,6 +63,7 @@ from pathlib import Path
 
 import requests
 import feedparser
+from PIL import Image, ImageDraw, ImageFont
 
 RSS_FEEDS = [
     "https://www.actuia.com/feed/",
@@ -385,18 +388,176 @@ RACHEL_PHOTO_PATH = "assets/Rachel.PNG"
 THUMB_W, THUMB_H = 1280, 720
 
 
-def generate_thumbnail(titre: str, out_path: Path) -> Path:
-    """Construit une miniature 1280x720 à partir de la photo de référence de
-    Rachel, avec le titre du jour en incrustation. Nécessite que
-    assets/rachel.png soit présent dans le repo (pas juste en local sur un
-    poste de travail -- le job GitHub Actions n'a que ce qui est commité)."""
-    from PIL import Image, ImageDraw, ImageFont
+def _wrap_text(draw, text: str, font, max_width: int) -> list:
+    """Retourne le texte réparti en lignes tenant dans max_width, sans jamais
+    couper un mot en deux."""
+    words = text.split()
+    lines, current = [], []
+    for word in words:
+        test = " ".join(current + [word])
+        bbox = draw.textbbox((0, 0), test, font=font)
+        if bbox[2] > max_width and current:
+            lines.append(" ".join(current))
+            current = [word]
+        else:
+            current.append(word)
+    if current:
+        lines.append(" ".join(current))
+    return lines
 
-    photo = Image.open(RACHEL_PHOTO_PATH).convert("RGB")
 
-    # Recadrage "cover" centré pour remplir exactement 1280x720 sans déformer
-    src_ratio = photo.width / photo.height
+def _fit_title(draw, titre: str, font_path: str, max_width: int, max_height: int,
+                start_size=130, min_size=36):
+    """Réduit progressivement la taille de police jusqu'à ce que le titre
+    tienne entièrement dans la zone disponible (largeur ET hauteur).
+    C'est la correction du bug de troncature observé en V1 : plutôt que de
+    couper à 2 lignes fixes, on ajuste la taille tant que ça ne rentre pas.
+    start_size volontairement haut pour que les titres courts remplissent
+    bien l'espace visuel plutôt que de rester petits par défaut."""
+    # Colle la ponctuation isolée (espace français avant ?!;:) au mot
+    # précédent, pour éviter qu'un simple "?" se retrouve seul sur sa ligne.
+    titre_ajuste = re.sub(r"\s+([?!;:])", r"\1", titre)
+
+    size = start_size
+    while size >= min_size:
+        try:
+            font = ImageFont.truetype(font_path, size)
+        except Exception:
+            font = ImageFont.load_default()
+            return font, [titre_ajuste.upper()]
+        lines = _wrap_text(draw, titre_ajuste.upper(), font, max_width)
+        line_height = int(size * 1.15)
+        total_height = len(lines) * line_height
+        if total_height <= max_height:
+            return font, lines
+        size -= 4
+    # Dernier recours à la taille minimale, quel que soit le nombre de lignes
+    # -- rare en pratique vu le pas de réduction, mais on ne tronque jamais
+    # le texte lui-même, seulement sa taille.
+    font = ImageFont.truetype(font_path, min_size) if size >= min_size else ImageFont.load_default()
+    return font, _wrap_text(draw, titre_ajuste.upper(), font, max_width)
+
+
+def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
+    """Génère la miniature via l'API OpenAI Images (endpoint /v1/images/edits,
+    modèle gpt-image-1), en utilisant la photo de référence de Rachel pour
+    préserver son visage. Même API que celle déjà utilisée en production
+    dans agent_article_hebdo.py pour la couverture des articles -- on
+    réutilise un pattern déjà validé plutôt que d'intégrer un nouveau
+    fournisseur non éprouvé.
+
+    Prompt volontairement générique : c'est le modèle qui décide de la mise
+    en scène (drapeaux, icônes, chiffres...) selon le titre du jour, sans
+    étape de sélection de style intermédiaire par Claude (contrairement au
+    choix de style à 4 options de l'article hebdo).
+
+    ⚠️ Non testé en conditions réelles au moment de l'écriture (pas de clé
+    API disponible dans l'environnement de développement) -- le premier run
+    réel fera foi. En cas d'échec (quota, contenu refusé, erreur réseau),
+    generate_thumbnail() (version PIL déterministe) prend le relais
+    automatiquement -- voir l'appel dans main()."""
+    api_key = os.environ["OPENAI_API_KEY"]
+
+    prompt = (
+        "Créer une vignette YouTube premium au format paysage 16:9, dans le "
+        "style des meilleures miniatures YouTube actuelles : impact immédiat, "
+        "lisibilité maximale, fort contraste, émotion claire, composition "
+        "dynamique et rendu très professionnel.\n\n"
+        "Utiliser la photo de la personne fournie comme référence fidèle : "
+        "conserver son visage, sa coiffure et son expression naturelle. La "
+        "détourer proprement et la placer de façon dominante sur la partie "
+        "droite de l'image, en cadrage buste, avec une présence forte et "
+        "engageante.\n\n"
+        "Sur la partie gauche, intégrer en très grand, en majuscules, "
+        "typographie sans-serif très bold, avec fort contraste et ombre "
+        "portée discrète, le texte suivant, épelé EXACTEMENT sans aucune "
+        "faute ni déformation : \"" + titre.upper() + "\"\n\n"
+        "Ajouter, si pertinent selon le sujet, des éléments visuels forts en "
+        "lien avec le thème (drapeaux pour une confrontation entre pays, "
+        "icônes tech/IA/business, chiffres, comparaison, symboles) sur un "
+        "fond sombre dégradé avec lumière cinématographique et contrastes "
+        "colorés. Ne pas surcharger : priorité absolue à la lisibilité du "
+        "visage et du texte.\n\n"
+        "Ne pas ajouter d'interface YouTube, ni durée vidéo, ni barre de "
+        "lecture, ni watermark."
+    )
+
+    with open(RACHEL_PHOTO_PATH, "rb") as photo_file:
+        resp = requests.post(
+            "https://api.openai.com/v1/images/edits",
+            headers={"Authorization": "Bearer %s" % api_key},
+            files={"image": ("rachel.png", photo_file, "image/png")},
+            data={
+                "model": "gpt-image-1",
+                "prompt": prompt,
+                "size": "1536x1024",
+                "quality": "high",
+                "n": 1,
+            },
+            timeout=120,
+        )
+
+    if resp.status_code >= 400:
+        print("[generate_thumbnail_ai] Erreur HTTP %s -- corps de la réponse :" % resp.status_code)
+        print(resp.text[:2000])
+    resp.raise_for_status()
+
+    b64_data = resp.json()["data"][0]["b64_json"]
+    image_bytes = base64.b64decode(b64_data)
+
+    # Le modèle renvoie du 1536x1024 (ratio proche mais pas identique à
+    # 1280x720) -- recadrage "cover" centré pour ajuster exactement.
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     target_ratio = THUMB_W / THUMB_H
+    src_ratio = img.width / img.height
+    if src_ratio > target_ratio:
+        new_width = int(img.height * target_ratio)
+        left = (img.width - new_width) // 2
+        img = img.crop((left, 0, left + new_width, img.height))
+    else:
+        new_height = int(img.width / target_ratio)
+        top = (img.height - new_height) // 2
+        img = img.crop((0, top, img.width, top + new_height))
+    img = img.resize((THUMB_W, THUMB_H), Image.LANCZOS)
+    img.save(out_path, "JPEG", quality=92)
+    return out_path
+
+
+def generate_thumbnail(titre: str, out_path: Path) -> Path:
+    """Construit une miniature 1280x720 : panneau texte à gauche (fond
+    dégradé sombre + effet de lueur), photo de Rachel à droite. Le titre est
+    dimensionné automatiquement pour toujours tenir entièrement -- plus de
+    troncature comme en V1 ("sur l'I" au lieu de "sur l'IA").
+
+    Nécessite que assets/Rachel.PNG soit présent dans le repo (le job
+    GitHub Actions n'a que ce qui est commité, pas ce qui est en local)."""
+
+    LEFT_W = int(THUMB_W * 0.58)   # panneau texte
+    RIGHT_W = THUMB_W - LEFT_W     # panneau photo
+
+    canvas = Image.new("RGB", (THUMB_W, THUMB_H), (13, 20, 33))
+    draw = ImageDraw.Draw(canvas, "RGBA")
+
+    # --- Panneau gauche : dégradé sombre + halo lumineux derrière le texte
+    for x in range(LEFT_W):
+        # Dégradé horizontal léger, plus clair vers le centre du panneau
+        t = x / LEFT_W
+        shade = int(13 + 10 * (1 - abs(t - 0.5) * 2))
+        draw.line([(x, 0), (x, THUMB_H)], fill=(shade, shade + 6, shade + 20))
+
+    # Halo (glow) : cercles concentriques semi-transparents, couleur accent
+    glow_cx, glow_cy = int(LEFT_W * 0.5), int(THUMB_H * 0.42)
+    for r in range(280, 0, -20):
+        alpha = int(18 * (1 - r / 280))
+        draw.ellipse(
+            [(glow_cx - r, glow_cy - r), (glow_cx + r, glow_cy + r)],
+            fill=(0, 168, 168, alpha),
+        )
+
+    # --- Panneau droit : photo de Rachel, recadrage "cover"
+    photo = Image.open(RACHEL_PHOTO_PATH).convert("RGB")
+    src_ratio = photo.width / photo.height
+    target_ratio = RIGHT_W / THUMB_H
     if src_ratio > target_ratio:
         new_width = int(photo.height * target_ratio)
         left = (photo.width - new_width) // 2
@@ -405,51 +566,60 @@ def generate_thumbnail(titre: str, out_path: Path) -> Path:
         new_height = int(photo.width / target_ratio)
         top = (photo.height - new_height) // 2
         photo = photo.crop((0, top, photo.width, top + new_height))
-    photo = photo.resize((THUMB_W, THUMB_H), Image.LANCZOS)
+    photo = photo.resize((RIGHT_W, THUMB_H), Image.LANCZOS)
+    canvas.paste(photo, (LEFT_W, 0))
 
-    draw = ImageDraw.Draw(photo, "RGBA")
+    # Fondu doux à la jointure entre les deux panneaux pour éviter une
+    # coupure trop nette
+    seam_width = 40
+    for i in range(seam_width):
+        alpha = int(255 * (1 - i / seam_width))
+        x = LEFT_W - seam_width + i
+        overlay = Image.new("RGBA", (1, THUMB_H), (13, 19, 39, alpha))
+        canvas.paste(Image.blend(canvas.crop((x, 0, x + 1, THUMB_H)).convert("RGBA"),
+                                  overlay, alpha / 255), (x, 0))
 
-    # Bande sombre en bas pour la lisibilité du texte, dégradé simple
-    gradient_height = 260
-    for y in range(gradient_height):
-        alpha = int(200 * (y / gradient_height))
-        draw.line(
-            [(0, THUMB_H - gradient_height + y), (THUMB_W, THUMB_H - gradient_height + y)],
-            fill=(13, 20, 33, alpha),
-        )
+    draw = ImageDraw.Draw(canvas, "RGBA")
 
-    try:
-        font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
-    except Exception:
-        font_title = ImageFont.load_default()
+    # --- Titre, auto-dimensionné pour tenir dans le panneau gauche
+    FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    margin = 56
+    text_max_width = LEFT_W - 2 * margin
+    text_max_height = THUMB_H - 270  # marge suffisante pour ne jamais chevaucher le badge IA
 
-    # Wrap manuel simple sur la largeur utile
-    max_width = THUMB_W - 100
-    words = titre.split()
-    lines, current = [], []
-    for word in words:
-        test = " ".join(current + [word])
-        bbox = draw.textbbox((0, 0), test, font=font_title)
-        if bbox[2] > max_width and current:
-            lines.append(" ".join(current))
-            current = [word]
-        else:
-            current.append(word)
-    if current:
-        lines.append(" ".join(current))
-    lines = lines[:2]  # deux lignes maximum, sinon ça déborde visuellement
+    font_title, lines = _fit_title(draw, titre, FONT_PATH, text_max_width, text_max_height)
+    line_height = int(font_title.size * 1.15)
+    total_text_height = len(lines) * line_height
+    y = (THUMB_H - total_text_height) // 2 - 30
 
-    line_height = 68
-    y = THUMB_H - 40 - len(lines) * line_height
     for line in lines:
-        draw.text((52, y + 2), line, font=font_title, fill=(0, 0, 0, 180))  # ombre
-        draw.text((50, y), line, font=font_title, fill=(255, 255, 255, 255))
+        draw.text((margin + 3, y + 3), line, font=font_title, fill=(0, 0, 0, 200))  # ombre
+        draw.text((margin, y), line, font=font_title, fill=(255, 255, 255, 255))
         y += line_height
 
-    # Bande d'accent turquoise en haut, cohérente avec le format fond statique
-    draw.rectangle([(0, 0), (THUMB_W, 10)], fill=(0, 168, 168, 255))
+    # --- Badge "IA" en bas à gauche, style néon, cohérent avec la rubrique
+    # du format fond statique (identité visuelle partagée entre les 2 formats)
+    badge_cx, badge_cy, badge_r = margin + 34, THUMB_H - 70, 34
+    for glow_r in range(badge_r + 14, badge_r, -2):
+        alpha = int(60 * (glow_r - badge_r) / 14)
+        draw.ellipse(
+            [(badge_cx - glow_r, badge_cy - glow_r), (badge_cx + glow_r, badge_cy + glow_r)],
+            outline=(0, 168, 168, alpha), width=2,
+        )
+    draw.ellipse(
+        [(badge_cx - badge_r, badge_cy - badge_r), (badge_cx + badge_r, badge_cy + badge_r)],
+        outline=(0, 168, 168, 255), width=3,
+    )
+    try:
+        font_badge = ImageFont.truetype(FONT_PATH, 26)
+    except Exception:
+        font_badge = ImageFont.load_default()
+    bbox = draw.textbbox((0, 0), "IA", font=font_badge)
+    bw, bh = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    draw.text((badge_cx - bw / 2, badge_cy - bh / 2 - bbox[1]), "IA",
+               font=font_badge, fill=(0, 168, 168, 255))
 
-    photo.save(out_path, "JPEG", quality=90)
+    canvas.save(out_path, "JPEG", quality=92)
     return out_path
 
 
@@ -518,12 +688,27 @@ def main():
     video_id = upload_video(video_path, script_data["titre"], description, script_data["hashtags"])
     print("[6/6] Vidéo publiée : https://youtube.com/watch?v=%s" % video_id)
 
+    thumb_path = WORKDIR / "thumbnail.jpg"
     try:
-        thumb_path = generate_thumbnail(script_data["titre"], WORKDIR / "thumbnail.jpg")
-        upload_thumbnail(video_id, thumb_path)
+        generate_thumbnail_ai(script_data["titre"], thumb_path)
+        print("[thumbnail] Miniature générée via l'API OpenAI Images (IA).")
     except Exception as e:
-        print("[thumbnail] Non appliquée (%s) -- la vidéo reste publiée normalement, "
-              "juste avec la miniature auto générée par YouTube." % e)
+        print("[thumbnail] Génération IA indisponible (%s) -- repli sur la "
+              "version PIL déterministe." % e)
+        try:
+            generate_thumbnail(script_data["titre"], thumb_path)
+            print("[thumbnail] Miniature générée via PIL (repli).")
+        except Exception as e2:
+            print("[thumbnail] Non appliquée (%s) -- la vidéo reste publiée "
+                  "normalement, juste avec la miniature auto de YouTube." % e2)
+            thumb_path = None
+
+    if thumb_path:
+        try:
+            upload_thumbnail(video_id, thumb_path)
+        except Exception as e:
+            print("[thumbnail] Upload échoué (%s) -- vidéo déjà publiée, "
+                  "sans impact sur le reste du run." % e)
 
     if news_item:
         history.setdefault("news_used_links", []).append(news_item["lien"])
