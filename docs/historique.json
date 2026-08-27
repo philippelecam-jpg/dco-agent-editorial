@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T08:29:17.034393",
-    "theme": "Terrain et missions clients",
-    "sujet": "Terrain et missions clients : quand la connaissance dort dans les têtes",
-    "post_x": "Mission client cette semaine. Le dirigeant savait tout. Ses équipes, presque rien. Pas un problème d'IA. Un problème de connaissance non transmise. L'IA n'aurait fait qu'accélérer le vide.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089630697006731564",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=082914"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T08:33:25.606128",
     "theme": "Terrain et missions clients",
     "sujet": "Terrain et missions clients : quand la connaissance est dans une seule tête",
@@ -268,5 +259,14 @@
     "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart, ce n'est pas un problème d'outil. C'est un problème de connaissance non structurée avant de déployer.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2092507619118158004",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-26-070105.png?v=070105"
+  },
+  {
+    "date": "Jeudi 27 août 2026",
+    "timestamp": "2026-08-27T10:19:30.309664",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "Gouvernance IA : ce que l'AI Act change concrètement pour une PME française en 2026",
+    "post_x": "L'AI Act est entré en vigueur. La plupart des PME ne savent pas encore si leurs outils IA sont concernés. Ce n'est pas un problème juridique. C'est un problème de connaissance de ses propres pratiques.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2092919758177948151",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-27-101847.png?v=101847"
   }
 ]
