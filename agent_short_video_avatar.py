@@ -439,59 +439,51 @@ def _fit_title(draw, titre: str, font_path: str, max_width: int, max_height: int
 
 
 def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
-    """Génère la miniature via l'API OpenAI Images (endpoint /v1/images/edits,
-    modèle gpt-image-1), en utilisant la photo de référence de Rachel pour
-    préserver son visage. Même API que celle déjà utilisée en production
-    dans agent_article_hebdo.py pour la couverture des articles -- on
-    réutilise un pattern déjà validé plutôt que d'intégrer un nouveau
-    fournisseur non éprouvé.
+    """Génère la miniature en deux temps, pour combiner richesse visuelle et
+    fiabilité :
 
-    Prompt volontairement générique : c'est le modèle qui décide de la mise
-    en scène (drapeaux, icônes, chiffres...) selon le titre du jour, sans
-    étape de sélection de style intermédiaire par Claude (contrairement au
-    choix de style à 4 options de l'article hebdo).
+    1. L'API OpenAI Images (endpoint /v1/images/edits, modèle gpt-image-1)
+       génère UNIQUEMENT la scène visuelle -- photo de Rachel + ambiance,
+       icônes ou éléments graphiques liés au thème (drapeaux, symboles...) --
+       SANS AUCUN TEXTE. C'est ce que ce type de modèle sait bien faire.
+    2. Le titre est ensuite posé par-dessus avec le même code PIL
+       auto-dimensionné que generate_thumbnail() (_draw_title_and_badge) --
+       c'est ce qu'un modèle génératif ne sait PAS garantir de façon fiable :
+       deux tests consécutifs ont montré du texte tronqué/débordant malgré
+       des consignes de marge explicites et chiffrées dans le prompt.
 
-    ⚠️ Non testé en conditions réelles au moment de l'écriture (pas de clé
-    API disponible dans l'environnement de développement) -- le premier run
-    réel fera foi. En cas d'échec (quota, contenu refusé, erreur réseau),
-    generate_thumbnail() (version PIL déterministe) prend le relais
-    automatiquement -- voir l'appel dans main()."""
+    Cette séparation élimine structurellement le risque de texte coupé,
+    plutôt que d'essayer (sans succès) de le corriger par la formulation du
+    prompt seule.
+
+    Nécessite que assets/Rachel.PNG soit présent dans le repo."""
     api_key = os.environ["OPENAI_API_KEY"]
 
     prompt = (
-        "Créer une vignette YouTube premium au format paysage 16:9, dans le "
-        "style des meilleures miniatures YouTube actuelles : impact immédiat, "
-        "lisibilité maximale, fort contraste, émotion claire, composition "
-        "dynamique et rendu très professionnel.\n\n"
-        "CONTRAINTE DE MARGE CRITIQUE : l'image finale sera légèrement "
-        "recadrée en haut et en bas après génération (perte d'environ 8% de "
-        "la hauteur de chaque côté, haut et bas). Composer donc TOUT élément "
-        "important -- texte, visage, éléments graphiques -- exclusivement "
-        "dans la zone centrale sûre, en laissant une marge vide d'au moins "
-        "10% de la largeur sur les bords gauche et droit, et d'au moins 15% "
-        "de la hauteur en haut et en bas. Aucune lettre, aucun élément "
-        "graphique important ne doit toucher ou dépasser les bords de "
-        "l'image. Mieux vaut un texte légèrement plus petit mais entièrement "
-        "visible avec de la marge, qu'un texte plus grand qui touche les "
-        "bords.\n\n"
+        "Créer un arrière-plan de vignette YouTube premium au format paysage "
+        "16:9, dans le style des meilleures miniatures YouTube actuelles : "
+        "impact immédiat, fort contraste, composition dynamique, rendu très "
+        "professionnel.\n\n"
+        "IMPORTANT -- NE JAMAIS ÉCRIRE DE TEXTE, TITRE, LETTRE, MOT, CHIFFRE "
+        "OU TYPOGRAPHIE NULLE PART DANS L'IMAGE. Aucune exception, même "
+        "petite ou décorative. Le texte sera ajouté séparément après coup.\n\n"
         "Utiliser la photo de la personne fournie comme référence fidèle : "
         "conserver son visage, sa coiffure et son expression naturelle. La "
         "détourer proprement et la placer de façon dominante sur la partie "
-        "droite de l'image, en cadrage buste, avec une présence forte et "
-        "engageante, entièrement visible et non coupée.\n\n"
-        "Sur la partie gauche, intégrer en très grand (mais dans le respect "
-        "de la marge de sécurité ci-dessus), en majuscules, typographie "
-        "sans-serif très bold, avec fort contraste et ombre portée discrète, "
-        "le texte suivant, épelé EXACTEMENT sans aucune faute ni "
-        "déformation : \"" + titre.upper() + "\"\n\n"
-        "Ajouter, si pertinent selon le sujet, des éléments visuels forts en "
-        "lien avec le thème (drapeaux pour une confrontation entre pays, "
-        "icônes tech/IA/business, chiffres, comparaison, symboles) sur un "
-        "fond sombre dégradé avec lumière cinématographique et contrastes "
-        "colorés. Ne pas surcharger : priorité absolue à la lisibilité du "
-        "visage et du texte, et au respect strict de la marge de sécurité.\n\n"
-        "Ne pas ajouter d'interface YouTube, ni durée vidéo, ni barre de "
-        "lecture, ni watermark."
+        "droite de l'image (environ les 40% de droite), en cadrage buste, "
+        "entièrement visible, non coupée par les bords.\n\n"
+        "Sur la partie gauche (environ les 60% de gauche), créer un fond "
+        "sombre dégradé bleu-nuit avec lumière cinématographique, et "
+        "intégrer, si pertinent selon le thème suivant, des éléments "
+        "visuels forts SANS AUCUN TEXTE : drapeaux pour une confrontation "
+        "entre pays, logos ou symboles génériques d'univers tech/IA/"
+        "business, icônes, halo, mise en évidence graphique. Cette zone "
+        "gauche doit rester visuellement intéressante mais laisser un "
+        "espace globalement dégagé au centre pour l'ajout ultérieur d'un "
+        "texte -- ne pas remplir excessivement cette zone.\n\n"
+        "Thème du jour, pour choisir les éléments visuels pertinents : " + titre + "\n\n"
+        "Style très premium, crédible, moderne. Ne pas ajouter d'interface "
+        "YouTube, ni durée vidéo, ni barre de lecture, ni watermark."
     )
 
     with open(RACHEL_PHOTO_PATH, "rb") as photo_file:
@@ -517,8 +509,8 @@ def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
     b64_data = resp.json()["data"][0]["b64_json"]
     image_bytes = base64.b64decode(b64_data)
 
-    # Le modèle renvoie du 1536x1024 (ratio proche mais pas identique à
-    # 1280x720) -- recadrage "cover" centré pour ajuster exactement.
+    # Recadrage "cover" 1536x1024 -> 1280x720 (aucun texte à risquer de
+    # couper puisque le modèle n'en a généré aucun, par construction).
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     target_ratio = THUMB_W / THUMB_H
     src_ratio = img.width / img.height
@@ -530,9 +522,60 @@ def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
         new_height = int(img.width / target_ratio)
         top = (img.height - new_height) // 2
         img = img.crop((0, top, img.width, top + new_height))
-    img = img.resize((THUMB_W, THUMB_H), Image.LANCZOS)
-    img.save(out_path, "JPEG", quality=92)
+    canvas = img.resize((THUMB_W, THUMB_H), Image.LANCZOS)
+
+    # Le titre est posé ici, garanti par le même moteur auto-dimensionné que
+    # la version PIL pure -- jamais tronqué, jamais collé aux bords.
+    LEFT_W = int(THUMB_W * 0.58)
+    _draw_title_and_badge(canvas, titre, LEFT_W)
+    canvas.save(out_path, "JPEG", quality=92)
     return out_path
+
+
+def _draw_title_and_badge(canvas, titre: str, left_w: int):
+    """Dessine le titre (auto-dimensionné, jamais tronqué) et le badge 'IA'
+    par-dessus un canvas existant, dans la zone [0, left_w]. Réutilisée à la
+    fois par generate_thumbnail() (panneau PIL pur) et generate_thumbnail_ai()
+    (scène IA sans texte + overlay PIL garanti) -- le texte ne doit jamais
+    dépendre de la fiabilité d'un modèle génératif."""
+    draw = ImageDraw.Draw(canvas, "RGBA")
+    FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    margin = 56
+    text_max_width = left_w - 2 * margin
+    text_max_height = THUMB_H - 270  # marge suffisante pour ne jamais chevaucher le badge IA
+
+    font_title, lines = _fit_title(draw, titre, FONT_PATH, text_max_width, text_max_height)
+    line_height = int(font_title.size * 1.15)
+    total_text_height = len(lines) * line_height
+    y = (THUMB_H - total_text_height) // 2 - 30
+
+    for line in lines:
+        draw.text((margin + 3, y + 3), line, font=font_title, fill=(0, 0, 0, 200))  # ombre
+        draw.text((margin, y), line, font=font_title, fill=(255, 255, 255, 255))
+        y += line_height
+
+    # Badge "IA" en bas à gauche, style néon, identité visuelle partagée
+    # avec la rubrique du format fond statique.
+    badge_cx, badge_cy, badge_r = margin + 34, THUMB_H - 70, 34
+    for glow_r in range(badge_r + 14, badge_r, -2):
+        alpha = int(60 * (glow_r - badge_r) / 14)
+        draw.ellipse(
+            [(badge_cx - glow_r, badge_cy - glow_r), (badge_cx + glow_r, badge_cy + glow_r)],
+            outline=(0, 168, 168, alpha), width=2,
+        )
+    draw.ellipse(
+        [(badge_cx - badge_r, badge_cy - badge_r), (badge_cx + badge_r, badge_cy + badge_r)],
+        outline=(0, 168, 168, 255), width=3,
+    )
+    try:
+        font_badge = ImageFont.truetype(FONT_PATH, 26)
+    except Exception:
+        font_badge = ImageFont.load_default()
+    bbox = draw.textbbox((0, 0), "IA", font=font_badge)
+    bw, bh = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    draw.text((badge_cx - bw / 2, badge_cy - bh / 2 - bbox[1]), "IA",
+               font=font_badge, fill=(0, 168, 168, 255))
+    return canvas
 
 
 def generate_thumbnail(titre: str, out_path: Path) -> Path:
@@ -591,46 +634,7 @@ def generate_thumbnail(titre: str, out_path: Path) -> Path:
         canvas.paste(Image.blend(canvas.crop((x, 0, x + 1, THUMB_H)).convert("RGBA"),
                                   overlay, alpha / 255), (x, 0))
 
-    draw = ImageDraw.Draw(canvas, "RGBA")
-
-    # --- Titre, auto-dimensionné pour tenir dans le panneau gauche
-    FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    margin = 56
-    text_max_width = LEFT_W - 2 * margin
-    text_max_height = THUMB_H - 270  # marge suffisante pour ne jamais chevaucher le badge IA
-
-    font_title, lines = _fit_title(draw, titre, FONT_PATH, text_max_width, text_max_height)
-    line_height = int(font_title.size * 1.15)
-    total_text_height = len(lines) * line_height
-    y = (THUMB_H - total_text_height) // 2 - 30
-
-    for line in lines:
-        draw.text((margin + 3, y + 3), line, font=font_title, fill=(0, 0, 0, 200))  # ombre
-        draw.text((margin, y), line, font=font_title, fill=(255, 255, 255, 255))
-        y += line_height
-
-    # --- Badge "IA" en bas à gauche, style néon, cohérent avec la rubrique
-    # du format fond statique (identité visuelle partagée entre les 2 formats)
-    badge_cx, badge_cy, badge_r = margin + 34, THUMB_H - 70, 34
-    for glow_r in range(badge_r + 14, badge_r, -2):
-        alpha = int(60 * (glow_r - badge_r) / 14)
-        draw.ellipse(
-            [(badge_cx - glow_r, badge_cy - glow_r), (badge_cx + glow_r, badge_cy + glow_r)],
-            outline=(0, 168, 168, alpha), width=2,
-        )
-    draw.ellipse(
-        [(badge_cx - badge_r, badge_cy - badge_r), (badge_cx + badge_r, badge_cy + badge_r)],
-        outline=(0, 168, 168, 255), width=3,
-    )
-    try:
-        font_badge = ImageFont.truetype(FONT_PATH, 26)
-    except Exception:
-        font_badge = ImageFont.load_default()
-    bbox = draw.textbbox((0, 0), "IA", font=font_badge)
-    bw, bh = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    draw.text((badge_cx - bw / 2, badge_cy - bh / 2 - bbox[1]), "IA",
-               font=font_badge, fill=(0, 168, 168, 255))
-
+    _draw_title_and_badge(canvas, titre, LEFT_W)
     canvas.save(out_path, "JPEG", quality=92)
     return out_path
 
