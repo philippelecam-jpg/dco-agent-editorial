@@ -4,7 +4,8 @@
     "https://www.clubic.com/actualite-626842-claude-se-souvient-enfin-de-tout-meme-quand-vous-changez-d-outil.html",
     "https://www.clubic.com/actualite-626869-bill-gates-veut-rapidement-rencontrer-xi-jinping-pour-reguler-les-ia-les-plus-dangereuses.html",
     "https://www.actuia.com/actualite/ia-et-emploi-la-note-du-tresor-et-les-metiers-qualifies-exposes/",
-    "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/"
+    "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
+    "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/"
   ],
   "scripts": [
     {
@@ -30,6 +31,12 @@
       "source": "actualite",
       "titre": "Portugal 1, France 0 sur l'IA souveraine ?",
       "video_id": "qLOlw_DITRI"
+    },
+    {
+      "date": "2026-08-27T05:32:16.759219",
+      "source": "actualite",
+      "titre": "IA à l'école dès la 6e : ce que ça changerait",
+      "video_id": "_mTvQL6Wt6g"
     }
   ]
 }
