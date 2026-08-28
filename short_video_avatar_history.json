@@ -8,7 +8,8 @@
     "https://www.actuia.com/actualite/ia-a-lecole-des-la-6e-ce-que-propose-vraiment-le-rapport-calvez/",
     "https://www.clubic.com/actualite-626917-openai-decouvre-une-operation-russe-qui-detournait-chatgpt-pour-influencer-les-occidentaux.html",
     "https://www.actuia.com/actualite/pourquoi-godot-ferme-la-porte-au-code-genere-par-ia/",
-    "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/"
+    "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
+    "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html"
   ],
   "scripts": [
     {
@@ -58,6 +59,12 @@
       "source": "actualite",
       "titre": "Intermarché hacké : vos données en danger ?",
       "video_id": "_nK5jiLkV_w"
+    },
+    {
+      "date": "2026-08-28T16:01:15.877906",
+      "source": "actualite",
+      "titre": "Hack des impôts : une plainte pour en savoir plus",
+      "video_id": "ftrHpDsi_fY"
     }
   ]
 }
