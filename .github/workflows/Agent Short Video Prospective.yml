@@ -1,0 +1,69 @@
+name: Agent Short Video Prospective (Rachel / YouTube)
+
+on:
+  schedule:
+    # Vendredi 11h17 Paris, hiver et été. Minute décalée (:17, pas :00) pour
+    # éviter la congestion documentée par GitHub aux heures rondes -- leçon
+    # tirée du blocage silencieux observé sur les autres workflows du repo.
+    - cron: "17 9 * * 5"    # 11h17 Paris en été (CEST, UTC+2)
+    - cron: "17 10 * * 5"   # 11h17 Paris en hiver (CET, UTC+1)
+  workflow_dispatch: {}
+
+jobs:
+  short-video-prospective:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install requests pillow requests_oauthlib
+
+      - name: Run prospective short video agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          RACHEL_PHOTO_ASSET_ID: ${{ secrets.RACHEL_PHOTO_ASSET_ID }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          # Lues à l'import de agent.py même si non utilisées ici -- même
+          # convention que les autres modules satellites du dispositif.
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+        run: python agent_short_video_prospective.py
+
+      - name: Commit updated history
+        run: |
+          if [ -n "$(git status --porcelain short_video_prospective_history.json)" ]; then
+            git config user.name "dco-agent-editorial"
+            git config user.email "actions@github.com"
+            git add short_video_prospective_history.json
+            git commit -m "chore: update short_video_prospective history [skip ci]"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -sS -X POST "$MAKE_WEBHOOK_URL" \
+            -H "x-make-apikey: $MAKE_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"alerte\": \"echec_short_video_prospective\", \"run_url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\", \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+        env:
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
