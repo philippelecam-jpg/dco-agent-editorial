@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T08:33:25.606128",
-    "theme": "Terrain et missions clients",
-    "sujet": "Terrain et missions clients : quand la connaissance est dans une seule tête",
-    "post_x": "Mission cette semaine. Un processus critique, une seule personne capable de l'expliquer. Elle partait à la retraite dans trois mois. L'IA n'était pas le sujet. L'urgence, si.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089631739220029800",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=083322"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T08:40:05.061338",
     "theme": "Terrain et missions clients",
     "sujet": "Quand l'IA révèle ce que l'organisation ne savait pas d'elle-même",
@@ -268,5 +259,14 @@
     "post_x": "L'AI Act est entré en vigueur. La plupart des PME ne savent pas encore si leurs outils IA sont concernés. Ce n'est pas un problème juridique. C'est un problème de connaissance de ses propres pratiques.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2092919758177948151",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-27-101847.png?v=101847"
+  },
+  {
+    "date": "Vendredi 28 août 2026",
+    "timestamp": "2026-08-28T18:59:05.934038",
+    "theme": "Formation et culture IA",
+    "sujet": "La formation IA ne change rien si l'organisation n'est pas prête à apprendre",
+    "post_x": "On forme des gens à des outils. On ne forme pas des organisations à penser autrement. C'est là que la plupart des programmes IA s'arrêtent, et que les résultats aussi.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2093412863557984763",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-28-185811.png?v=185812"
   }
 ]
