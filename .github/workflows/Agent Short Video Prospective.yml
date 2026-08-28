@@ -2,11 +2,10 @@ name: Agent Short Video Prospective (Rachel / YouTube)
 
 on:
   schedule:
-    # Vendredi 11h17 Paris, hiver et été. Minute décalée (:17, pas :00) pour
-    # éviter la congestion documentée par GitHub aux heures rondes -- leçon
-    # tirée du blocage silencieux observé sur les autres workflows du repo.
-    - cron: "17 9 * * 5"    # 11h17 Paris en été (CEST, UTC+2)
-    - cron: "17 10 * * 5"   # 11h17 Paris en hiver (CET, UTC+1)
+    # Tous les vendredis à 11h17, heure de Paris.
+    # Un seul cron : GitHub gère automatiquement CET/CEST.
+    - cron: "17 11 * * 5"
+      timezone: "Europe/Paris"
   workflow_dispatch: {}
 
 jobs:

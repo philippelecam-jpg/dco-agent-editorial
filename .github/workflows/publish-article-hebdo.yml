@@ -2,12 +2,10 @@ name: Agent Éditorial D&Co — Article hebdo (brouillon)
 
 on:
   schedule:
-    # Tous les mercredis à 7h12 heure de Paris (6h UTC en hiver, 5h UTC en été,
-    # comme publish.yml : on accepte un décalage d'une heure l'été plutôt que
-    # de gérer le changement d'heure dans le cron -- choix conservé tel quel).
-    # Minute décalée à :12 (au lieu de :00) pour éviter la congestion
-    # documentée par GitHub aux heures rondes.
-    - cron: '12 6 * * 3'
+    # Tous les mercredis à 7h13, heure de Paris.
+    # Fuseau IANA : GitHub gère automatiquement CET/CEST.
+    - cron: '13 7 * * 3'
+      timezone: "Europe/Paris"
   workflow_dispatch:
     inputs:
       dry_run:

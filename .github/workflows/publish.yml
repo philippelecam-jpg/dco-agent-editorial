@@ -2,11 +2,10 @@ name: Agent Éditorial D&Co
 
 on:
   schedule:
-    # 7h07 heure de Paris, hiver et été (décalé de la minute 0 pour éviter
-    # la congestion documentée par GitHub aux heures rondes -- le run du
-    # 26 août a subi ~1h de retard, probablement lié à ce problème connu).
-    - cron: '7 6 * * 1-5'   # 7h07 Paris en hiver (CET, UTC+1)
-    - cron: '7 5 * * 1-5'   # 7h07 Paris en été (CEST, UTC+2)
+    # Tous les jours de semaine à 7h07, heure de Paris.
+    # Fuseau IANA : GitHub gère automatiquement CET/CEST.
+    - cron: '7 7 * * 1-5'
+      timezone: "Europe/Paris"
   workflow_dispatch:
     inputs:
       test_mode:

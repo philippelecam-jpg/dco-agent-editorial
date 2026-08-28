@@ -2,8 +2,10 @@ name: Agent Short Video (YouTube)
 
 on:
   schedule:
-    - cron: "41 16 * * *"   # 18h41 Paris en été (CEST)
-    - cron: "41 17 * * *"   # 18h41 Paris en hiver (CET)
+    # Tous les jours à 18h37, heure de Paris.
+    # Un seul cron : GitHub gère automatiquement CET/CEST.
+    - cron: "37 18 * * *"
+      timezone: "Europe/Paris"
   workflow_dispatch: {}
 
 jobs:

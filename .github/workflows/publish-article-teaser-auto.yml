@@ -2,16 +2,10 @@ name: Agent Éditorial D&Co — Teaser LinkedIn (auto)
 
 on:
   schedule:
-    # Tous les jours à 9h23 Paris, hiver et été -- détecte tout article
-    # publié depuis le dernier passage, quel que soit le jour.
-    # CORRECTIF : le fichier précédent n'avait qu'une seule ligne cron
-    # ('0 8 * * *'), alors que le commentaire décrivait déjà une intention
-    # saisonnière ("8h UTC hiver / 7h UTC été") jamais codée -- résultat,
-    # le run tournait en réalité à 10h Paris l'été au lieu de 9h. Corrigé
-    # avec les deux lignes, comme les autres workflows du dispositif.
-    # Minute décalée à :23 pour éviter la congestion aux heures rondes.
-    - cron: '23 8 * * *'   # 9h23 Paris en hiver (CET, UTC+1)
-    - cron: '23 7 * * *'   # 9h23 Paris en été (CEST, UTC+2)
+    # Tous les jours à 9h17, heure de Paris — détecte tout article publié
+    # depuis le dernier passage, quel que soit le jour.
+    - cron: '17 9 * * *'
+      timezone: "Europe/Paris"
   workflow_dispatch: {}
 
 jobs:

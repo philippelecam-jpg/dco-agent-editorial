@@ -2,12 +2,11 @@ name: Agent Éditorial D&Co — Week-end (agentique)
 
 on:
   schedule:
-    # Samedi et dimanche à 9h34 UTC (10h34 Paris hiver / 11h34 Paris été).
-    # Volontairement plus tard que la semaine (6h UTC) : usage LinkedIn/X
-    # différent le week-end, on ne vise pas le pic professionnel du matin.
-    # Choix conservé : pas de couple saisonnier ici, décalage assumé l'été.
-    # Minute décalée à :34 pour éviter la congestion aux heures rondes.
-    - cron: '34 9 * * 6,0'
+    # Samedi et dimanche à 10h23, heure de Paris.
+    # Volontairement plus tard que la semaine : usage LinkedIn/X différent
+    # le week-end, on ne vise pas le pic professionnel du matin.
+    - cron: '23 10 * * 6,0'
+      timezone: "Europe/Paris"
   workflow_dispatch:
     inputs:
       dry_run:
