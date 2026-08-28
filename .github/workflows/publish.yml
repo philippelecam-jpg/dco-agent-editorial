@@ -1,9 +1,6 @@
 name: Agent Éditorial D&Co
 
 on:
-  schedule:
-    # Du lundi au vendredi à 06:07 UTC.
-    - cron: '7 6 * * 1-5'
   workflow_dispatch:
     inputs:
       test_mode:

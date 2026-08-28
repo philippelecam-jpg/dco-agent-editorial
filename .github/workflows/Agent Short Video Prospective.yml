@@ -1,9 +1,6 @@
 name: Agent Short Video Prospective (Rachel / YouTube)
 
 on:
-  schedule:
-    # Tous les vendredis à 09:17 UTC.
-    - cron: "17 9 * * 5"
   workflow_dispatch: {}
 
 jobs:

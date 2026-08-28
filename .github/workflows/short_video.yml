@@ -1,9 +1,6 @@
 name: Agent Short Video (YouTube)
 
 on:
-  schedule:
-    # Tous les jours à 16:37 UTC.
-    - cron: "37 16 * * *"
   workflow_dispatch: {}
 
 jobs:
