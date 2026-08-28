@@ -10,7 +10,8 @@
     "https://www.actuia.com/actualite/washington-retablit-fable-5-mais-le-risque-de-dependance-aux-modeles-americains-demeure-entier/",
     "https://www.clubic.com/actualite-626884-revolut-lance-son-premiere-stablecoin-adosse-a-l-euro-l-eurr.html",
     "https://www.01net.com/actualites/nvidia-aurait-rachete-la-plateforme-dia-hugging-face-pour-129-milliards-de-dollars.html",
-    "https://www.clubic.com/dossier-617203-assurance-cyber-le-marche-se-durcit-les-pme-non-preparees-seront-bientot-inassurables.html"
+    "https://www.clubic.com/dossier-617203-assurance-cyber-le-marche-se-durcit-les-pme-non-preparees-seront-bientot-inassurables.html",
+    "https://www.blogdumoderateur.com/fin-liens-directs-resultats-google/"
   ],
   "scripts": [
     {
@@ -72,6 +73,12 @@
       "source": "actualite",
       "titre": "Votre assurance cyber est peut-être nulle et non avenue",
       "video_id": "xmPOnHDVZ8M"
+    },
+    {
+      "date": "2026-08-28T18:55:55.260948",
+      "source": "actualite",
+      "titre": "SEO : ce que Google vient de changer pour vous",
+      "video_id": "LznQuUU2QLg"
     }
   ]
 }
