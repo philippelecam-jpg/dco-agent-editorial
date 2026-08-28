@@ -1,11 +1,7 @@
 name: Agent Short Video Avatar (Rachel / YouTube)
 
 on:
-  schedule:
-    # Tous les mercredis à 08:43 UTC.
-    - cron: "43 8 * * 3"
   workflow_dispatch: {}
-
 jobs:
   short-video-avatar:
     runs-on: ubuntu-latest
