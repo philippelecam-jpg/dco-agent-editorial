@@ -8,7 +8,8 @@
     "https://www.clubic.com/actualite-626794-la-plateforme-francaise-avis-verifies-lance-son-reseau-de-syndication-d-avis-pour-defier-les-geants-americains.html",
     "https://www.actuia.com/actualite/pendant-que-la-france-debat-de-souverainete-ia-le-portugal-a-livre-la-sienne-pour-7-meur/",
     "https://www.actuia.com/actualite/washington-retablit-fable-5-mais-le-risque-de-dependance-aux-modeles-americains-demeure-entier/",
-    "https://www.clubic.com/actualite-626884-revolut-lance-son-premiere-stablecoin-adosse-a-l-euro-l-eurr.html"
+    "https://www.clubic.com/actualite-626884-revolut-lance-son-premiere-stablecoin-adosse-a-l-euro-l-eurr.html",
+    "https://www.01net.com/actualites/nvidia-aurait-rachete-la-plateforme-dia-hugging-face-pour-129-milliards-de-dollars.html"
   ],
   "scripts": [
     {
@@ -58,6 +59,12 @@
       "source": "actualite",
       "titre": "Revolut lance un euro numérique, et alors ?",
       "video_id": "ryzLkqN0XBQ"
+    },
+    {
+      "date": "2026-08-28T01:08:57.130831",
+      "source": "actualite",
+      "titre": "Nvidia rachète Hugging Face : ce que ça change pour vous",
+      "video_id": "nI-qTVjrj3E"
     }
   ]
 }
