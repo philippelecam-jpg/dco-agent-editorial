@@ -2,10 +2,8 @@ name: Agent Éditorial D&Co
 
 on:
   schedule:
-    # Tous les jours de semaine à 7h07, heure de Paris.
-    # Fuseau IANA : GitHub gère automatiquement CET/CEST.
-    - cron: '7 7 * * 1-5'
-      timezone: "Europe/Paris"
+    # Du lundi au vendredi à 06:07 UTC.
+    - cron: '7 6 * * 1-5'
   workflow_dispatch:
     inputs:
       test_mode:

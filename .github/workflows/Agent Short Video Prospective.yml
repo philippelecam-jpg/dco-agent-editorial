@@ -2,10 +2,8 @@ name: Agent Short Video Prospective (Rachel / YouTube)
 
 on:
   schedule:
-    # Tous les vendredis à 11h17, heure de Paris.
-    # Un seul cron : GitHub gère automatiquement CET/CEST.
-    - cron: "17 11 * * 5"
-      timezone: "Europe/Paris"
+    # Tous les vendredis à 09:17 UTC.
+    - cron: "17 9 * * 5"
   workflow_dispatch: {}
 
 jobs:

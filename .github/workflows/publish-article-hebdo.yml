@@ -2,10 +2,8 @@ name: Agent Éditorial D&Co — Article hebdo (brouillon)
 
 on:
   schedule:
-    # Tous les mercredis à 7h13, heure de Paris.
-    # Fuseau IANA : GitHub gère automatiquement CET/CEST.
-    - cron: '13 7 * * 3'
-      timezone: "Europe/Paris"
+    # Tous les mercredis à 06:13 UTC.
+    - cron: '13 6 * * 3'
   workflow_dispatch:
     inputs:
       dry_run:

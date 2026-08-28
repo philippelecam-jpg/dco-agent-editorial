@@ -2,10 +2,8 @@ name: Agent Short Video Avatar (Rachel / YouTube)
 
 on:
   schedule:
-    # Tous les mercredis à 10h43, heure de Paris.
-    # Un seul cron : GitHub gère automatiquement CET/CEST.
-    - cron: "43 10 * * 3"
-      timezone: "Europe/Paris"
+    # Tous les mercredis à 08:43 UTC.
+    - cron: "43 8 * * 3"
   workflow_dispatch: {}
 
 jobs:

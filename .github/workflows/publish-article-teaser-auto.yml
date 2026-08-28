@@ -2,10 +2,8 @@ name: Agent Éditorial D&Co — Teaser LinkedIn (auto)
 
 on:
   schedule:
-    # Tous les jours à 9h17, heure de Paris — détecte tout article publié
-    # depuis le dernier passage, quel que soit le jour.
-    - cron: '17 9 * * *'
-      timezone: "Europe/Paris"
+    # Tous les jours à 08:17 UTC.
+    - cron: '17 8 * * *'
   workflow_dispatch: {}
 
 jobs:
