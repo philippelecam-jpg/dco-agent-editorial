@@ -9,7 +9,8 @@
     "https://www.clubic.com/actualite-626917-openai-decouvre-une-operation-russe-qui-detournait-chatgpt-pour-influencer-les-occidentaux.html",
     "https://www.actuia.com/actualite/pourquoi-godot-ferme-la-porte-au-code-genere-par-ia/",
     "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
-    "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html"
+    "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html",
+    "https://www.01net.com/actualites/smartphone-ecologique-leurope-veut-mettre-un-terme-au-greenwashing-des-entreprises-tech.html"
   ],
   "scripts": [
     {
@@ -65,6 +66,12 @@
       "source": "actualite",
       "titre": "Hack des impôts : une plainte pour en savoir plus",
       "video_id": "ftrHpDsi_fY"
+    },
+    {
+      "date": "2026-08-28T16:18:36.203885",
+      "source": "actualite",
+      "titre": "Fini les mensonges verts dans la tech ?",
+      "video_id": "yrWY04GKeTw"
     }
   ]
 }
