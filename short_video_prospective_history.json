@@ -1,8 +1,11 @@
 {
-  "last_theme_index": 0,
+  "last_theme_index": 1,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales"
+    ],
+    "Technologie": [
+      "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques"
     ]
   },
   "scripts": [
@@ -12,6 +15,13 @@
       "angle": "L'organisation du travail face aux reconfigurations technologiques et managériales",
       "titre": "Et si votre entreprise tournait sans organigramme ?",
       "video_id": "gHmydqOkBbs"
+    },
+    {
+      "date": "2026-08-28T19:11:04.422237",
+      "theme": "Technologie",
+      "angle": "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques",
+      "titre": "Quand l'infrastructure décide à votre place",
+      "video_id": "INBgHl36yRw"
     }
   ]
 }
