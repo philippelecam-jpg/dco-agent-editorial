@@ -11,7 +11,8 @@
     "https://www.clubic.com/actualite-626884-revolut-lance-son-premiere-stablecoin-adosse-a-l-euro-l-eurr.html",
     "https://www.01net.com/actualites/nvidia-aurait-rachete-la-plateforme-dia-hugging-face-pour-129-milliards-de-dollars.html",
     "https://www.clubic.com/dossier-617203-assurance-cyber-le-marche-se-durcit-les-pme-non-preparees-seront-bientot-inassurables.html",
-    "https://www.blogdumoderateur.com/fin-liens-directs-resultats-google/"
+    "https://www.blogdumoderateur.com/fin-liens-directs-resultats-google/",
+    "https://www.clubic.com/actualite-627310-anthropic-montre-comment-une-ia-peut-desormais-ameliorer-d-autres-ia.html"
   ],
   "scripts": [
     {
@@ -79,6 +80,12 @@
       "source": "actualite",
       "titre": "SEO : ce que Google vient de changer pour vous",
       "video_id": "LznQuUU2QLg"
+    },
+    {
+      "date": "2026-08-29T16:37:59.969935",
+      "source": "actualite",
+      "titre": "Vos prestataires IA vont changer plus vite que prévu",
+      "video_id": "w6GG_1JFWaQ"
     }
   ]
 }
