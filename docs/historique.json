@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T08:40:05.061338",
-    "theme": "Terrain et missions clients",
-    "sujet": "Quand l'IA révèle ce que l'organisation ne savait pas d'elle-même",
-    "post_x": "Mission client cette semaine. On a déployé un agent IA sur un processus commercial. Résultat : il a exposé trois règles métier contradictoires que personne n'avait documentées. L'IA n'a pas planté. Elle a rendu visible ce qui était cassé.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089633414613725350",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=084002"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T09:04:03.635587",
     "theme": "Terrain et missions clients",
     "sujet": "Quand l'IA révèle ce que l'organisation ne voulait pas voir",
@@ -268,5 +259,14 @@
     "post_x": "On forme des gens à des outils. On ne forme pas des organisations à penser autrement. C'est là que la plupart des programmes IA s'arrêtent, et que les résultats aussi.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2093412863557984763",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-28-185811.png?v=185812"
+  },
+  {
+    "date": "Samedi 29 août 2026",
+    "timestamp": "2026-08-29T13:48:44.868640",
+    "theme": "Regard de fond",
+    "sujet": "Agents IA en PME : les gains de temps sont réels, mais ils ne disent pas ce qu'il faut faire avant",
+    "post_x": "45 minutes → 8 minutes pour traiter un devis avec un agent IA. Le chiffre est réel. Ce qu'il ne dit pas : combien de temps il a fallu pour structurer la connaissance avant que l'agent puisse travailler.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2093697326430765503",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-29-134749-weekend.png?v=134749"
   }
 ]
