@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T09:17:54.919777",
-    "theme": "Terrain et missions clients",
-    "sujet": "Mission client : quand l'IA révèle que personne ne sait vraiment comment une décision est prise",
-    "post_x": "Mission cette semaine. On a demandé à six managers comment une décision clé était prise dans leur service. Six réponses différentes. L'IA n'est pas le problème. Elle va juste rendre ce flou impossible à ignorer.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089642936271012291",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=091752"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T09:22:39.739255",
     "theme": "Terrain et missions clients",
     "sujet": "Mission client : quand la connaissance est dans les têtes, l'IA ne peut rien faire",
@@ -268,5 +259,14 @@
     "post_x": "Dans la plupart des PME, la vraie connaissance métier n'est ni dans le SI, ni dans les docs. Elle est dans trois têtes. Personne ne le sait vraiment, jusqu'au jour où une de ces têtes part.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2093993384473932200",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-092407-weekend.png?v=092408"
+  },
+  {
+    "date": "Dimanche 30 août 2026",
+    "timestamp": "2026-08-30T14:19:59.337324",
+    "theme": "Regard de fond",
+    "sujet": "Le temps du dirigeant comme révélateur de ses vraies priorités face à la transformation IA",
+    "post_x": "Ce qu'un dirigeant reporte n'est jamais anodin. Structurer la connaissance, c'est toujours urgent demain. Jusqu'au jour où ce n'est plus possible.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2094067583481770301",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-141857-weekend.png?v=141857"
   }
 ]
