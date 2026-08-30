@@ -1,10 +1,10 @@
 {
-  "date": "Samedi 29 août 2026",
+  "date": "Dimanche 30 août 2026",
   "theme": "Regard de fond",
-  "generated_at": "2026-08-29T13:47:49.490872",
-  "sujet": "Agents IA en PME : les gains de temps sont réels, mais ils ne disent pas ce qu'il faut faire avant",
-  "post_x": "45 minutes → 8 minutes pour traiter un devis avec un agent IA. Le chiffre est réel. Ce qu'il ne dit pas : combien de temps il a fallu pour structurer la connaissance avant que l'agent puisse travailler.",
-  "post_linkedin": "45 minutes → 8 minutes pour traiter un devis. 4 heures → 15 minutes pour analyser des contrats fournisseurs. Ces chiffres circulent. Ils sont vrais.\n\nCe qu'ils ne montrent pas, c'est le travail d'avant.\n\nUn agent IA ne sait pas comment votre entreprise calcule ses marges. Il ne connaît pas vos règles de validation, vos exceptions clients, vos seuils internes. Il ne devine pas ce qui est implicite dans la tête de votre responsable commercial depuis douze ans.\n\nAvant de gagner du temps, il faut d'abord codifier ce temps-là.\n\nLes PME qui obtiennent ces résultats ont fait un travail préalable : cartographier leurs processus, éliciter leur connaissance métier, la rendre lisible pour une machine. Ce n'est pas un projet IA. C'est un projet d'organisation.\n\nCelles qui sautent cette étape deployent vite. Et amplifient vite ce qui ne fonctionnait déjà pas.\n\nLe gain de temps est à la sortie. La préparation est à l'entrée. Les deux ne sont pas optionnels.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #AgentsIA #PME #Transformation #Connaissance #Gouvernance",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-29-134749-weekend.png?v=134749"
+  "generated_at": "2026-08-30T09:24:08.029865",
+  "sujet": "La connaissance tacite : ce que les organisations ne savent pas qu'elles savent",
+  "post_x": "Dans la plupart des PME, la vraie connaissance métier n'est ni dans le SI, ni dans les docs. Elle est dans trois têtes. Personne ne le sait vraiment, jusqu'au jour où une de ces têtes part.",
+  "post_linkedin": "Il y a une connaissance que personne ne voit.\n\nPas dans les processus documentés. Pas dans le CRM. Pas dans les réunions. Elle est dans la façon dont un technicien lit une anomalie avant même d'ouvrir le ticket. Dans le réflexe d'un commercial qui sait, sans le formuler, quand un client est sur le point de partir. Dans l'intuition d'un dirigeant qui a vu la même situation vingt fois.\n\nC'est la connaissance tacite. Elle porte l'essentiel de la valeur réelle d'une organisation.\n\nLe problème : elle est invisible. Elle ne se transfère pas par capillarité. Elle disparaît avec les départs, les réorganisations, le temps.\n\nEt quand on déploie une IA sans l'avoir élicitée, sans l'avoir codifiée, l'IA ne capte pas cette connaissance. Elle travaille avec ce qui est formalisé. Ce qui reste.\n\nAvant de déployer quoi que ce soit, la vraie question est là : savez-vous ce que votre organisation sait vraiment ?\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#ConnaissanceMétier #TransformationIA #PME #Gouvernance #Codifier",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-092407-weekend.png?v=092408"
 }
