@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T09:04:03.635587",
-    "theme": "Terrain et missions clients",
-    "sujet": "Quand l'IA révèle ce que l'organisation ne voulait pas voir",
-    "post_x": "Mission client cette semaine. On a cartographié un processus RH. L'IA n'a rien raté. Elle a juste rendu visible ce que tout le monde évitait de regarder.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089639447772254625",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=090400"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T09:17:54.919777",
     "theme": "Terrain et missions clients",
     "sujet": "Mission client : quand l'IA révèle que personne ne sait vraiment comment une décision est prise",
@@ -268,5 +259,14 @@
     "post_x": "45 minutes → 8 minutes pour traiter un devis avec un agent IA. Le chiffre est réel. Ce qu'il ne dit pas : combien de temps il a fallu pour structurer la connaissance avant que l'agent puisse travailler.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2093697326430765503",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-29-134749-weekend.png?v=134749"
+  },
+  {
+    "date": "Dimanche 30 août 2026",
+    "timestamp": "2026-08-30T09:25:09.018303",
+    "theme": "Regard de fond",
+    "sujet": "La connaissance tacite : ce que les organisations ne savent pas qu'elles savent",
+    "post_x": "Dans la plupart des PME, la vraie connaissance métier n'est ni dans le SI, ni dans les docs. Elle est dans trois têtes. Personne ne le sait vraiment, jusqu'au jour où une de ces têtes part.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2093993384473932200",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-092407-weekend.png?v=092408"
   }
 ]
