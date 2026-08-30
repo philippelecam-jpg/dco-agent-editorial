@@ -12,7 +12,8 @@
     "https://www.01net.com/actualites/nvidia-aurait-rachete-la-plateforme-dia-hugging-face-pour-129-milliards-de-dollars.html",
     "https://www.clubic.com/dossier-617203-assurance-cyber-le-marche-se-durcit-les-pme-non-preparees-seront-bientot-inassurables.html",
     "https://www.blogdumoderateur.com/fin-liens-directs-resultats-google/",
-    "https://www.clubic.com/actualite-627310-anthropic-montre-comment-une-ia-peut-desormais-ameliorer-d-autres-ia.html"
+    "https://www.clubic.com/actualite-627310-anthropic-montre-comment-une-ia-peut-desormais-ameliorer-d-autres-ia.html",
+    "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/"
   ],
   "scripts": [
     {
@@ -86,6 +87,12 @@
       "source": "actualite",
       "titre": "Vos prestataires IA vont changer plus vite que prévu",
       "video_id": "w6GG_1JFWaQ"
+    },
+    {
+      "date": "2026-08-30T16:38:08.052443",
+      "source": "actualite",
+      "titre": "Cyberattaque : votre PME est-elle vraiment protégée ?",
+      "video_id": "N1xN4uuxyT0"
     }
   ]
 }
