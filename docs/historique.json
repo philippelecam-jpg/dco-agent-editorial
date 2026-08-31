@@ -1,15 +1,6 @@
 [
   {
     "date": "Mardi 18 août 2026",
-    "timestamp": "2026-08-18T09:22:39.739255",
-    "theme": "Terrain et missions clients",
-    "sujet": "Mission client : quand la connaissance est dans les têtes, l'IA ne peut rien faire",
-    "post_x": "Mission cette semaine. On a voulu former un agent IA sur un processus métier. Personne n'avait de documentation. La connaissance était dans la tête d'un seul homme, 58 ans, départ prévu dans 6 mois. L'IA attendait. Nous aussi.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089644130506785144",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-18.png?v=092237"
-  },
-  {
-    "date": "Mardi 18 août 2026",
     "timestamp": "2026-08-18T09:27:40.497269",
     "theme": "Terrain et missions clients",
     "sujet": "Mission terrain : quand l'IA produit vite ce que personne ne peut vérifier",
@@ -268,5 +259,14 @@
     "post_x": "Ce qu'un dirigeant reporte n'est jamais anodin. Structurer la connaissance, c'est toujours urgent demain. Jusqu'au jour où ce n'est plus possible.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2094067583481770301",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-141857-weekend.png?v=141857"
+  },
+  {
+    "date": "Lundi 31 août 2026",
+    "timestamp": "2026-08-31T06:08:48.743046",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Diffuser",
+    "post_x": "Un SI produit des documents. Un Entreprise OS diffuse de la connaissance au bon endroit, au bon moment, au bon format. Ce n'est pas la même sortie.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2094306178272489587",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-31-060755.png?v=060756"
   }
 ]
