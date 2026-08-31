@@ -13,7 +13,8 @@
     "https://www.clubic.com/dossier-617203-assurance-cyber-le-marche-se-durcit-les-pme-non-preparees-seront-bientot-inassurables.html",
     "https://www.blogdumoderateur.com/fin-liens-directs-resultats-google/",
     "https://www.clubic.com/actualite-627310-anthropic-montre-comment-une-ia-peut-desormais-ameliorer-d-autres-ia.html",
-    "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/"
+    "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
+    "https://www.clubic.com/actualite-627478-facturation-electronique-mardi-la-france-passe-au-tout-numerique-mais-pas-pour-tout-le-monde-en-meme-temps.html"
   ],
   "scripts": [
     {
@@ -93,6 +94,12 @@
       "source": "actualite",
       "titre": "Cyberattaque : votre PME est-elle vraiment protégée ?",
       "video_id": "N1xN4uuxyT0"
+    },
+    {
+      "date": "2026-08-31T16:38:26.097335",
+      "source": "actualite",
+      "titre": "Facturation électronique : ce que ça change vraiment",
+      "video_id": "oTqPmGB92bo"
     }
   ]
 }
