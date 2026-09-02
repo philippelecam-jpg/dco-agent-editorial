@@ -15,7 +15,8 @@
     "https://www.clubic.com/actualite-627310-anthropic-montre-comment-une-ia-peut-desormais-ameliorer-d-autres-ia.html",
     "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
     "https://www.clubic.com/actualite-627478-facturation-electronique-mardi-la-france-passe-au-tout-numerique-mais-pas-pour-tout-le-monde-en-meme-temps.html",
-    "https://www.blogdumoderateur.com/chatgpt-reddit-roblox-desormais-soumis-regime-plus-strict-dsa/"
+    "https://www.blogdumoderateur.com/chatgpt-reddit-roblox-desormais-soumis-regime-plus-strict-dsa/",
+    "https://www.actuia.com/actualite/vous-avez-decroche-cet-ete-huit-faits-pour-reprendre-le-fil-de-lia/"
   ],
   "scripts": [
     {
@@ -107,6 +108,12 @@
       "source": "actualite",
       "titre": "DSA : ce que ça change pour votre entreprise",
       "video_id": "sHL_6SUUetw"
+    },
+    {
+      "date": "2026-09-02T16:40:14.709673",
+      "source": "actualite",
+      "titre": "L'été IA a changé vos décisions de rentrée",
+      "video_id": "JRcVY8Yuskg"
     }
   ]
 }
