@@ -70,7 +70,7 @@ class YouTubeSearcher:
             client_id=os.environ["YOUTUBE_CLIENT_ID"],
             client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
             token_uri="https://oauth2.googleapis.com/token",
-            scopes=["https://www.googleapis.com/auth/youtube.readonly"],
+            # Pas de scopes ici : le refresh_token porte déjà ses droits
         )
         # Forcer le refresh du token au démarrage
         creds.refresh(Request())
