@@ -810,6 +810,7 @@ class ClippingEngine:
         self,
         theme_filter: Optional[str] = None,
         max_clips_override: Optional[int] = None,
+        language_override: Optional[str] = None,
     ):
         themes = self.config["themes"]
         if theme_filter:
@@ -834,7 +835,8 @@ class ClippingEngine:
                 if clips_generated >= max_total:
                     break
 
-                videos = self.searcher.search_videos(keyword, theme.get("language", "fr"))
+                lang = language_override or theme.get("language", "fr")
+                videos = self.searcher.search_videos(keyword, lang)
 
                 for video in videos:
                     if clips_generated >= max_total:
@@ -966,6 +968,11 @@ def parse_args():
         help="Nombre maximum de clips à générer (override config)"
     )
     parser.add_argument(
+        "--language", default=None,
+        help="Langue de recherche : 'fr' (francophone), 'en' (anglophone), etc. "
+             "Surcharge la langue définie par thème."
+    )
+    parser.add_argument(
         "--list-themes", action="store_true",
         help="Lister les thèmes disponibles et quitter"
     )
@@ -993,6 +1000,7 @@ def main():
     engine.run(
         theme_filter=args.theme,
         max_clips_override=args.max_clips,
+        language_override=args.language,
     )
 
 
