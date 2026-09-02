@@ -511,6 +511,40 @@ class AISelector:
             api_key=os.environ["ANTHROPIC_API_KEY"]
         )
 
+    def is_video_relevant(self, video_meta: dict, theme: dict) -> bool:
+        """
+        Vérification rapide (titre + chaîne uniquement) :
+        la vidéo est-elle vraiment dans le thème éditorial D&Co ?
+        Évite de transcrire et de traiter des vidéos hors-sujet.
+        """
+        prompt = f"""Tu es un filtre éditorial pour Décisions & Co (D&Co), cabinet de conseil en transformation IA pour les dirigeants de PME et ETI françaises.
+
+Thème éditorial visé : {theme['label']}
+
+Vidéo YouTube à évaluer :
+- Titre : {video_meta['title']}
+- Chaîne : {video_meta['channel']}
+
+Cette vidéo traite-t-elle VRAIMENT du thème "{theme['label']}" avec un angle business/entreprise/dirigeant ?
+
+Réponds UNIQUEMENT par un JSON sur une ligne :
+{{"relevant": true}} ou {{"relevant": false}}
+
+Sois strict : si le titre évoque la finance personnelle, le développement personnel généraliste, le divertissement, la politique, ou tout sujet sans lien direct avec la transformation IA des entreprises → false."""
+
+        try:
+            response = self.client.messages.create(
+                model=self.cfg["model"],
+                max_tokens=20,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = response.content[0].text.strip()
+            data = json.loads(raw)
+            return bool(data.get("relevant", False))
+        except Exception as e:
+            self.logger.warning(f"  Filtre pertinence échoué ({e}) — vidéo conservée par défaut")
+            return True  # en cas d'erreur, on laisse passer
+
     def select_best_moments(
         self,
         transcript: list[dict],
@@ -1080,6 +1114,13 @@ class ClippingEngine:
         video_id = video["video_id"]
         self.logger.info(f"\nTraitement : {video['title'][:70]}")
         self.logger.info(f"  URL : {video['url']}")
+
+        # 0. Filtre de pertinence rapide (titre + chaîne → Claude)
+        if not self.ai_selector.is_video_relevant(video, theme):
+            self.logger.warning(
+                f"  ⛔ Vidéo hors-thème rejetée : {video['title'][:60]}"
+            )
+            return []
 
         # 1. Transcription
         transcript = self.transcriber.get_transcript(video_id)
