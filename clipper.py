@@ -456,21 +456,46 @@ class VideoProcessor:
         start: float,
         end: float,
         output_path: Path,
+        transcript: Optional[list[dict]] = None,
     ) -> bool:
-        """Découpe un segment et le reformate en Shorts (9:16, 1080x1920)."""
+        """Découpe un segment, reformate en Shorts 9:16 et incruste les sous-titres."""
+        import tempfile, shutil as _shutil
         out_cfg = self.clip_cfg["output"]
         duration = end - start
+
+        # Générer le fichier ASS de sous-titres si transcript disponible
+        ass_path = None
+        if transcript:
+            try:
+                ass_content = self._build_ass_subtitles(transcript, start, end)
+                tmp_ass = tempfile.NamedTemporaryFile(
+                    suffix=".ass", delete=False, mode="w", encoding="utf-8"
+                )
+                tmp_ass.write(ass_content)
+                tmp_ass.close()
+                ass_path = tmp_ass.name
+            except Exception as e:
+                self.logger.warning(f"  Sous-titres ignorés : {e}")
+                ass_path = None
+
+        # Filtre vidéo : recadrage + sous-titres incrustés
+        if ass_path:
+            # Sur Windows, ffmpeg veut les backslashes échappés dans le filtre
+            ass_escaped = ass_path.replace("\\", "/").replace(":", "\\:")
+            vf = (
+                f"scale=1080:1920:force_original_aspect_ratio=increase,"
+                f"crop=1080:1920,"
+                f"subtitles='{ass_escaped}'"
+            )
+        else:
+            vf = "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920"
 
         cmd = [
             "ffmpeg", "-y",
             "-ss", str(start),
             "-i", str(source),
             "-t", str(duration),
-            # Recadrage vertical 9:16
-            "-vf", (
-                "scale=1080:1920:force_original_aspect_ratio=increase,"
-                "crop=1080:1920"
-            ),
+            "-vf", vf,
             "-r", str(out_cfg["fps"]),
             "-c:v", out_cfg["video_codec"],
             "-crf", str(out_cfg["crf"]),
@@ -480,11 +505,104 @@ class VideoProcessor:
             str(output_path),
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
+
+        # Nettoyage du fichier ASS temporaire
+        if ass_path:
+            Path(ass_path).unlink(missing_ok=True)
+
         if result.returncode != 0:
-            self.logger.error(f"  ffmpeg échoué : {result.stderr[-300:]}")
+            self.logger.error(f"  ffmpeg échoué : {result.stderr[-400:]}")
             return False
-        self.logger.info(f"  Clip généré : {output_path.name}")
+        self.logger.info(f"  Clip généré avec sous-titres : {output_path.name}")
         return True
+
+    @staticmethod
+    def _build_ass_subtitles(
+        transcript: list[dict], clip_start: float, clip_end: float
+    ) -> str:
+        """
+        Génère un fichier ASS avec des sous-titres style TikTok/Shorts :
+        texte blanc centré, grande police, contour noir épais.
+        Les timestamps sont relatifs au début du clip.
+        """
+        def sec_to_ass(seconds: float) -> str:
+            seconds = max(0.0, seconds)
+            h = int(seconds // 3600)
+            m = int((seconds % 3600) // 60)
+            s = seconds % 60
+            return f"{h}:{m:02d}:{s:05.2f}"
+
+        # Style TikTok : gros texte blanc, contour noir, centré bas-milieu
+        header = """\
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 1
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,72,&H00FFFFFF,&H000000FF,&H00000000,&H96000000,-1,0,0,0,100,100,2,0,1,5,2,2,60,60,350,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+        lines = []
+        # Filtrer et regrouper les segments du clip
+        clip_segments = [
+            s for s in transcript
+            if s["start"] < clip_end and (s["start"] + s.get("duration", 2)) > clip_start
+        ]
+
+        # Regrouper en blocs de ~8 mots max pour l'effet phrase par phrase
+        def group_segments(segs, max_words=8):
+            groups = []
+            current_text = []
+            current_start = None
+            current_end = None
+            word_count = 0
+
+            for seg in segs:
+                words = seg["text"].split()
+                if current_start is None:
+                    current_start = seg["start"]
+
+                current_text.extend(words)
+                current_end = seg["start"] + seg.get("duration", 2)
+                word_count += len(words)
+
+                if word_count >= max_words:
+                    groups.append({
+                        "text": " ".join(current_text),
+                        "start": current_start,
+                        "end": current_end,
+                    })
+                    current_text = []
+                    current_start = None
+                    word_count = 0
+
+            if current_text and current_start is not None:
+                groups.append({
+                    "text": " ".join(current_text),
+                    "start": current_start,
+                    "end": current_end,
+                })
+            return groups
+
+        groups = group_segments(clip_segments)
+        for grp in groups:
+            # Temps relatif au début du clip
+            t_start = max(0.0, grp["start"] - clip_start)
+            t_end = min(clip_end - clip_start, grp["end"] - clip_start)
+            if t_end <= t_start:
+                continue
+            text = grp["text"].strip().upper()  # MAJUSCULES style TikTok
+            lines.append(
+                f"Dialogue: 0,{sec_to_ass(t_start)},{sec_to_ass(t_end)},"
+                f"Default,,0,0,0,,{text}"
+            )
+
+        return header + "\n".join(lines) + "\n"
 
     def build_output_path(
         self,
@@ -779,6 +897,7 @@ class ClippingEngine:
                 start=float(moment["start"]),
                 end=float(moment["end"]),
                 output_path=output_path,
+                transcript=transcript,
             )
             if success:
                 meta = {
