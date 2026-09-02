@@ -27,6 +27,8 @@ from typing import Optional
 
 import yaml
 import anthropic
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound
 
@@ -61,8 +63,18 @@ def setup_logging(config: dict) -> logging.Logger:
 # ─────────────────────────────────────────────────────────────
 
 class YouTubeSearcher:
-    def __init__(self, api_key: str, config: dict, logger: logging.Logger):
-        self.service = build("youtube", "v3", developerKey=api_key)
+    def __init__(self, config: dict, logger: logging.Logger):
+        creds = Credentials(
+            token=None,
+            refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+            client_id=os.environ["YOUTUBE_CLIENT_ID"],
+            client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+            token_uri="https://oauth2.googleapis.com/token",
+            scopes=["https://www.googleapis.com/auth/youtube.readonly"],
+        )
+        # Forcer le refresh du token au démarrage
+        creds.refresh(Request())
+        self.service = build("youtube", "v3", credentials=creds)
         self.cfg = config["search"]
         self.logger = logger
 
@@ -463,7 +475,6 @@ class ClippingEngine:
         self.config = config
         self.logger = setup_logging(config)
         self.searcher = YouTubeSearcher(
-            api_key=os.environ["YOUTUBE_API_KEY"],
             config=config,
             logger=self.logger,
         )
@@ -636,7 +647,7 @@ def main():
         return
 
     # Vérification des variables d'environnement requises
-    required_env = ["YOUTUBE_API_KEY", "ANTHROPIC_API_KEY"]
+    required_env = ["YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN", "ANTHROPIC_API_KEY"]
     missing = [v for v in required_env if not os.environ.get(v)]
     if missing:
         print(f"Erreur : variables d'environnement manquantes : {', '.join(missing)}")
