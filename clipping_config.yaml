@@ -92,9 +92,9 @@ clipping:
   target_format: shorts
 
   # Durées des clips générés
-  clip_duration_min: 30             # secondes
-  clip_duration_max: 59             # secondes (Shorts limit)
-  clip_duration_target: 45          # idéal
+  clip_duration_min: 28             # secondes
+  clip_duration_max: 35             # secondes
+  clip_duration_target: 30          # idéal
 
   # Nombre max de clips par vidéo source
   max_clips_per_video: 3
