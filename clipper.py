@@ -104,7 +104,11 @@ class YouTubeSearcher:
 
         videos = []
         for item in details.get("items", []):
-            duration_s = self._parse_duration(item["contentDetails"]["duration"])
+            duration_s = self._parse_duration(
+                item.get("contentDetails", {}).get("duration", "PT0S")
+            )
+            if duration_s == 0:
+                continue
             view_count = int(item["statistics"].get("viewCount", 0))
             published_at = item["snippet"]["publishedAt"]
 
