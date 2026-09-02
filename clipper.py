@@ -251,12 +251,15 @@ class Transcriber:
             h, m, s = float(parts[0]), float(parts[1]), float(parts[2])
             return h * 3600 + m * 60 + s
 
+        import html as _html
         seen_texts = set()
         for match in pattern.finditer(vtt_text):
             start_ts, end_ts, raw_text = match.groups()
             # Nettoyer balises HTML et tags VTT
             text = _re.sub(r"<[^>]+>", "", raw_text).strip()
-            text = _re.sub(r"\n+", " ", text).strip()
+            # Décoder les entités HTML (&nbsp; &amp; &lt; etc.)
+            text = _html.unescape(text)
+            text = _re.sub(r"\s+", " ", text).strip()
             if not text or text in seen_texts:
                 continue
             seen_texts.add(text)
@@ -780,6 +783,39 @@ class MetadataStore:
     def add_clip(self, clip_meta: dict):
         self.index["clips"].append(clip_meta)
 
+    # ── Uploads en attente (limite quotidienne YouTube) ──────────
+
+    def add_pending_upload(self, clip_meta: dict):
+        """Sauvegarde un clip dont l'upload a échoué pour re-tentative ultérieure."""
+        pending = self._load_pending()
+        # Éviter les doublons
+        if not any(p["clip_file"] == clip_meta["clip_file"] for p in pending):
+            pending.append(clip_meta)
+            self._save_pending(pending)
+
+    def remove_pending_upload(self, clip_file: str):
+        """Retire un clip de la liste pending après upload réussi."""
+        pending = self._load_pending()
+        pending = [p for p in pending if p["clip_file"] != clip_file]
+        self._save_pending(pending)
+
+    def get_pending_uploads(self) -> list[dict]:
+        return self._load_pending()
+
+    def _pending_file(self) -> Path:
+        return self.meta_dir / "pending_uploads.json"
+
+    def _load_pending(self) -> list[dict]:
+        f = self._pending_file()
+        if f.exists():
+            with open(f, "r", encoding="utf-8") as fh:
+                return json.load(fh)
+        return []
+
+    def _save_pending(self, pending: list[dict]):
+        with open(self._pending_file(), "w", encoding="utf-8") as fh:
+            json.dump(pending, fh, ensure_ascii=False, indent=2)
+
     def get_clip_count_today(self) -> int:
         today = datetime.now().strftime("%Y%m%d")
         return sum(
@@ -824,6 +860,9 @@ class ClippingEngine:
         all_clips_meta = []
 
         self.logger.info(f"=== D&Co Clipping Engine démarré — {len(themes)} thème(s) ===")
+
+        # Re-tenter les uploads en attente du run précédent
+        self._retry_pending_uploads()
 
         for theme in sorted(themes, key=lambda t: t.get("priority", "medium") != "high"):
             if clips_generated >= max_total:
@@ -927,10 +966,43 @@ class ClippingEngine:
             youtube_url = self.uploader.upload_clip(meta)
             if youtube_url:
                 meta["youtube_url"] = youtube_url
+            elif self.uploader.enabled:
+                # Upload échoué (limite quotidienne, quota API…) → file d'attente
+                self.metadata.add_pending_upload(meta)
+                self.logger.warning(
+                    f"  ⏳ Upload différé : {Path(meta['clip_file']).name} "
+                    f"(ajouté à pending_uploads.json)"
+                )
 
         # 6. Nettoyage source
         self.processor.cleanup_source(source_path)
         return clips_meta
+
+    def _retry_pending_uploads(self):
+        """Re-tente l'upload des clips mis en attente lors d'un run précédent."""
+        pending = self.metadata.get_pending_uploads()
+        if not pending:
+            return
+
+        self.logger.info(f"\n── Re-tentative de {len(pending)} upload(s) en attente ──")
+        for meta in list(pending):
+            clip_path = Path(meta["clip_file"])
+            if not clip_path.exists():
+                self.logger.warning(
+                    f"  Fichier introuvable, supprimé de la file : {clip_path.name}"
+                )
+                self.metadata.remove_pending_upload(meta["clip_file"])
+                continue
+
+            youtube_url = self.uploader.upload_clip(meta)
+            if youtube_url:
+                meta["youtube_url"] = youtube_url
+                self.metadata.remove_pending_upload(meta["clip_file"])
+                self.logger.info(f"  ✅ Upload différé réussi : {youtube_url}")
+            else:
+                self.logger.warning(
+                    f"  ❌ Upload toujours impossible : {clip_path.name} — conservé en file d'attente"
+                )
 
     def _print_summary(self, clips: list[dict]):
         if not clips:
