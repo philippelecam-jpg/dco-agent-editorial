@@ -28,7 +28,11 @@ from typing import Optional
 import yaml
 import anthropic
 from googleapiclient.discovery import build
-from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound
+from youtube_transcript_api import YouTubeTranscriptApi
+try:
+    from youtube_transcript_api._errors import NoTranscriptFound, TranscriptsDisabled
+except ImportError:
+    from youtube_transcript_api import NoTranscriptFound, TranscriptsDisabled
 
 # ─────────────────────────────────────────────────────────────
 # CONFIGURATION
@@ -180,10 +184,16 @@ class Transcriber:
     def _fetch_youtube_transcript(self, video_id: str) -> Optional[list[dict]]:
         try:
             languages = self.cfg.get("languages", ["fr", "en"])
-            t = YouTubeTranscriptApi.get_transcript(video_id, languages=languages)
-            self.logger.info(f"  Transcript YouTube OK : {video_id}")
-            return t
-        except NoTranscriptFound:
+            # API youtube-transcript-api >= 0.6 : instance method fetch()
+            ytt_api = YouTubeTranscriptApi()
+            fetched = ytt_api.fetch(video_id, languages=languages)
+            segments = [
+                {"text": s.text, "start": s.start, "duration": s.duration}
+                for s in fetched
+            ]
+            self.logger.info(f"  Transcript YouTube OK : {video_id} ({len(segments)} segments)")
+            return segments
+        except (NoTranscriptFound, TranscriptsDisabled):
             self.logger.warning(f"  Pas de transcript YouTube : {video_id}")
             return None
         except Exception as e:
@@ -196,9 +206,19 @@ class Transcriber:
             import whisper
             audio_path = f"/tmp/{video_id}.mp3"
             # Télécharger uniquement l'audio
+            # Options pour contourner les restrictions YouTube en CI
             subprocess.run(
-                ["yt-dlp", "-x", "--audio-format", "mp3",
-                 "-o", audio_path, f"https://youtu.be/{video_id}"],
+                [
+                    "yt-dlp",
+                    "-x", "--audio-format", "mp3",
+                    "--no-check-certificates",
+                    "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "--add-header", "Accept-Language:fr-FR,fr;q=0.9,en;q=0.8",
+                    "--retries", "3",
+                    "--fragment-retries", "3",
+                    "-o", audio_path,
+                    f"https://youtu.be/{video_id}",
+                ],
                 check=True, capture_output=True,
             )
             model = whisper.load_model(self.cfg.get("whisper_model", "base"))
