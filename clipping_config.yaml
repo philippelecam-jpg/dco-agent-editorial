@@ -71,6 +71,18 @@ themes:
     language: fr
     priority: medium
 
+  - id: changement_seo_google
+    label: "SEO & évolution des moteurs de recherche IA"
+    keywords:
+      - "SEO intelligence artificielle 2025"
+      - "Google AI search impact"
+      - "SGE Google Search Generative Experience"
+      - "référencement naturel IA générative"
+      - "Search GPT SEO impact"
+      - "avenir du SEO IA"
+    language: fr
+    priority: medium
+
 # -----------------------------------------------------------
 # PARAMÈTRES DE RECHERCHE YOUTUBE
 # -----------------------------------------------------------
