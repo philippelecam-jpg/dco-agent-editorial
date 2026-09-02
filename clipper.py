@@ -843,7 +843,8 @@ class ClippingEngine:
                         self.logger.debug(f"Déjà traité : {video['video_id']}")
                         continue
 
-                    clips_meta = self._process_video(video, theme, max_clips_override=3)
+                    remaining = max_total - clips_generated
+                    clips_meta = self._process_video(video, theme, max_clips_override=min(3, remaining))
                     clips_generated += len(clips_meta)
                     all_clips_meta.extend(clips_meta)
                     # Marquer traité UNIQUEMENT si des clips ont été générés
