@@ -299,14 +299,25 @@ class Transcriber:
                 check=True, capture_output=True, timeout=120,
             )
             model = whisper.load_model(self.cfg.get("whisper_model", "base"))
-            result = model.transcribe(audio_path, language="fr")
+            # Laisser Whisper détecter la langue automatiquement
+            # (forcer "fr" sur une vidéo anglaise provoque des hallucinations)
+            result = model.transcribe(audio_path)
             Path(audio_path).unlink(missing_ok=True)
             segments = [
                 {"text": s["text"], "start": s["start"],
                  "duration": s["end"] - s["start"]}
                 for s in result["segments"]
             ]
-            self.logger.info(f"  Transcript Whisper OK : {video_id}")
+            # Vérification qualité : rejeter si trop de segments vides ou suspects
+            non_empty = [s for s in segments if len(s["text"].strip()) > 3]
+            if len(non_empty) < 5:
+                self.logger.warning(f"  Transcript Whisper trop court/vide : {video_id}")
+                return None
+            detected_lang = result.get("language", "?")
+            self.logger.info(
+                f"  Transcript Whisper OK : {video_id} "
+                f"(langue détectée : {detected_lang}, {len(segments)} segments)"
+            )
             return segments
         except Exception as e:
             self.logger.error(f"  Whisper échoué : {e}")
