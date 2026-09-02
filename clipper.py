@@ -182,50 +182,118 @@ class Transcriber:
         return transcript
 
     def _fetch_youtube_transcript(self, video_id: str) -> Optional[list[dict]]:
+        """
+        Méthode 1 : sous-titres via yt-dlp (fichiers .vtt).
+        Contourne le blocage des IPs cloud de GitHub Actions.
+        """
+        import tempfile, shutil
+        tmp_dir = tempfile.mkdtemp(prefix="dco_subs_")
         try:
-            languages = self.cfg.get("languages", ["fr", "en"])
-            # API youtube-transcript-api >= 0.6 : instance method fetch()
-            ytt_api = YouTubeTranscriptApi()
-            fetched = ytt_api.fetch(video_id, languages=languages)
-            segments = [
-                {"text": s.text, "start": s.start, "duration": s.duration}
-                for s in fetched
+            url = f"https://www.youtube.com/watch?v={video_id}"
+            cmd = [
+                "yt-dlp",
+                "--skip-download",           # pas de vidéo, juste les sous-titres
+                "--write-auto-subs",         # sous-titres auto-générés
+                "--write-subs",              # sous-titres manuels aussi
+                "--sub-langs", "fr,en,fr-FR,en-US",
+                "--convert-subs", "vtt",
+                "--no-check-certificates",
+                "--user-agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "--add-header", "Accept-Language:fr-FR,fr;q=0.9,en;q=0.8",
+                "--retries", "5",
+                "-o", f"{tmp_dir}/{video_id}.%(ext)s",
+                url,
             ]
-            self.logger.info(f"  Transcript YouTube OK : {video_id} ({len(segments)} segments)")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+
+            # Chercher un fichier VTT téléchargé
+            vtt_files = sorted(Path(tmp_dir).glob("*.vtt"))
+            if not vtt_files:
+                self.logger.warning(f"  Pas de sous-titres VTT : {video_id}")
+                if result.stderr:
+                    self.logger.debug(f"  yt-dlp stderr : {result.stderr[-300:]}")
+                return None
+
+            # Préférer français si disponible
+            chosen = next(
+                (f for f in vtt_files if ".fr" in f.name or "fr-FR" in f.name),
+                vtt_files[0]
+            )
+            segments = self._parse_vtt(chosen.read_text(encoding="utf-8"))
+            self.logger.info(
+                f"  Transcript VTT OK : {video_id} ({len(segments)} segments, {chosen.name})"
+            )
             return segments
-        except (NoTranscriptFound, TranscriptsDisabled):
-            self.logger.warning(f"  Pas de transcript YouTube : {video_id}")
-            return None
+
         except Exception as e:
-            self.logger.error(f"  Erreur transcript YouTube : {e}")
+            self.logger.error(f"  Erreur yt-dlp sous-titres : {e}")
             return None
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    @staticmethod
+    def _parse_vtt(vtt_text: str) -> list[dict]:
+        """Parse un fichier WebVTT en liste de segments [{text, start, duration}]."""
+        import re as _re
+        segments = []
+        # Regex pour les blocs de sous-titres VTT
+        pattern = _re.compile(
+            r"(\d{2}:\d{2}:\d{2}[.,]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[.,]\d{3})"
+            r"[^\n]*\n([\s\S]*?)(?=\n\n|\Z)",
+            _re.MULTILINE,
+        )
+
+        def ts_to_sec(ts: str) -> float:
+            ts = ts.replace(",", ".")
+            parts = ts.split(":")
+            h, m, s = float(parts[0]), float(parts[1]), float(parts[2])
+            return h * 3600 + m * 60 + s
+
+        seen_texts = set()
+        for match in pattern.finditer(vtt_text):
+            start_ts, end_ts, raw_text = match.groups()
+            # Nettoyer balises HTML et tags VTT
+            text = _re.sub(r"<[^>]+>", "", raw_text).strip()
+            text = _re.sub(r"\n+", " ", text).strip()
+            if not text or text in seen_texts:
+                continue
+            seen_texts.add(text)
+            start = ts_to_sec(start_ts)
+            end = ts_to_sec(end_ts)
+            segments.append({
+                "text": text,
+                "start": start,
+                "duration": max(0.1, end - start),
+            })
+
+        return segments
 
     def _fetch_whisper_transcript(self, video_id: str) -> Optional[list[dict]]:
-        """Transcription locale via Whisper (fallback)."""
+        """
+        Méthode 2 (fallback) : transcription Whisper sur l'audio.
+        Rarement utile en CI (yt-dlp audio aussi bloqué), mais gardé pour
+        usage local ou runner auto-hébergé.
+        """
         try:
             import whisper
             audio_path = f"/tmp/{video_id}.mp3"
-            # Télécharger uniquement l'audio
-            # Options pour contourner les restrictions YouTube en CI
             subprocess.run(
                 [
-                    "yt-dlp",
-                    "-x", "--audio-format", "mp3",
+                    "yt-dlp", "-x", "--audio-format", "mp3",
                     "--no-check-certificates",
-                    "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    "--add-header", "Accept-Language:fr-FR,fr;q=0.9,en;q=0.8",
+                    "--user-agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "--retries", "3",
-                    "--fragment-retries", "3",
                     "-o", audio_path,
                     f"https://youtu.be/{video_id}",
                 ],
-                check=True, capture_output=True,
+                check=True, capture_output=True, timeout=120,
             )
             model = whisper.load_model(self.cfg.get("whisper_model", "base"))
             result = model.transcribe(audio_path, language="fr")
             Path(audio_path).unlink(missing_ok=True)
-
-            # Reformater en [{text, start, duration}]
             segments = [
                 {"text": s["text"], "start": s["start"],
                  "duration": s["end"] - s["start"]}
