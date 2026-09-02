@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T06:57:28.302504",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Cartographier avant de déployer : la méthode qui change tout",
-    "post_x": "Avant de déployer l'IA, la plupart des organisations ne savent pas ce qu'elles savent. Cartographier, c'est la première étape. Pas la plus glamour. La plus décisive.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089969811623203178",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19.png?v=065645"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T07:59:18.038376",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
     "sujet": "Éliciter avant de déployer : ce que ça change",
@@ -268,5 +259,14 @@
     "post_x": "Un client ETI nous appelle pour déployer des agents IA. On commence par cartographier. On trouve : 3 bases de données contradictoires, 0 processus documenté, 2 experts métier sur le départ. Le sujet n'était pas l'IA.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2094668594512638008",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-01-060802.png?v=060802"
+  },
+  {
+    "date": "Mercredi 2 septembre 2026",
+    "timestamp": "2026-09-02T06:08:59.721613",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte",
+    "post_x": "La plupart des entreprises codifient sans avoir élicité. Et élicitent sans avoir cartographié. Résultat : elles documentent du bruit. La méthode, ça commence par regarder avant de toucher.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095030997662175527",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-02-060805.png?v=060806"
   }
 ]
