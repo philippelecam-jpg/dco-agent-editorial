@@ -934,10 +934,21 @@ class ClippingEngine:
             output_path = self.processor.build_output_path(
                 theme["id"], video_id, i
             )
+            # Ajustement intelligent des points de coupe
+            raw_start = float(moment["start"])
+            raw_end   = float(moment["end"])
+            smart_start, smart_end = self._smart_cut_points(
+                transcript, raw_start, raw_end
+            )
+            self.logger.info(
+                f"  Coupe ajustée : {raw_start:.1f}→{smart_start:.1f}s "
+                f"/ {raw_end:.1f}→{smart_end:.1f}s "
+                f"(durée {smart_end - smart_start:.1f}s)"
+            )
             success = self.processor.cut_clip(
                 source=source_path,
-                start=float(moment["start"]),
-                end=float(moment["end"]),
+                start=smart_start,
+                end=smart_end,
                 output_path=output_path,
                 transcript=transcript,
             )
@@ -950,9 +961,9 @@ class ClippingEngine:
                     "video_url": video["url"],
                     "theme_id": theme["id"],
                     "theme_label": theme["label"],
-                    "start": moment["start"],
-                    "end": moment["end"],
-                    "duration": round(float(moment["end"]) - float(moment["start"]), 1),
+                    "start": smart_start,
+                    "end": smart_end,
+                    "duration": round(smart_end - smart_start, 1),
                     "score": moment.get("score", 0),
                     "reason": moment.get("reason", ""),
                     "caption": moment.get("caption", ""),
@@ -977,6 +988,65 @@ class ClippingEngine:
         # 6. Nettoyage source
         self.processor.cleanup_source(source_path)
         return clips_meta
+
+    def _smart_cut_points(
+        self,
+        transcript: list[dict],
+        start: float,
+        end: float,
+        window: float = 6.0,
+    ) -> tuple[float, float]:
+        """
+        Ajuste start/end pour couper sur des frontières naturelles
+        (fin de phrase, fin de citation, fin de sujet) détectées dans le transcript.
+        Cherche dans une fenêtre de ±window secondes autour de chaque point.
+        Respecte les contraintes de durée min/max de la config.
+        """
+        dur_min = self.config["clipping"]["clip_duration_min"]
+        dur_max = self.config["clipping"]["clip_duration_max"]
+
+        SENTENCE_END = re.compile(r'[.!?…»""\']\s*$')
+
+        def seg_end(seg: dict) -> float:
+            return seg["start"] + seg.get("duration", 2.0)
+
+        # ── Point de début : trouver le début de segment le plus proche ──
+        start_candidates = [
+            seg for seg in transcript
+            if abs(seg["start"] - start) <= window
+        ]
+        if start_candidates:
+            best_start_seg = min(
+                start_candidates,
+                key=lambda s: abs(s["start"] - start)
+            )
+            new_start = best_start_seg["start"]
+        else:
+            new_start = start
+
+        # ── Point de fin : préférer une fin de phrase dans la fenêtre ──
+        end_candidates = [
+            seg for seg in transcript
+            if abs(seg_end(seg) - end) <= window
+        ]
+        # D'abord essayer ceux qui terminent sur de la ponctuation forte
+        good_end = [s for s in end_candidates if SENTENCE_END.search(s["text"])]
+        pool = good_end if good_end else end_candidates
+
+        if pool:
+            best_end_seg = min(pool, key=lambda s: abs(seg_end(s) - end))
+            new_end = seg_end(best_end_seg)
+        else:
+            new_end = end
+
+        # ── Garantir le respect des durées min/max ──
+        duration = new_end - new_start
+        if duration < dur_min:
+            new_end = new_start + dur_min
+        elif duration > dur_max:
+            new_end = new_start + dur_max
+
+        return round(new_start, 2), round(new_end, 2)
 
     def _retry_pending_uploads(self):
         """Re-tente l'upload des clips mis en attente lors d'un run précédent."""
