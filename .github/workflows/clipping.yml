@@ -97,12 +97,27 @@ jobs:
         run: |
           mkdir -p outputs/clips outputs/transcripts outputs/metadata
 
-      # 9. Lancer le clipping engine
+      # 9. Diagnostic secrets (debug temporaire)
+      - name: Debug secrets availability
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$YOUTUBE_API_KEY" ]; then
+            echo "❌ YOUTUBE_API_KEY est VIDE ou non définie"
+          else
+            echo "✅ YOUTUBE_API_KEY est définie (longueur: ${#YOUTUBE_API_KEY} caractères)"
+          fi
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "❌ ANTHROPIC_API_KEY est VIDE ou non définie"
+          else
+            echo "✅ ANTHROPIC_API_KEY est définie (longueur: ${#ANTHROPIC_API_KEY} caractères)"
+          fi
+
+      # 10. Lancer le clipping engine (numéro corrigé)
       - name: Run Clipping Engine
         env:
-          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           ARGS=""
@@ -114,7 +129,7 @@ jobs:
           fi
           python clipper.py $ARGS
 
-      # 10. Lister les clips générés
+      # 11. Lister les clips générés
       - name: List generated clips
         run: |
           echo "=== Clips générés ==="
