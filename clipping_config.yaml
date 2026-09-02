@@ -1,0 +1,184 @@
+# ============================================================
+# D&Co — Clipping Configuration
+# Pipeline : dco-agent-editorial
+# ============================================================
+
+# -----------------------------------------------------------
+# THÈMES ÉDITORIAUX D&Co
+# Chaque thème = un axe de recherche YouTube + des mots-clés
+# -----------------------------------------------------------
+themes:
+  - id: transformation_ia
+    label: "Transformation IA des entreprises"
+    keywords:
+      - "intelligence artificielle PME"
+      - "transformation IA ETI"
+      - "IA en entreprise 2025"
+      - "AI transformation business France"
+      - "déploiement IA organisation"
+    language: fr
+    priority: high
+
+  - id: strategie_ia
+    label: "Stratégie & gouvernance IA"
+    keywords:
+      - "stratégie intelligence artificielle"
+      - "gouvernance IA entreprise"
+      - "ROI intelligence artificielle"
+      - "AI strategy SMB"
+      - "feuille de route IA"
+    language: fr
+    priority: high
+
+  - id: entreprise_os
+    label: "Entreprise OS & mémoire organisationnelle"
+    keywords:
+      - "knowledge management entreprise"
+      - "mémoire organisationnelle IA"
+      - "capitalisation savoir entreprise"
+      - "enterprise knowledge AI"
+    language: fr
+    priority: medium
+
+  - id: ia_agent
+    label: "IA agentique & automatisation"
+    keywords:
+      - "agents IA automatisation"
+      - "agentic AI workflow"
+      - "automatisation processus IA"
+      - "AI agents entreprise"
+      - "LLM workflow automation"
+    language: fr
+    priority: high
+
+  - id: leadership_ia
+    label: "Leadership & management à l'ère de l'IA"
+    keywords:
+      - "manager IA équipe"
+      - "leadership intelligence artificielle"
+      - "transformation digitale dirigeant"
+      - "AI management future of work"
+    language: fr
+    priority: medium
+
+  - id: pme_numerique
+    label: "Compétitivité PME / ETI"
+    keywords:
+      - "compétitivité PME numérique"
+      - "ETI transformation digitale"
+      - "PME innovation technologique"
+      - "small business AI competitive"
+    language: fr
+    priority: medium
+
+# -----------------------------------------------------------
+# PARAMÈTRES DE RECHERCHE YOUTUBE
+# -----------------------------------------------------------
+search:
+  max_results_per_keyword: 5        # vidéos analysées par mot-clé
+  max_duration_seconds: 3600        # ignorer les vidéos > 1h
+  min_duration_seconds: 120         # ignorer les vidéos < 2 min
+  min_view_count: 1000              # filtre qualité minimale
+  published_within_days: 90         # fenêtre de fraîcheur (3 mois)
+  language_filter: true             # filtrer par langue du thème
+  exclude_channels: []              # blacklist de chaînes (optionnel)
+  preferred_channels: []            # whitelist favorisée (optionnel)
+
+# -----------------------------------------------------------
+# PARAMÈTRES DE CLIPPING
+# -----------------------------------------------------------
+clipping:
+  # Format cible principal : YouTube Shorts / Reels / TikTok
+  target_format: shorts
+
+  # Durées des clips générés
+  clip_duration_min: 30             # secondes
+  clip_duration_max: 59             # secondes (Shorts limit)
+  clip_duration_target: 45          # idéal
+
+  # Nombre max de clips par vidéo source
+  max_clips_per_video: 3
+
+  # Nombre max de clips par run (contrôle coût API)
+  max_clips_per_run: 10
+
+  # Seuil de score IA pour retenir un moment (0.0 → 1.0)
+  relevance_threshold: 0.75
+
+  # Encodage vidéo de sortie
+  output:
+    format: mp4
+    resolution: "1080x1920"         # 9:16 vertical Shorts
+    fps: 30
+    video_codec: libx264
+    audio_codec: aac
+    crf: 23                         # qualité (18=haute, 28=faible)
+
+# -----------------------------------------------------------
+# TRANSCRIPTION
+# -----------------------------------------------------------
+transcription:
+  provider: youtube_transcript      # "youtube_transcript" ou "whisper"
+  whisper_model: base               # si provider=whisper : tiny/base/small
+  fallback_to_whisper: true         # si pas de sous-titres YouTube dispo
+  languages: ["fr", "en"]
+
+# -----------------------------------------------------------
+# SÉLECTION IA DES MOMENTS (Claude)
+# -----------------------------------------------------------
+ai_selection:
+  model: claude-sonnet-4-6
+  max_tokens: 2048
+  # Critères de sélection des meilleurs moments
+  selection_criteria:
+    - "Insight actionnable pour un dirigeant de PME/ETI"
+    - "Statistique ou fait marquant sur l'IA"
+    - "Conseil pratique de transformation"
+    - "Prise de position forte ou contre-intuitive"
+    - "Moment de storytelling fort ou exemple concret"
+  # Éléments à éviter
+  avoid_criteria:
+    - "Introduction générique ou présentation de l'intervenant"
+    - "Transition ou conclusion sans substance"
+    - "Contenu trop technique sans application business"
+    - "Auto-promotion de produit ou service"
+
+# -----------------------------------------------------------
+# STOCKAGE & OUTPUTS
+# -----------------------------------------------------------
+storage:
+  output_dir: "./outputs/clips"
+  transcript_cache_dir: "./outputs/transcripts"
+  metadata_dir: "./outputs/metadata"
+  keep_source_video: false          # supprimer la vidéo source après clip
+  filename_template: "{theme_id}_{video_id}_{clip_index}_{date}"
+
+# -----------------------------------------------------------
+# INTÉGRATIONS PIPELINE D&Co
+# -----------------------------------------------------------
+integrations:
+  # Injection dans le pipeline Shorts existant
+  shorts_pipeline:
+    enabled: true
+    output_dir: "./outputs/clips"   # lu par le pipeline Shorts
+    auto_trigger_shorts: false      # déclencher le workflow Shorts auto
+
+  # Métadonnées pour post LinkedIn/X
+  social_metadata:
+    generate_caption: true          # générer une accroche avec Claude
+    caption_model: claude-sonnet-4-6
+    caption_max_chars: 280          # format X
+    hashtags:
+      - "#TransformationIA"
+      - "#PME"
+      - "#IA"
+      - "#Leadership"
+      - "#IntelligenceArtificielle"
+
+# -----------------------------------------------------------
+# LOGS & MONITORING
+# -----------------------------------------------------------
+logging:
+  level: INFO                       # DEBUG / INFO / WARNING / ERROR
+  log_file: "./outputs/clipping.log"
+  notify_on_completion: false       # webhook futur (Slack / Make.com)
