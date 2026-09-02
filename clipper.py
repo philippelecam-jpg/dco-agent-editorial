@@ -156,6 +156,166 @@ class YouTubeSearcher:
 
 
 # ─────────────────────────────────────────────────────────────
+# DÉCOUVERTE DYNAMIQUE DE THÈMES
+# ─────────────────────────────────────────────────────────────
+
+class ThemeDiscovery:
+    """
+    Découvre les thèmes IA les plus porteurs du moment sur YouTube,
+    en analysant les vidéos trending via Claude.
+
+    Usage :
+      python clipper.py --discover              # éphémère (run uniquement)
+      python clipper.py --discover --save-themes # + sauvegarde dans le YAML
+      python clipper.py --discover --dry-run    # affiche sans clipper
+    """
+
+    # Requêtes larges pour capter les tendances IA actuelles
+    SEED_QUERIES = [
+        "intelligence artificielle entreprise 2025",
+        "IA transformation PME ETI",
+        "agentic AI business France",
+        "LLM entreprise déploiement",
+        "AI automation workflow 2025",
+        "intelligence artificielle dirigeant",
+        "IA productivité travail",
+        "agent IA automatisation",
+    ]
+
+    def __init__(self, config: dict, logger: logging.Logger):
+        self.config = config
+        self.logger = logger
+        self.searcher = YouTubeSearcher(config=config, logger=logger)
+        self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+    def discover(self, n_themes: int = 5) -> list[dict]:
+        """
+        Recherche les vidéos trending, analyse avec Claude,
+        retourne n_themes thèmes proposés au format config.
+        """
+        self.logger.info("\n══════════════════════════════════════════")
+        self.logger.info("  DÉCOUVERTE DYNAMIQUE DE THÈMES IA")
+        self.logger.info("══════════════════════════════════════════")
+
+        # 1. Collecter des vidéos sur les requêtes larges
+        videos_seen = set()
+        collected = []
+        for query in self.SEED_QUERIES:
+            try:
+                results = self.searcher.search_videos(query, language="fr")
+                for v in results:
+                    if v["video_id"] not in videos_seen:
+                        videos_seen.add(v["video_id"])
+                        collected.append(v)
+            except Exception as e:
+                self.logger.warning(f"  Erreur recherche '{query}' : {e}")
+
+        if not collected:
+            self.logger.error("  Aucune vidéo collectée pour la découverte")
+            return []
+
+        self.logger.info(f"\n  {len(collected)} vidéos collectées pour analyse")
+
+        # 2. Préparer le corpus pour Claude
+        existing_ids = {t["id"] for t in self.config.get("themes", [])}
+        existing_labels = [t["label"] for t in self.config.get("themes", [])]
+
+        corpus_lines = []
+        for v in sorted(collected, key=lambda x: -x["view_count"])[:40]:
+            corpus_lines.append(
+                f"- [{v['view_count']:,} vues] {v['title']} (chaîne: {v['channel']})"
+            )
+        corpus = "\n".join(corpus_lines)
+
+        existing_str = "\n".join(f"- {l}" for l in existing_labels)
+
+        prompt = f"""Tu es l'assistant éditorial de Décisions & Co (D&Co), cabinet de conseil en transformation IA pour les dirigeants de PME et ETI françaises.
+
+Voici les {len(corpus_lines)} vidéos YouTube les plus vues en ce moment sur l'IA en entreprise :
+
+{corpus}
+
+Thèmes déjà couverts par D&Co (à NE PAS reproduire) :
+{existing_str}
+
+**Ta mission :**
+Identifie exactement {n_themes} thèmes éditoriaux NOUVEAUX et PORTEURS, différents des thèmes existants, qui :
+1. Correspondent à des sujets en forte demande chez les dirigeants PME/ETI
+2. Sont actionnables et concrets (pas trop génériques)
+3. Reflètent des tendances actuelles visibles dans ce corpus
+4. Sont distincts les uns des autres
+
+Pour chaque thème, génère 4-5 mots-clés YouTube pertinents en français et/ou anglais.
+
+Réponds UNIQUEMENT en JSON valide, sans texte avant ni après :
+{{
+  "themes": [
+    {{
+      "id": "<snake_case_unique_id>",
+      "label": "<Titre du thème en français, max 50 chars>",
+      "rationale": "<1 phrase : pourquoi ce thème est porteur en ce moment>",
+      "keywords": ["<kw1>", "<kw2>", "<kw3>", "<kw4>"],
+      "language": "fr",
+      "priority": "medium"
+    }}
+  ]
+}}"""
+
+        self.logger.info("  Analyse Claude des tendances en cours...")
+        try:
+            response = self.client.messages.create(
+                model=self.config["ai_selection"]["model"],
+                max_tokens=2048,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = response.content[0].text.strip()
+            raw = re.sub(r"^```json\s*", "", raw)
+            raw = re.sub(r"\s*```$", "", raw)
+            data = json.loads(raw)
+            themes = data.get("themes", [])
+
+            # Dédoublonner par rapport aux thèmes existants
+            themes = [t for t in themes if t.get("id") not in existing_ids]
+
+            self.logger.info(f"  → {len(themes)} thème(s) découvert(s) par Claude")
+            return themes
+
+        except Exception as e:
+            self.logger.error(f"  Erreur analyse Claude : {e}")
+            return []
+
+    def display_proposals(self, themes: list[dict]):
+        """Affiche les thèmes proposés dans les logs."""
+        self.logger.info("\n─── THÈMES DÉCOUVERTS ───────────────────────────────")
+        for i, t in enumerate(themes, 1):
+            self.logger.info(f"\n  [{i}] {t['label']}  (id: {t['id']})")
+            self.logger.info(f"      Pourquoi : {t.get('rationale', '—')}")
+            kws = ", ".join(t.get("keywords", []))
+            self.logger.info(f"      Mots-clés : {kws}")
+        self.logger.info("\n────────────────────────────────────────────────────")
+
+    @staticmethod
+    def save_to_config(themes: list[dict], config_path: str):
+        """Ajoute les thèmes découverts au fichier YAML de configuration."""
+        with open(config_path, "r", encoding="utf-8") as f:
+            content = f.read()
+            config = yaml.safe_load(content)
+
+        existing_ids = {t["id"] for t in config.get("themes", [])}
+        new_themes = [t for t in themes if t["id"] not in existing_ids]
+
+        if not new_themes:
+            return 0
+
+        # Ajouter proprement à la liste YAML
+        config["themes"].extend(new_themes)
+        with open(config_path, "w", encoding="utf-8") as f:
+            yaml.dump(config, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
+
+        return len(new_themes)
+
+
+# ─────────────────────────────────────────────────────────────
 # TRANSCRIPTION
 # ─────────────────────────────────────────────────────────────
 
@@ -1133,6 +1293,23 @@ def parse_args():
         "--list-themes", action="store_true",
         help="Lister les thèmes disponibles et quitter"
     )
+    parser.add_argument(
+        "--discover", action="store_true",
+        help="Découvrir dynamiquement les thèmes IA les plus porteurs du moment "
+             "et les utiliser pour ce run"
+    )
+    parser.add_argument(
+        "--save-themes", action="store_true",
+        help="Avec --discover : sauvegarder les thèmes découverts dans le YAML de config"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Avec --discover : afficher les thèmes découverts sans lancer le clipping"
+    )
+    parser.add_argument(
+        "--n-themes", type=int, default=5,
+        help="Avec --discover : nombre de thèmes à découvrir (défaut: 5)"
+    )
     return parser.parse_args()
 
 
@@ -1154,6 +1331,40 @@ def main():
         sys.exit(1)
 
     engine = ClippingEngine(config)
+
+    # ── Mode découverte dynamique ──────────────────────────────
+    if args.discover:
+        discovery = ThemeDiscovery(config=config, logger=engine.logger)
+        discovered = discovery.discover(n_themes=args.n_themes)
+
+        if not discovered:
+            engine.logger.error("Découverte échouée — aucun thème trouvé.")
+            sys.exit(1)
+
+        discovery.display_proposals(discovered)
+
+        # Sauvegarde dans le YAML si demandé
+        if args.save_themes:
+            n_saved = ThemeDiscovery.save_to_config(discovered, args.config)
+            engine.logger.info(f"\n✅ {n_saved} thème(s) sauvegardé(s) dans {args.config}")
+
+        # Dry-run : afficher uniquement, pas de clipping
+        if args.dry_run:
+            engine.logger.info("\n[dry-run] Clipping non lancé.")
+            return
+
+        # Injecter les thèmes découverts dans la config pour ce run
+        existing_ids = {t["id"] for t in config["themes"]}
+        for t in discovered:
+            if t["id"] not in existing_ids:
+                config["themes"].append(t)
+
+        engine.logger.info(
+            f"\n  {len(discovered)} thème(s) ajouté(s) pour ce run "
+            f"({'sauvegardés' if args.save_themes else 'éphémères'})\n"
+        )
+
+    # ── Run principal ──────────────────────────────────────────
     engine.run(
         theme_filter=args.theme,
         max_clips_override=args.max_clips,
