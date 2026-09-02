@@ -1,0 +1,179 @@
+# ============================================================
+# D&Co — GitHub Actions : Clipping Engine
+# Pipeline : dco-agent-editorial
+# Déclenché : tous les jours à 6h00 UTC (8h Paris)
+#             + manuellement via workflow_dispatch
+# ============================================================
+
+name: 🎬 Clipping Engine
+
+on:
+  schedule:
+    # Tous les jours à 06:00 UTC (08:00 Paris)
+    - cron: "0 6 * * *"
+
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: "Thème éditorial à traiter (laisser vide = tous)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - transformation_ia
+          - strategie_ia
+          - entreprise_os
+          - ia_agent
+          - leadership_ia
+          - pme_numerique
+      max_clips:
+        description: "Nombre max de clips à générer"
+        required: false
+        default: "10"
+        type: string
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ──────────────────────────────────────────────────────────
+  # JOB : Génération des clips
+  # ──────────────────────────────────────────────────────────
+  clipping:
+    name: Générer les clips
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # 1. Checkout du repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Python
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      # 3. Dépendances système (ffmpeg)
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
+
+      # 4. Dépendances Python
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install \
+            anthropic \
+            google-api-python-client \
+            youtube-transcript-api \
+            yt-dlp \
+            pyyaml \
+            openai-whisper
+
+      # 5. Vérifier yt-dlp (toujours à jour)
+      - name: Update yt-dlp
+        run: yt-dlp --update
+
+      # 6. Restaurer le cache des transcripts
+      - name: Restore transcript cache
+        uses: actions/cache@v4
+        with:
+          path: outputs/transcripts
+          key: transcripts-${{ hashFiles('clipping_config.yaml') }}-${{ github.run_id }}
+          restore-keys: |
+            transcripts-${{ hashFiles('clipping_config.yaml') }}-
+            transcripts-
+
+      # 7. Restaurer l'index des clips traités
+      - name: Restore clips metadata index
+        uses: actions/cache@v4
+        with:
+          path: outputs/metadata
+          key: clips-metadata-${{ github.run_id }}
+          restore-keys: |
+            clips-metadata-
+
+      # 8. Créer les répertoires de sortie
+      - name: Create output directories
+        run: |
+          mkdir -p outputs/clips outputs/transcripts outputs/metadata
+
+      # 9. Lancer le clipping engine
+      - name: Run Clipping Engine
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.theme }}" ]; then
+            ARGS="$ARGS --theme ${{ github.event.inputs.theme }}"
+          fi
+          if [ -n "${{ github.event.inputs.max_clips }}" ]; then
+            ARGS="$ARGS --max-clips ${{ github.event.inputs.max_clips }}"
+          fi
+          python clipper.py $ARGS
+
+      # 10. Lister les clips générés
+      - name: List generated clips
+        run: |
+          echo "=== Clips générés ==="
+          ls -lh outputs/clips/*.mp4 2>/dev/null || echo "Aucun clip généré"
+          echo ""
+          echo "=== Index métadonnées ==="
+          if [ -f outputs/metadata/clips_index.json ]; then
+            python -c "
+          import json
+          with open('outputs/metadata/clips_index.json') as f:
+              idx = json.load(f)
+          clips = idx.get('clips', [])
+          print(f'Total clips en base : {len(clips)}')
+          today_clips = [c for c in clips if c.get('created_at','')[:10] == __import__('datetime').date.today().isoformat()]
+          print(f'Clips générés aujourd\\'hui : {len(today_clips)}')
+          for c in today_clips:
+              print(f'  - [{c[\"theme_id\"]}] {c[\"duration\"]}s | score={c[\"score\"]:.2f} | {c[\"video_title\"][:50]}')
+            "
+          fi
+
+      # 11. Upload des clips comme artefacts GitHub
+      - name: Upload clips as GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: clips-${{ github.run_id }}
+          path: outputs/clips/
+          retention-days: 7
+          if-no-files-found: warn
+
+      # 12. Upload des métadonnées
+      - name: Upload metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: clips-metadata-${{ github.run_id }}
+          path: outputs/metadata/
+          retention-days: 30
+
+      # 13. (Optionnel) Injecter dans le pipeline Shorts existant
+      #     Décommenter si le pipeline Shorts lit depuis outputs/clips/
+      # - name: Trigger Shorts Pipeline
+      #   if: success()
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       await github.rest.actions.createWorkflowDispatch({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         workflow_id: 'shorts_pipeline.yml',
+      #         ref: 'main'
+      #       })
+
+      # 14. Notification d'échec
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Le Clipping Engine a échoué. Vérifier les logs ci-dessus."
+          # Ajouter ici un webhook Make.com ou Slack si besoin
