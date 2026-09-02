@@ -660,8 +660,11 @@ class ClippingEngine:
                     clips_meta = self._process_video(video, theme, max_clips_override=3)
                     clips_generated += len(clips_meta)
                     all_clips_meta.extend(clips_meta)
-                    self.metadata.mark_processed(video["video_id"])
-                    self.metadata.save()
+                    # Marquer traité UNIQUEMENT si des clips ont été générés
+                    # → les vidéos sans transcript ou sous le seuil seront retentées
+                    if clips_meta:
+                        self.metadata.mark_processed(video["video_id"])
+                        self.metadata.save()
 
         self.logger.info(
             f"\n=== Terminé : {clips_generated} clip(s) généré(s) ==="
