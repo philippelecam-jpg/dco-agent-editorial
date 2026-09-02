@@ -441,6 +441,129 @@ class VideoProcessor:
 
 
 # ─────────────────────────────────────────────────────────────
+# UPLOAD YOUTUBE SHORTS
+# ─────────────────────────────────────────────────────────────
+
+class YouTubeUploader:
+    """
+    Publie les clips générés directement sur la chaîne YouTube D&Co
+    en utilisant les credentials OAuth existants (scope youtube.upload).
+    """
+
+    HASHTAGS = ["#Shorts", "#TransformationIA", "#IA", "#PME", "#Leadership"]
+    CATEGORY_ID = "28"   # Science & Technology
+
+    def __init__(self, config: dict, logger: logging.Logger):
+        self.cfg = config
+        self.logger = logger
+        self.service = self._build_service()
+        self.enabled = self.service is not None
+
+    def _build_service(self):
+        """Construit le service YouTube avec les credentials OAuth."""
+        client_id     = os.environ.get("YOUTUBE_CLIENT_ID")
+        client_secret = os.environ.get("YOUTUBE_CLIENT_SECRET")
+        refresh_token = os.environ.get("YOUTUBE_REFRESH_TOKEN")
+
+        if not all([client_id, client_secret, refresh_token]):
+            self.logger and self.logger.warning(
+                "  Upload YouTube désactivé — YOUTUBE_CLIENT_ID / "
+                "YOUTUBE_CLIENT_SECRET / YOUTUBE_REFRESH_TOKEN manquants"
+            )
+            return None
+
+        try:
+            from google.oauth2.credentials import Credentials
+            from googleapiclient.discovery import build as yt_build
+
+            creds = Credentials(
+                token=None,
+                refresh_token=refresh_token,
+                token_uri="https://oauth2.googleapis.com/token",
+                client_id=client_id,
+                client_secret=client_secret,
+            )
+            return yt_build("youtube", "v3", credentials=creds)
+        except Exception as e:
+            self.logger.error(f"  Erreur init upload YouTube : {e}")
+            return None
+
+    def upload_clip(self, clip_meta: dict) -> Optional[str]:
+        """
+        Upload un clip MP4 comme YouTube Short.
+        Retourne l'URL de la vidéo uploadée ou None en cas d'échec.
+        """
+        if not self.enabled:
+            return None
+
+        clip_path = Path(clip_meta["clip_file"])
+        if not clip_path.exists():
+            self.logger.error(f"  Fichier clip introuvable : {clip_path}")
+            return None
+
+        # Titre : caption IA + #Shorts (obligatoire pour être reconnu comme Short)
+        caption = clip_meta.get("caption", clip_meta.get("video_title", ""))[:80]
+        title = f"{caption} #Shorts"[:100]
+
+        # Description : contexte + source + hashtags
+        hashtags_str = " ".join(self.HASHTAGS)
+        description = (
+            f"{clip_meta.get('reason', '')}\n\n"
+            f"Extrait de : {clip_meta['video_title']}\n"
+            f"Source : {clip_meta['video_url']}\n\n"
+            f"Thème : {clip_meta['theme_label']}\n\n"
+            f"{hashtags_str}"
+        )
+
+        body = {
+            "snippet": {
+                "title": title,
+                "description": description,
+                "tags": [t.lstrip("#") for t in self.HASHTAGS] + [clip_meta["theme_id"]],
+                "categoryId": self.CATEGORY_ID,
+                "defaultLanguage": "fr",
+            },
+            "status": {
+                "privacyStatus": "public",
+                "selfDeclaredMadeForKids": False,
+                "madeForKids": False,
+            },
+        }
+
+        try:
+            from googleapiclient.http import MediaFileUpload
+
+            media = MediaFileUpload(
+                str(clip_path),
+                mimetype="video/mp4",
+                resumable=True,
+                chunksize=5 * 1024 * 1024,  # 5 MB chunks
+            )
+            self.logger.info(f"  Upload YouTube : {clip_path.name}")
+            request = self.service.videos().insert(
+                part=",".join(body.keys()),
+                body=body,
+                media_body=media,
+            )
+
+            response = None
+            while response is None:
+                status, response = request.next_chunk()
+                if status:
+                    pct = int(status.progress() * 100)
+                    self.logger.info(f"    Upload progression : {pct}%")
+
+            video_id = response["id"]
+            url = f"https://www.youtube.com/shorts/{video_id}"
+            self.logger.info(f"  ✅ Short publié : {url}")
+            return url
+
+        except Exception as e:
+            self.logger.error(f"  ❌ Erreur upload YouTube : {e}")
+            return None
+
+
+# ─────────────────────────────────────────────────────────────
 # MÉTADONNÉES & DÉDUPLICATION
 # ─────────────────────────────────────────────────────────────
 
@@ -495,6 +618,7 @@ class ClippingEngine:
         self.ai_selector = AISelector(config, self.logger)
         self.processor = VideoProcessor(config, self.logger)
         self.metadata = MetadataStore(config)
+        self.uploader = YouTubeUploader(config, self.logger)
 
     def run(
         self,
@@ -605,7 +729,13 @@ class ClippingEngine:
                 self.metadata.add_clip(meta)
                 clips_meta.append(meta)
 
-        # 5. Nettoyage source
+        # 5. Upload YouTube Shorts
+        for meta in clips_meta:
+            youtube_url = self.uploader.upload_clip(meta)
+            if youtube_url:
+                meta["youtube_url"] = youtube_url
+
+        # 6. Nettoyage source
         self.processor.cleanup_source(source_path)
         return clips_meta
 
@@ -620,6 +750,8 @@ class ClippingEngine:
             )
             self.logger.info(f"    Source : {c['video_title'][:60]}")
             self.logger.info(f"    Caption : {c['caption'][:100]}")
+            if c.get("youtube_url"):
+                self.logger.info(f"    YouTube : {c['youtube_url']}")
 
 
 # ─────────────────────────────────────────────────────────────
