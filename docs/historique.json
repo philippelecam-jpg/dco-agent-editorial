@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T07:59:18.038376",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Éliciter avant de déployer : ce que ça change",
-    "post_x": "La plupart des projets IA échouent avant même de commencer. Pas à cause de la technologie. À cause de ce qu'on n'a pas encore sorti des têtes.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2089985539663331462",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19.png?v=075915"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T09:10:38.810760",
     "theme": "Regard de fond / Actualité",
     "sujet": "IBM + OpenAI : quand l'offre clé-en-main arrive avant que l'organisation soit prête",
@@ -268,5 +259,14 @@
     "post_x": "La plupart des entreprises codifient sans avoir élicité. Et élicitent sans avoir cartographié. Résultat : elles documentent du bruit. La méthode, ça commence par regarder avant de toucher.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2095030997662175527",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-02-060805.png?v=060806"
+  },
+  {
+    "date": "Jeudi 3 septembre 2026",
+    "timestamp": "2026-09-03T06:08:47.237713",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "La gouvernance IA n'est pas un sujet juridique. C'est un sujet de management.",
+    "post_x": "Une charte IA sans usage réel dans l'organisation, c'est un document de plus dans un tiroir. La gouvernance IA commence par les pratiques, pas par les textes.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095393376833093803",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-03-060803.png?v=060803"
   }
 ]
