@@ -16,7 +16,8 @@
     "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
     "https://www.clubic.com/actualite-627478-facturation-electronique-mardi-la-france-passe-au-tout-numerique-mais-pas-pour-tout-le-monde-en-meme-temps.html",
     "https://www.blogdumoderateur.com/chatgpt-reddit-roblox-desormais-soumis-regime-plus-strict-dsa/",
-    "https://www.actuia.com/actualite/vous-avez-decroche-cet-ete-huit-faits-pour-reprendre-le-fil-de-lia/"
+    "https://www.actuia.com/actualite/vous-avez-decroche-cet-ete-huit-faits-pour-reprendre-le-fil-de-lia/",
+    "https://www.01net.com/actualites/apres-le-piratage-des-impots-des-ingenieurs-de-mistral-vont-sinstaller-dans-les-ministeres.html"
   ],
   "scripts": [
     {
@@ -114,6 +115,12 @@
       "source": "actualite",
       "titre": "L'été IA a changé vos décisions de rentrée",
       "video_id": "JRcVY8Yuskg"
+    },
+    {
+      "date": "2026-09-03T16:38:12.685577",
+      "source": "actualite",
+      "titre": "L'État paye Mistral pour sa cybersécurité, et vous ?",
+      "video_id": "eJC4rEO--W0"
     }
   ]
 }
