@@ -1,11 +1,14 @@
 {
-  "last_theme_index": 1,
+  "last_theme_index": 2,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales"
     ],
     "Technologie": [
       "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques"
+    ],
+    "Économie": [
+      "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives"
     ]
   },
   "scripts": [
@@ -22,6 +25,13 @@
       "angle": "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques",
       "titre": "Quand l'infrastructure décide à votre place",
       "video_id": "INBgHl36yRw"
+    },
+    {
+      "date": "2026-09-04T09:22:31.680452",
+      "theme": "Économie",
+      "angle": "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives",
+      "titre": "Et si la valeur de ce que vous faites changeait de main ?",
+      "video_id": "HvPiOnm1vME"
     }
   ]
 }
