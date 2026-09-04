@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T09:10:38.810760",
-    "theme": "Regard de fond / Actualité",
-    "sujet": "IBM + OpenAI : quand l'offre clé-en-main arrive avant que l'organisation soit prête",
-    "post_x": "IBM + OpenAI vont proposer de l'IA clé-en-main à des milliers d'entreprises. La question n'est pas \"est-ce accessible ?\" Elle est : \"sommes-nous prêts à l'accueillir ?\"",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090003468056473802",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-weekend.png?v=091027"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T09:20:41.946387",
     "theme": "Regard de fond / Week-end",
     "sujet": "Ce que l'IA ne peut pas remplacer : le temps de penser",
@@ -268,5 +259,14 @@
     "post_x": "Une charte IA sans usage réel dans l'organisation, c'est un document de plus dans un tiroir. La gouvernance IA commence par les pratiques, pas par les textes.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2095393376833093803",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-03-060803.png?v=060803"
+  },
+  {
+    "date": "Vendredi 4 septembre 2026",
+    "timestamp": "2026-09-04T06:08:43.646221",
+    "theme": "Formation et culture IA",
+    "sujet": "Formation IA : ce qu'on apprend aux individus ne change pas l'organisation",
+    "post_x": "Former des gens à l'IA, c'est nécessaire. Suffisant ? Non. Une organisation ne change pas parce que ses membres ont suivi un atelier. Elle change quand ses processus, ses décisions et sa connaissance sont restructurés.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095755749779439894",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-04-060800.png?v=060800"
   }
 ]
