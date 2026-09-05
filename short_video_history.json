@@ -18,7 +18,8 @@
     "https://www.blogdumoderateur.com/chatgpt-reddit-roblox-desormais-soumis-regime-plus-strict-dsa/",
     "https://www.actuia.com/actualite/vous-avez-decroche-cet-ete-huit-faits-pour-reprendre-le-fil-de-lia/",
     "https://www.01net.com/actualites/apres-le-piratage-des-impots-des-ingenieurs-de-mistral-vont-sinstaller-dans-les-ministeres.html",
-    "https://www.clubic.com/actualite-628315-alerte-fuite-de-donnees-l-association-des-maires-de-france-touchee-par-une-cyberattaque.html"
+    "https://www.clubic.com/actualite-628315-alerte-fuite-de-donnees-l-association-des-maires-de-france-touchee-par-une-cyberattaque.html",
+    "https://www.actuia.com/actualite/modeles-ouverts-la-chine-fournit-leurope-assemble-lamerique-verrouille/"
   ],
   "scripts": [
     {
@@ -128,6 +129,12 @@
       "source": "actualite",
       "titre": "Cyberattaque : ce que ça change pour vous demain",
       "video_id": "t6ewlgfQ9is"
+    },
+    {
+      "date": "2026-09-05T16:38:10.483533",
+      "source": "actualite",
+      "titre": "Open source IA : ce que ça change pour vous",
+      "video_id": "KvglRp2KdZo"
     }
   ]
 }
