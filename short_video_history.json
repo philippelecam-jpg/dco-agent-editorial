@@ -19,7 +19,8 @@
     "https://www.actuia.com/actualite/vous-avez-decroche-cet-ete-huit-faits-pour-reprendre-le-fil-de-lia/",
     "https://www.01net.com/actualites/apres-le-piratage-des-impots-des-ingenieurs-de-mistral-vont-sinstaller-dans-les-ministeres.html",
     "https://www.clubic.com/actualite-628315-alerte-fuite-de-donnees-l-association-des-maires-de-france-touchee-par-une-cyberattaque.html",
-    "https://www.actuia.com/actualite/modeles-ouverts-la-chine-fournit-leurope-assemble-lamerique-verrouille/"
+    "https://www.actuia.com/actualite/modeles-ouverts-la-chine-fournit-leurope-assemble-lamerique-verrouille/",
+    "https://www.blogdumoderateur.com/avantages-facturation-electronique-pour-tpe-pme-independants/"
   ],
   "scripts": [
     {
@@ -135,6 +136,12 @@
       "source": "actualite",
       "titre": "Open source IA : ce que ça change pour vous",
       "video_id": "KvglRp2KdZo"
+    },
+    {
+      "date": "2026-09-06T16:38:00.000000",
+      "source": "actualite",
+      "titre": "Facturation électronique : ne ratez pas le vrai enjeu",
+      "video_id": "gjo0UNz7E8w"
     }
   ]
 }
