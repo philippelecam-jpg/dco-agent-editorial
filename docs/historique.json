@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T09:58:01.616157",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Ce qu'on trouve quand on élicite vraiment la connaissance d'une organisation",
-    "post_x": "Éliciter, ce n'est pas interviewer. C'est faire dire ce que les gens ne savent pas qu'ils savent. C'est là que se cache la vraie matière d'une organisation.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090015418203201614",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19.png?v=095759"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T10:33:41.336687",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
     "sujet": "Codifier n'est pas développer : la connaissance métier n'est pas du code",
@@ -268,5 +259,14 @@
     "post_x": "GPT-6 Astra agit dans vos logiciels à votre place. CRM, reporting, propositions commerciales. La puissance est réelle. Ce qu'elle révèle aussi : l'état exact de ce qu'elle trouve en arrivant.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2096213908314866092",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-05-122751-weekend.png?v=122751"
+  },
+  {
+    "date": "Dimanche 6 septembre 2026",
+    "timestamp": "2026-09-06T19:38:56.124913",
+    "theme": "Regard de fond",
+    "sujet": "La confiance que les dirigeants accordent aux outils IA avant d'avoir structuré leur propre connaissance",
+    "post_x": "Un dirigeant adopte GPT-6 en trois semaines. Il documente ses processus critiques depuis trois ans. Les deux mouvements ne vont pas à la même vitesse. Ce n'est pas un hasard.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2096684563431117257",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-06-193804-weekend.png?v=193804"
   }
 ]
