@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T10:33:41.336687",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Codifier n'est pas développer : la connaissance métier n'est pas du code",
-    "post_x": "Codifier la connaissance d'une organisation, ce n'est pas écrire du code. C'est ancrer ce qui sait dans un format que l'IA peut utiliser. La nuance change tout.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090024224509333883",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-103258.png?v=103258"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T10:37:02.249186",
     "theme": "Regard de fond",
     "sujet": "Agents IA à 25€/mois : l'accessibilité financière ne règle pas la question de la préparation organisationnelle",
@@ -268,5 +259,14 @@
     "post_x": "Un dirigeant adopte GPT-6 en trois semaines. Il documente ses processus critiques depuis trois ans. Les deux mouvements ne vont pas à la même vitesse. Ce n'est pas un hasard.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2096684563431117257",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-06-193804-weekend.png?v=193804"
+  },
+  {
+    "date": "Lundi 7 septembre 2026",
+    "timestamp": "2026-09-07T06:08:44.599518",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Traiter, au coeur des décisions augmentées",
+    "post_x": "Un Entreprise OS ne stocke pas juste de la connaissance. Il la met au travail. La fonction Traiter, c'est là que vos processus cessent de dépendre de la mémoire d'une seule personne.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2096842915922493825",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-07-060800.png?v=060801"
   }
 ]
