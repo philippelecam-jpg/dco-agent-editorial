@@ -20,7 +20,8 @@
     "https://www.01net.com/actualites/apres-le-piratage-des-impots-des-ingenieurs-de-mistral-vont-sinstaller-dans-les-ministeres.html",
     "https://www.clubic.com/actualite-628315-alerte-fuite-de-donnees-l-association-des-maires-de-france-touchee-par-une-cyberattaque.html",
     "https://www.actuia.com/actualite/modeles-ouverts-la-chine-fournit-leurope-assemble-lamerique-verrouille/",
-    "https://www.blogdumoderateur.com/avantages-facturation-electronique-pour-tpe-pme-independants/"
+    "https://www.blogdumoderateur.com/avantages-facturation-electronique-pour-tpe-pme-independants/",
+    "https://www.clubic.com/dossier-618439-le-dirigeant-de-pme-maillon-le-plus-faible-de-la-chaine-pourquoi-les-hackers-vous-ciblent-en-premier.html"
   ],
   "scripts": [
     {
@@ -142,6 +143,12 @@
       "source": "actualite",
       "titre": "Facturation électronique : ne ratez pas le vrai enjeu",
       "video_id": "gjo0UNz7E8w"
+    },
+    {
+      "date": "2026-09-07T16:38:39.197941",
+      "source": "actualite",
+      "titre": "Dirigeant de PME : vous êtes la cible numéro 1",
+      "video_id": "SXTAy9Eu9X4"
     }
   ]
 }
