@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T10:37:02.249186",
-    "theme": "Regard de fond",
-    "sujet": "Agents IA à 25€/mois : l'accessibilité financière ne règle pas la question de la préparation organisationnelle",
-    "post_x": "Un agent IA coûtait 500€/mois il y a 3 ans. Il en coûte 25€ aujourd'hui. Le prix n'est plus le frein. La question, c'est : votre organisation est-elle prête à l'accueillir ?",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090025156903080378",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-103558-weekend.png?v=103558"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T15:15:23.767171",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
     "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte autant que les étapes",
@@ -268,5 +259,14 @@
     "post_x": "Un Entreprise OS ne stocke pas juste de la connaissance. Il la met au travail. La fonction Traiter, c'est là que vos processus cessent de dépendre de la mémoire d'une seule personne.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2096842915922493825",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-07-060800.png?v=060801"
+  },
+  {
+    "date": "Mardi 8 septembre 2026",
+    "timestamp": "2026-09-08T06:08:51.001654",
+    "theme": "Terrain et missions clients",
+    "sujet": "Quand le vrai problème n'est pas celui qu'on nous a décrit",
+    "post_x": "Une PME industrielle nous appelle pour automatiser ses comptes-rendus de réunion. On commence à creuser. Le vrai problème : personne ne sait qui décide quoi.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2097205331000791119",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-08-060807.png?v=060807"
   }
 ]
