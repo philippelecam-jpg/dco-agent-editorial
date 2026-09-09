@@ -22,7 +22,8 @@
     "https://www.actuia.com/actualite/modeles-ouverts-la-chine-fournit-leurope-assemble-lamerique-verrouille/",
     "https://www.blogdumoderateur.com/avantages-facturation-electronique-pour-tpe-pme-independants/",
     "https://www.clubic.com/dossier-618439-le-dirigeant-de-pme-maillon-le-plus-faible-de-la-chaine-pourquoi-les-hackers-vous-ciblent-en-premier.html",
-    "https://www.blogdumoderateur.com/fuite-donnees-comment-communiquer-premieres-heures-crise/"
+    "https://www.blogdumoderateur.com/fuite-donnees-comment-communiquer-premieres-heures-crise/",
+    "https://www.actuia.com/actualite/pourquoi-mistral-leve-3-milliards-deuros-aupres-de-samsung-nvidia-et-asml/"
   ],
   "scripts": [
     {
@@ -156,6 +157,12 @@
       "source": "actualite",
       "titre": "Fuite de données : ce que ça change pour vous dès demain",
       "video_id": "M4pn7FUBv4s"
+    },
+    {
+      "date": "2026-09-09T16:41:22.213892",
+      "source": "actualite",
+      "titre": "Mistral à 21 milliards : ce que ça change pour vous",
+      "video_id": "jq-PHvhPG7I"
     }
   ]
 }
