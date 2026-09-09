@@ -1,15 +1,6 @@
 [
   {
     "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T15:15:23.767171",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte autant que les étapes",
-    "post_x": "88 % des pilotes IA n'atteignent jamais la production. Ce n'est pas un problème d'outil. C'est un problème d'ordre. On déploie avant de comprendre. On code avant d'éliciter. On accélère avant de structurer.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090095076701507791",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-151430.png?v=151431"
-  },
-  {
-    "date": "Mercredi 19 août 2026",
     "timestamp": "2026-08-19T15:25:14.093880",
     "theme": "Actualité décryptée",
     "sujet": "DeepSeek triple ses prix API : ce que ça dit sur la dépendance des PME/ETI à un seul fournisseur IA",
@@ -268,5 +259,14 @@
     "post_x": "Une PME industrielle nous appelle pour automatiser ses comptes-rendus de réunion. On commence à creuser. Le vrai problème : personne ne sait qui décide quoi.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2097205331000791119",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-08-060807.png?v=060807"
+  },
+  {
+    "date": "Mercredi 9 septembre 2026",
+    "timestamp": "2026-09-09T06:09:31.267949",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Ce qu'on trouve vraiment quand on cartographie une organisation",
+    "post_x": "Quand on cartographie une organisation, on ne trouve pas des processus. On trouve des habitudes. Des routines non écrites. Des savoirs que personne n'a jamais pensé à mettre en mots.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2097567719231259005",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-09-060807.png?v=060807"
   }
 ]
