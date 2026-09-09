@@ -10,7 +10,8 @@
     "https://www.actuia.com/actualite/pourquoi-godot-ferme-la-porte-au-code-genere-par-ia/",
     "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
     "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html",
-    "https://www.01net.com/actualites/smartphone-ecologique-leurope-veut-mettre-un-terme-au-greenwashing-des-entreprises-tech.html"
+    "https://www.01net.com/actualites/smartphone-ecologique-leurope-veut-mettre-un-terme-au-greenwashing-des-entreprises-tech.html",
+    "https://www.01net.com/actualites/openai-revele-chatgpt-resolu-equation-vieille-200-ans-mathematicien-accuse-plagiat.html"
   ],
   "scripts": [
     {
@@ -72,6 +73,12 @@
       "source": "actualite",
       "titre": "Fini les mensonges verts dans la tech ?",
       "video_id": "yrWY04GKeTw"
+    },
+    {
+      "date": "2026-09-09T17:04:20.846497",
+      "source": "actualite",
+      "titre": "ChatGPT résout un problème vieux de 200 ans… vraiment ?",
+      "video_id": "aFYITVic7Uo"
     }
   ]
 }
