@@ -23,7 +23,8 @@
     "https://www.blogdumoderateur.com/avantages-facturation-electronique-pour-tpe-pme-independants/",
     "https://www.clubic.com/dossier-618439-le-dirigeant-de-pme-maillon-le-plus-faible-de-la-chaine-pourquoi-les-hackers-vous-ciblent-en-premier.html",
     "https://www.blogdumoderateur.com/fuite-donnees-comment-communiquer-premieres-heures-crise/",
-    "https://www.actuia.com/actualite/pourquoi-mistral-leve-3-milliards-deuros-aupres-de-samsung-nvidia-et-asml/"
+    "https://www.actuia.com/actualite/pourquoi-mistral-leve-3-milliards-deuros-aupres-de-samsung-nvidia-et-asml/",
+    "https://www.blogdumoderateur.com/interdire-ia-entreprise-utiliser-sans-autorisation-legal/"
   ],
   "scripts": [
     {
@@ -163,6 +164,12 @@
       "source": "actualite",
       "titre": "Mistral à 21 milliards : ce que ça change pour vous",
       "video_id": "jq-PHvhPG7I"
+    },
+    {
+      "date": "2026-09-10T16:39:38.623711",
+      "source": "actualite",
+      "titre": "IA en entreprise : vous êtes peut-être déjà hors-jeu",
+      "video_id": "vyVbW0wy4vE"
     }
   ]
 }
