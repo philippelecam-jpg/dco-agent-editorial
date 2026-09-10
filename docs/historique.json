@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 19 août 2026",
-    "timestamp": "2026-08-19T15:25:14.093880",
-    "theme": "Actualité décryptée",
-    "sujet": "DeepSeek triple ses prix API : ce que ça dit sur la dépendance des PME/ETI à un seul fournisseur IA",
-    "post_x": "DeepSeek vient de tripler ses prix API. Du jour au lendemain. Ceux qui avaient tout construit dessus reconstruisent aujourd'hui. Choisir un fournisseur IA, c'est un acte de gouvernance. Pas un achat de fournitures.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090097736599093474",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-19-152411-weekend.png?v=152411"
-  },
-  {
     "date": "Jeudi 20 août 2026",
     "timestamp": "2026-08-20T06:58:43.075243",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Quand on cartographie une organisation, on ne trouve pas des processus. On trouve des habitudes. Des routines non écrites. Des savoirs que personne n'a jamais pensé à mettre en mots.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2097567719231259005",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-09-060807.png?v=060807"
+  },
+  {
+    "date": "Jeudi 10 septembre 2026",
+    "timestamp": "2026-09-10T06:08:51.827114",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "Facturation électronique et IA : ce que la conformité révèle de votre organisation",
+    "post_x": "La facturation électronique est obligatoire pour les ETI dès maintenant. Beaucoup découvrent que leur donnée est mal structurée. L'IA n'y changera rien. C'est un problème de gouvernance, pas d'outil.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2097930069838557188",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-10-060758.png?v=060758"
   }
 ]
