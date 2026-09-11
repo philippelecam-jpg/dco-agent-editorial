@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 20 août 2026",
-    "timestamp": "2026-08-20T06:58:43.075243",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "Gouvernance IA : ce que l'AI Act change concrètement pour une PME en 2026",
-    "post_x": "55 % des PME françaises utilisent déjà l'IA générative. Très peu ont une charte. Encore moins ont cartographié leurs risques. L'AI Act ne pardonne pas l'improvisation.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090332512480641089",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-20-065759.png?v=065800"
-  },
-  {
     "date": "Vendredi 21 août 2026",
     "timestamp": "2026-08-21T07:02:10.094335",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "La facturation électronique est obligatoire pour les ETI dès maintenant. Beaucoup découvrent que leur donnée est mal structurée. L'IA n'y changera rien. C'est un problème de gouvernance, pas d'outil.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2097930069838557188",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-10-060758.png?v=060758"
+  },
+  {
+    "date": "Vendredi 11 septembre 2026",
+    "timestamp": "2026-09-11T06:09:33.042702",
+    "theme": "Formation et culture IA",
+    "sujet": "La formation IA ne change pas une organisation. Elle change des individus. Ce n'est pas la même chose.",
+    "post_x": "Beaucoup de salariés formés à l'IA. Très peu d'organisations transformées. La formation touche les individus. La transformation touche les structures. Confondre les deux, c'est la garantie de dépenser sans changer.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2098292501891207212",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-11-060808.png?v=060809"
   }
 ]
