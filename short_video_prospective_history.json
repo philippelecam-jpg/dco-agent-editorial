@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 2,
+  "last_theme_index": 3,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales"
@@ -9,6 +9,9 @@
     ],
     "Économie": [
       "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives"
+    ],
+    "Social": [
+      "Les nouvelles formes de solidarité et de lien communautaire face à l'effritement des structures collectives traditionnelles"
     ]
   },
   "scripts": [
@@ -32,6 +35,13 @@
       "angle": "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives",
       "titre": "Et si la valeur de ce que vous faites changeait de main ?",
       "video_id": "HvPiOnm1vME"
+    },
+    {
+      "date": "2026-09-11T09:21:30.293728",
+      "theme": "Social",
+      "angle": "Les nouvelles formes de solidarité et de lien communautaire face à l'effritement des structures collectives traditionnelles",
+      "titre": "Et si l'IA recousait ce que nos sociétés ont effiloché ?",
+      "video_id": "DseRw_3yH7U"
     }
   ]
 }
