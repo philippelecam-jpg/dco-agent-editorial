@@ -25,7 +25,8 @@
     "https://www.blogdumoderateur.com/fuite-donnees-comment-communiquer-premieres-heures-crise/",
     "https://www.actuia.com/actualite/pourquoi-mistral-leve-3-milliards-deuros-aupres-de-samsung-nvidia-et-asml/",
     "https://www.blogdumoderateur.com/interdire-ia-entreprise-utiliser-sans-autorisation-legal/",
-    "https://www.clubic.com/actualite-629332-deepseek-devoile-un-nouveau-modele-ia-puissant-et-econome-qui-pourrait-changer-les-futurs-llm.html"
+    "https://www.clubic.com/actualite-629332-deepseek-devoile-un-nouveau-modele-ia-puissant-et-econome-qui-pourrait-changer-les-futurs-llm.html",
+    "https://www.01net.com/actualites/40-millions-euros-voles-3-ans-avec-faux-rib-des-pirates-fait-ravages-france.html"
   ],
   "scripts": [
     {
@@ -177,6 +178,12 @@
       "source": "actualite",
       "titre": "IA : la puissance ne coûte plus cher. Et alors ?",
       "video_id": "M-JyAT1qvjo"
+    },
+    {
+      "date": "2026-09-12T16:38:00.948192",
+      "source": "actualite",
+      "titre": "Faux RIB : le vrai risque pour votre trésorerie",
+      "video_id": "IGr-fOX3D7o"
     }
   ]
 }
