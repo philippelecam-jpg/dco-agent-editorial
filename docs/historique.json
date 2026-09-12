@@ -1,15 +1,6 @@
 [
   {
     "date": "Vendredi 21 août 2026",
-    "timestamp": "2026-08-21T10:16:48.939515",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : ce qu'elle change et ce qu'elle ne change pas",
-    "post_x": "Une formation IA bien conçue change les réflexes. Mal conçue, elle change juste le vocabulaire. La différence, c'est ce qu'il y a derrière : une structure, ou rien.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090744290712678496",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-21-101415.png?v=101415"
-  },
-  {
-    "date": "Vendredi 21 août 2026",
     "timestamp": "2026-08-21T10:29:48.027918",
     "theme": "Formation et culture IA",
     "sujet": "La culture IA ne s'installe pas en salle de formation",
@@ -268,5 +259,14 @@
     "post_x": "Mistral lève 3 milliards. Valorisation : 21 milliards. Le chiffre impressionne. Ce qui compte pour une PME française : un modèle souverain, CNIL-compatible, déployable sans exposer ses données à l'étranger. L'outil arrive. La question reste la même : êtes-vous prêts à l'accueillir ?",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-12-092413-weekend.png?v=092414"
+  },
+  {
+    "date": "Samedi 12 septembre 2026",
+    "timestamp": "2026-09-12T12:41:45.967669",
+    "theme": "Actualité décryptée",
+    "sujet": "Microsoft 365 : hausse des tarifs Copilot et ce que ça révèle pour les PME/ETI",
+    "post_x": "Microsoft augmente ses tarifs M365. Copilot est désormais dans le prix. La vraie question pour une PME : est-ce que l'organisation est prête à s'en servir ? Payer plus ne remplace pas se préparer.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2098753910898938324",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-12-124054-weekend.png?v=124055"
   }
 ]
