@@ -26,7 +26,8 @@
     "https://www.actuia.com/actualite/pourquoi-mistral-leve-3-milliards-deuros-aupres-de-samsung-nvidia-et-asml/",
     "https://www.blogdumoderateur.com/interdire-ia-entreprise-utiliser-sans-autorisation-legal/",
     "https://www.clubic.com/actualite-629332-deepseek-devoile-un-nouveau-modele-ia-puissant-et-econome-qui-pourrait-changer-les-futurs-llm.html",
-    "https://www.01net.com/actualites/40-millions-euros-voles-3-ans-avec-faux-rib-des-pirates-fait-ravages-france.html"
+    "https://www.01net.com/actualites/40-millions-euros-voles-3-ans-avec-faux-rib-des-pirates-fait-ravages-france.html",
+    "https://www.blogdumoderateur.com/openai-lance-api-agents-fournir-developpeurs-infrastructure-derriere-codex/"
   ],
   "scripts": [
     {
@@ -184,6 +185,12 @@
       "source": "actualite",
       "titre": "Faux RIB : le vrai risque pour votre trésorerie",
       "video_id": "IGr-fOX3D7o"
+    },
+    {
+      "date": "2026-09-13T16:38:06.029841",
+      "source": "actualite",
+      "titre": "L'IA autonome arrive dans vos outils métier",
+      "video_id": "D7u5lYkEVR4"
     }
   ]
 }
