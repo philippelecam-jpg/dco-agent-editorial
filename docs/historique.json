@@ -1,15 +1,6 @@
 [
   {
     "date": "Vendredi 21 août 2026",
-    "timestamp": "2026-08-21T10:29:48.027918",
-    "theme": "Formation et culture IA",
-    "sujet": "La culture IA ne s'installe pas en salle de formation",
-    "post_x": "Une journée IA en salle, ça crée de l'enthousiasme. Pas une culture. La culture, c'est ce qui reste quand la salle est vide et que la décision doit se prendre.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2090747558444531977",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-21-102714.png?v=102714"
-  },
-  {
-    "date": "Vendredi 21 août 2026",
     "timestamp": "2026-08-21T12:34:07.906214",
     "theme": "Formation et culture IA",
     "sujet": "La formation IA ne crée pas une culture. Elle en révèle l'absence.",
@@ -268,5 +259,14 @@
     "post_x": "Microsoft augmente ses tarifs M365. Copilot est désormais dans le prix. La vraie question pour une PME : est-ce que l'organisation est prête à s'en servir ? Payer plus ne remplace pas se préparer.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2098753910898938324",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-12-124054-weekend.png?v=124055"
+  },
+  {
+    "date": "Dimanche 13 septembre 2026",
+    "timestamp": "2026-09-13T13:43:19.097606",
+    "theme": "Actualité décryptée",
+    "sujet": "L'effondrement des coûts des LLM : la barrière financière tombe, la barrière organisationnelle reste",
+    "post_x": "Les coûts d'accès aux grands modèles ont chuté de 90 % en deux ans. Pour une PME, l'IA n'est plus une question de budget. Elle reste une question de préparation. Le prix baisse. Le travail sur l'organisation, lui, ne se solde pas.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-13-134226-weekend.png?v=134227"
   }
 ]
