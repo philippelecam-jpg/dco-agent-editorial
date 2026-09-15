@@ -28,7 +28,8 @@
     "https://www.clubic.com/actualite-629332-deepseek-devoile-un-nouveau-modele-ia-puissant-et-econome-qui-pourrait-changer-les-futurs-llm.html",
     "https://www.01net.com/actualites/40-millions-euros-voles-3-ans-avec-faux-rib-des-pirates-fait-ravages-france.html",
     "https://www.blogdumoderateur.com/openai-lance-api-agents-fournir-developpeurs-infrastructure-derriere-codex/",
-    "https://www.actuia.com/actualite/gpt-6-astra-ce-qui-a-change-chez-openai-en-quinze-jours/"
+    "https://www.actuia.com/actualite/gpt-6-astra-ce-qui-a-change-chez-openai-en-quinze-jours/",
+    "https://www.actuia.com/actualite/distillation-la-nsa-la-cisa-et-le-fbi-nomment-six-societes-chinoises-et-prescrivent-une-riposte-aux-fournisseurs-americains/"
   ],
   "scripts": [
     {
@@ -198,6 +199,12 @@
       "source": "actualite",
       "titre": "GPT-6 : ce que le silence d'OpenAI vous coûte",
       "video_id": "7QjphNZTKrg"
+    },
+    {
+      "date": "2026-09-15T16:38:04.999187",
+      "source": "actualite",
+      "titre": "Vos outils IA vous mentent peut-être déjà",
+      "video_id": "GMiretybC6s"
     }
   ]
 }
