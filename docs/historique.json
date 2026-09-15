@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 22 août 2026",
-    "timestamp": "2026-08-22T09:26:19.469770",
-    "theme": "Conviction D&Co",
-    "sujet": "82,5 % de réussite quand le périmètre est défini : ce que ce chiffre dit vraiment",
-    "post_x": "82,5 % des projets IA réussissent quand le périmètre est défini avant de commencer. Le frein n'est pas technologique. Il est décisionnel. Définir le périmètre, c'est déjà diriger.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091094580104204354",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-22-092527-weekend.png?v=092527"
-  },
-  {
     "date": "Dimanche 23 août 2026",
     "timestamp": "2026-08-23T09:27:20.774528",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "Un Entreprise OS sans mémoire structurée, c'est une machine qui tourne dans le vide. La fonction Stocker n'est pas de l'archivage. C'est le fondement de toute décision augmentée.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2099379644680065260",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-14-060803.png?v=060804"
+  },
+  {
+    "date": "Mardi 15 septembre 2026",
+    "timestamp": "2026-09-15T06:08:47.483009",
+    "theme": "Terrain et missions clients",
+    "sujet": "Terrain et missions clients : quand l'IA agentique révèle les angles morts d'une organisation",
+    "post_x": "Un client ETI voulait un agent IA pour traiter ses devis automatiquement. On a découvert que personne ne savait exactement qui validait quoi. L'IA n'a rien automatisé. Elle a rendu le désordre visible.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2099742030725537841",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-15-060803.png?v=060804"
   }
 ]
