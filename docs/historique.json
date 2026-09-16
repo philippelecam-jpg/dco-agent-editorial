@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 23 août 2026",
-    "timestamp": "2026-08-23T09:27:20.774528",
-    "theme": "Regard de fond",
-    "sujet": "Architectures multi-agents : quand l'automatisation amplifie le désordre plutôt que la performance",
-    "post_x": "Un agent lit les mails. Un autre met à jour le CRM. Un troisième signale les exceptions. Sauf que si la connaissance n'est pas structurée en amont, ces agents ne s'organisent pas. Ils s'agitent.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091457218835349798",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-23-092628-weekend.png?v=092629"
-  },
-  {
     "date": "Lundi 24 août 2026",
     "timestamp": "2026-08-24T07:13:08.900832",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Un client ETI voulait un agent IA pour traiter ses devis automatiquement. On a découvert que personne ne savait exactement qui validait quoi. L'IA n'a rien automatisé. Elle a rendu le désordre visible.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2099742030725537841",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-15-060803.png?v=060804"
+  },
+  {
+    "date": "Mercredi 16 septembre 2026",
+    "timestamp": "2026-09-16T06:08:55.233647",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Éliciter avant de déployer : ce que l'IA ne trouvera jamais seule",
+    "post_x": "Codifier, ce n'est pas développer un logiciel. C'est ancrer ce que vos experts savent sans le dire. Aucun outil ne fait ça à votre place.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2100104410378428619",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-16-060801.png?v=060802"
   }
 ]
