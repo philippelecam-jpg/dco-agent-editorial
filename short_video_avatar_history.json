@@ -11,7 +11,8 @@
     "https://www.blogdumoderateur.com/fuite-donnees-intermarche-cyberattaque-revele-fragilites-retail/",
     "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html",
     "https://www.01net.com/actualites/smartphone-ecologique-leurope-veut-mettre-un-terme-au-greenwashing-des-entreprises-tech.html",
-    "https://www.01net.com/actualites/openai-revele-chatgpt-resolu-equation-vieille-200-ans-mathematicien-accuse-plagiat.html"
+    "https://www.01net.com/actualites/openai-revele-chatgpt-resolu-equation-vieille-200-ans-mathematicien-accuse-plagiat.html",
+    "https://www.01net.com/actualites/fuite-donnees-pres-moitie-francais-pirates-cette-annee.html"
   ],
   "scripts": [
     {
@@ -79,6 +80,12 @@
       "source": "actualite",
       "titre": "ChatGPT résout un problème vieux de 200 ans… vraiment ?",
       "video_id": "aFYITVic7Uo"
+    },
+    {
+      "date": "2026-09-16T17:06:47.545615",
+      "source": "actualite",
+      "titre": "1 Français sur 2 piraté : c'est vous, c'est moi",
+      "video_id": "zHPLpovLBl0"
     }
   ]
 }
