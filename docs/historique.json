@@ -1,15 +1,6 @@
 [
   {
     "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T07:13:08.900832",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation à l'ère de l'IA",
-    "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart ne vient pas des outils. Il vient de l'organisation elle-même. Un OS défaillant ne s'améliore pas en ajoutant des applications.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091785696168050761",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-071225.png?v=071226"
-  },
-  {
-    "date": "Lundi 24 août 2026",
     "timestamp": "2026-08-24T09:59:08.974878",
     "theme": "L'Entreprise OS",
     "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation",
@@ -268,5 +259,14 @@
     "post_x": "Codifier, ce n'est pas développer un logiciel. C'est ancrer ce que vos experts savent sans le dire. Aucun outil ne fait ça à votre place.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2100104410378428619",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-16-060801.png?v=060802"
+  },
+  {
+    "date": "Jeudi 17 septembre 2026",
+    "timestamp": "2026-09-17T06:08:53.515599",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "L'AI Act ne s'applique pas qu'aux géants de la tech. Les PME aussi sont concernées, dès maintenant.",
+    "post_x": "L'AI Act est entré en vigueur. Beaucoup de PME pensent que c'est pour les autres. Ce n'est pas le cas. Si vous utilisez un outil IA dans un processus RH, commercial ou opérationnel, vous avez des obligations. Pas demain.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2100466831970443413",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-17-060809.png?v=060809"
   }
 ]
