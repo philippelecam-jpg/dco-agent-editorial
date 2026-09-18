@@ -1,15 +1,6 @@
 [
   {
     "date": "Lundi 24 août 2026",
-    "timestamp": "2026-08-24T09:59:08.974878",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation",
-    "post_x": "Votre SI stocke des données. L'Entreprise OS stocke de la connaissance. Ce n'est pas le même actif. Ce n'est pas le même avenir.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2091827429191147678",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-24-095815.png?v=095816"
-  },
-  {
-    "date": "Lundi 24 août 2026",
     "timestamp": "2026-08-24T14:40:54.471535",
     "theme": "L'Entreprise OS",
     "sujet": "L'Entreprise OS : la fonction Traiter, le coeur décisionnel de l'organisation augmentée",
@@ -268,5 +259,14 @@
     "post_x": "L'AI Act est entré en vigueur. Beaucoup de PME pensent que c'est pour les autres. Ce n'est pas le cas. Si vous utilisez un outil IA dans un processus RH, commercial ou opérationnel, vous avez des obligations. Pas demain.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2100466831970443413",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-17-060809.png?v=060809"
+  },
+  {
+    "date": "Vendredi 18 septembre 2026",
+    "timestamp": "2026-09-18T06:08:54.410058",
+    "theme": "Formation et culture IA",
+    "sujet": "Former les collaborateurs à l'IA ne suffit pas si l'organisation n'a pas changé d'un centimètre",
+    "post_x": "Former des individus à l'IA dans une organisation immobile, c'est apprendre à nager dans une piscine vide. La compétence arrive. Le contexte, lui, n'a pas bougé.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2100829223825137747",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-18-060810.png?v=060811"
   }
 ]
