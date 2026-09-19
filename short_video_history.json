@@ -32,7 +32,8 @@
     "https://www.actuia.com/actualite/distillation-la-nsa-la-cisa-et-le-fbi-nomment-six-societes-chinoises-et-prescrivent-une-riposte-aux-fournisseurs-americains/",
     "https://www.blogdumoderateur.com/arrivee-google-ai-overview-ai-mode-france-impacts-paid-media/",
     "https://www.blogdumoderateur.com/facturation-electronique-change-vraiment-retards-paiement/",
-    "https://www.clubic.com/actualite-630367-chatgpt-6-astra-pourrait-bientot-remplacer-votre-avocat-avec-cette-nouvelle-fonctionnalite.html"
+    "https://www.clubic.com/actualite-630367-chatgpt-6-astra-pourrait-bientot-remplacer-votre-avocat-avec-cette-nouvelle-fonctionnalite.html",
+    "https://www.actuia.com/actualite/une-equipe-de-trois-chercheurs-a-compromis-le-depot-interne-dopenai-avec-claude-opus-5-pour-moins-de-3-000-dollars-de-tokens/"
   ],
   "scripts": [
     {
@@ -226,6 +227,12 @@
       "source": "actualite",
       "titre": "L'IA juridique : opportunité ou piège pour les dirigeants ?",
       "video_id": "PLFhIigMgfs"
+    },
+    {
+      "date": "2026-09-19T16:38:09.765359",
+      "source": "actualite",
+      "titre": "OpenAI hacké : ce que ça change pour vous",
+      "video_id": "IafTf2tsTeo"
     }
   ]
 }
