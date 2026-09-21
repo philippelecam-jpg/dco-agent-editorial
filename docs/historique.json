@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T07:01:08.376602",
-    "theme": "Terrain et missions clients",
-    "sujet": "Terrain : ce que révèle vraiment une mission d'accompagnement IA en PME",
-    "post_x": "On est entré dans une PME industrielle de 200 personnes pour cartographier leur connaissance métier. Ce qu'on a trouvé : 80 % des process critiques dans la tête de 3 personnes. L'IA n'était pas leur problème.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2092145017330475247",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-25-070014.png?v=070015"
-  },
-  {
     "date": "Mercredi 26 août 2026",
     "timestamp": "2026-08-26T07:02:08.857324",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
@@ -268,5 +259,14 @@
     "post_x": "88 solutions IA souveraines référencées pour les PME/ETI. Le catalogue est là. L'objectif : 80 % d'adoption d'ici 2030. Ce qu'on ne dit pas : avoir le choix d'un outil ne règle pas le problème de fond. Êtes-vous prêts à accueillir ce que vous allez y choisir ?",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-19-125624-weekend.png?v=125624"
+  },
+  {
+    "date": "Lundi 21 septembre 2026",
+    "timestamp": "2026-09-21T06:08:47.736054",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Traiter, là où la décision devient un processus",
+    "post_x": "Un Entreprise OS sans fonction Traiter, c'est une bibliothèque sans lecteurs. La connaissance est là. Personne ne s'en sert pour décider.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2101916359399780632",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-21-060804.png?v=060804"
   }
 ]
