@@ -35,7 +35,8 @@
     "https://www.clubic.com/actualite-630367-chatgpt-6-astra-pourrait-bientot-remplacer-votre-avocat-avec-cette-nouvelle-fonctionnalite.html",
     "https://www.actuia.com/actualite/une-equipe-de-trois-chercheurs-a-compromis-le-depot-interne-dopenai-avec-claude-opus-5-pour-moins-de-3-000-dollars-de-tokens/",
     "https://www.actuia.com/actualite/harvey-leve-550-millions-de-dollars-et-rachete-guardrails-ai-le-modele-le-banc-dessai-et-les-garde-fous-chez-un-seul-fournisseur/",
-    "https://www.clubic.com/dossier-626686-cyberattaque-comment-communiquer-avec-ses-clients-fournisseurs-et-partenaires-sans-aggraver-la-crise.html"
+    "https://www.clubic.com/dossier-626686-cyberattaque-comment-communiquer-avec-ses-clients-fournisseurs-et-partenaires-sans-aggraver-la-crise.html",
+    "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html"
   ],
   "scripts": [
     {
@@ -247,6 +248,12 @@
       "source": "actualite",
       "titre": "Cyberattaque : ce que vos partenaires jugent vraiment",
       "video_id": "X_Kdo2BUkPw"
+    },
+    {
+      "date": "2026-09-22T16:38:07.880984",
+      "source": "actualite",
+      "titre": "Orange fait du e-commerce : ce que ça change pour vous",
+      "video_id": "BPABfWqIdKw"
     }
   ]
 }
