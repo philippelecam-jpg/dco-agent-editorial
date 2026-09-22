@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 26 août 2026",
-    "timestamp": "2026-08-26T07:02:08.857324",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Méthode Cartographier → Éliciter → Codifier : ce qu'on trouve avant de toucher aux outils",
-    "post_x": "62 % des entreprises testent des agents IA. 23 % les déploient vraiment. L'écart, ce n'est pas un problème d'outil. C'est un problème de connaissance non structurée avant de déployer.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2092507619118158004",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-26-070105.png?v=070105"
-  },
-  {
     "date": "Jeudi 27 août 2026",
     "timestamp": "2026-08-27T10:19:30.309664",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Un Entreprise OS sans fonction Traiter, c'est une bibliothèque sans lecteurs. La connaissance est là. Personne ne s'en sert pour décider.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2101916359399780632",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-21-060804.png?v=060804"
+  },
+  {
+    "date": "Mardi 22 septembre 2026",
+    "timestamp": "2026-09-22T06:09:01.421568",
+    "theme": "Terrain et missions clients",
+    "sujet": "Quand l'IA révèle ce que l'organisation ne voulait pas voir",
+    "post_x": "Mission ETI cette semaine. Ils voulaient automatiser leurs comptes-rendus de réunion. On a découvert que personne ne lisait les comptes-rendus existants. Le vrai problème n'était pas l'IA.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2102278760741691514",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-22-060807.png?v=060807"
   }
 ]
