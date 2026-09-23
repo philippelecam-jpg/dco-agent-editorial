@@ -12,7 +12,8 @@
     "https://www.01net.com/actualites/hack-impots-corruption-association-depose-plainte-eventuelles-complicites.html",
     "https://www.01net.com/actualites/smartphone-ecologique-leurope-veut-mettre-un-terme-au-greenwashing-des-entreprises-tech.html",
     "https://www.01net.com/actualites/openai-revele-chatgpt-resolu-equation-vieille-200-ans-mathematicien-accuse-plagiat.html",
-    "https://www.01net.com/actualites/fuite-donnees-pres-moitie-francais-pirates-cette-annee.html"
+    "https://www.01net.com/actualites/fuite-donnees-pres-moitie-francais-pirates-cette-annee.html",
+    "https://www.actuia.com/actualite/sept-modeles-de-pointe-ont-dirige-de-vraies-entreprises-pendant-72-heures-12-431-dollars-de-factures-indues-zero-revenu/"
   ],
   "scripts": [
     {
@@ -86,6 +87,12 @@
       "source": "actualite",
       "titre": "1 Français sur 2 piraté : c'est vous, c'est moi",
       "video_id": "zHPLpovLBl0"
+    },
+    {
+      "date": "2026-09-23T17:07:18.560621",
+      "source": "actualite",
+      "titre": "Des IA ont géré de vraies boîtes… catastrophe",
+      "video_id": "BybUjc2sgtg"
     }
   ]
 }
