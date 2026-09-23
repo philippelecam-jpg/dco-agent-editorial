@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 27 août 2026",
-    "timestamp": "2026-08-27T10:19:30.309664",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "Gouvernance IA : ce que l'AI Act change concrètement pour une PME française en 2026",
-    "post_x": "L'AI Act est entré en vigueur. La plupart des PME ne savent pas encore si leurs outils IA sont concernés. Ce n'est pas un problème juridique. C'est un problème de connaissance de ses propres pratiques.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2092919758177948151",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-27-101847.png?v=101847"
-  },
-  {
     "date": "Vendredi 28 août 2026",
     "timestamp": "2026-08-28T18:59:05.934038",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "Mission ETI cette semaine. Ils voulaient automatiser leurs comptes-rendus de réunion. On a découvert que personne ne lisait les comptes-rendus existants. Le vrai problème n'était pas l'IA.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2102278760741691514",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-22-060807.png?v=060807"
+  },
+  {
+    "date": "Mercredi 23 septembre 2026",
+    "timestamp": "2026-09-23T06:08:46.166151",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Méthode Cartographier → Éliciter → Codifier : ce qu'on trouve quand on cartographie vraiment",
+    "post_x": "Avant de déployer quoi que ce soit, on cartographie. Ce qu'on trouve à chaque fois : une organisation qui croit savoir ce qu'elle sait. Elle a tort.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2102641127253749860",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-23-060801.png?v=060802"
   }
 ]
