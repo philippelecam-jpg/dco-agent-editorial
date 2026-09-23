@@ -36,7 +36,8 @@
     "https://www.actuia.com/actualite/une-equipe-de-trois-chercheurs-a-compromis-le-depot-interne-dopenai-avec-claude-opus-5-pour-moins-de-3-000-dollars-de-tokens/",
     "https://www.actuia.com/actualite/harvey-leve-550-millions-de-dollars-et-rachete-guardrails-ai-le-modele-le-banc-dessai-et-les-garde-fous-chez-un-seul-fournisseur/",
     "https://www.clubic.com/dossier-626686-cyberattaque-comment-communiquer-avec-ses-clients-fournisseurs-et-partenaires-sans-aggraver-la-crise.html",
-    "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html"
+    "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html",
+    "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/"
   ],
   "scripts": [
     {
@@ -254,6 +255,12 @@
       "source": "actualite",
       "titre": "Orange fait du e-commerce : ce que ça change pour vous",
       "video_id": "BPABfWqIdKw"
+    },
+    {
+      "date": "2026-09-23T16:38:08.034516",
+      "source": "actualite",
+      "titre": "L'IA vient de devenir deux fois moins chère",
+      "video_id": "SXJROQvWFNA"
     }
   ]
 }
