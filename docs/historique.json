@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 28 août 2026",
-    "timestamp": "2026-08-28T18:59:05.934038",
-    "theme": "Formation et culture IA",
-    "sujet": "La formation IA ne change rien si l'organisation n'est pas prête à apprendre",
-    "post_x": "On forme des gens à des outils. On ne forme pas des organisations à penser autrement. C'est là que la plupart des programmes IA s'arrêtent, et que les résultats aussi.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2093412863557984763",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-28-185811.png?v=185812"
-  },
-  {
     "date": "Samedi 29 août 2026",
     "timestamp": "2026-08-29T13:48:44.868640",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "Avant de déployer quoi que ce soit, on cartographie. Ce qu'on trouve à chaque fois : une organisation qui croit savoir ce qu'elle sait. Elle a tort.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2102641127253749860",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-23-060801.png?v=060802"
+  },
+  {
+    "date": "Jeudi 24 septembre 2026",
+    "timestamp": "2026-09-24T06:08:51.577155",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "Gouvernance IA : ce que la réglementation change concrètement pour une PME",
+    "post_x": "Une charte IA, ce n'est pas un document RH. C'est le contrat entre votre organisation et les outils qui vont décider à sa place. Sans elle, l'IA n'est pas gouvernée. Elle est subie.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2103003539211469069",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-24-060807.png?v=060808"
   }
 ]
