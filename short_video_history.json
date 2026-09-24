@@ -37,7 +37,8 @@
     "https://www.actuia.com/actualite/harvey-leve-550-millions-de-dollars-et-rachete-guardrails-ai-le-modele-le-banc-dessai-et-les-garde-fous-chez-un-seul-fournisseur/",
     "https://www.clubic.com/dossier-626686-cyberattaque-comment-communiquer-avec-ses-clients-fournisseurs-et-partenaires-sans-aggraver-la-crise.html",
     "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html",
-    "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/"
+    "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/",
+    "https://www.01net.com/actualites/nouveau-deluge-failles-chrome-google-corrige-plus-100-failles-11-breches-critiques.html"
   ],
   "scripts": [
     {
@@ -261,6 +262,12 @@
       "source": "actualite",
       "titre": "L'IA vient de devenir deux fois moins chère",
       "video_id": "SXJROQvWFNA"
+    },
+    {
+      "date": "2026-09-24T16:38:47.393124",
+      "source": "actualite",
+      "titre": "108 failles Chrome : ce que ça change pour vous",
+      "video_id": "jSjF5BUZ344"
     }
   ]
 }
