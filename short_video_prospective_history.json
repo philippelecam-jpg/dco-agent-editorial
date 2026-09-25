@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 4,
+  "last_theme_index": 5,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales"
@@ -15,6 +15,9 @@
     ],
     "Gouvernance et pouvoir": [
       "La recomposition des institutions face à la montée des contre-pouvoirs numériques et citoyens"
+    ],
+    "Éducation et transmission": [
+      "L'évolution des institutions scolaires face aux nouvelles formes d'apprentissage décentralisé et continu"
     ]
   },
   "scripts": [
@@ -52,6 +55,13 @@
       "angle": "La recomposition des institutions face à la montée des contre-pouvoirs numériques et citoyens",
       "titre": "Et si vos décisions étaient jugées en temps réel ?",
       "video_id": "jdp67Q4sxO0"
+    },
+    {
+      "date": "2026-09-25T09:21:07.578042",
+      "theme": "Éducation et transmission",
+      "angle": "L'évolution des institutions scolaires face aux nouvelles formes d'apprentissage décentralisé et continu",
+      "titre": "Et si l'école n'était plus un lieu ?",
+      "video_id": "OZnEfysHekc"
     }
   ]
 }
