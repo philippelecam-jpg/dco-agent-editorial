@@ -38,7 +38,8 @@
     "https://www.clubic.com/dossier-626686-cyberattaque-comment-communiquer-avec-ses-clients-fournisseurs-et-partenaires-sans-aggraver-la-crise.html",
     "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html",
     "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/",
-    "https://www.01net.com/actualites/nouveau-deluge-failles-chrome-google-corrige-plus-100-failles-11-breches-critiques.html"
+    "https://www.01net.com/actualites/nouveau-deluge-failles-chrome-google-corrige-plus-100-failles-11-breches-critiques.html",
+    "https://www.actuia.com/actualite/gpt-6-sol-claude-opus-55-ce-que-coute-une-session-dagent/"
   ],
   "scripts": [
     {
@@ -268,6 +269,12 @@
       "source": "actualite",
       "titre": "108 failles Chrome : ce que ça change pour vous",
       "video_id": "jSjF5BUZ344"
+    },
+    {
+      "date": "2026-09-25T16:38:12.776911",
+      "source": "actualite",
+      "titre": "Vos agents IA coûtent deux fois moins cher : et alors ?",
+      "video_id": "LPGPaNYwxYE"
     }
   ]
 }
