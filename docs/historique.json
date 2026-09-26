@@ -1,15 +1,6 @@
 [
   {
     "date": "Dimanche 30 août 2026",
-    "timestamp": "2026-08-30T09:25:09.018303",
-    "theme": "Regard de fond",
-    "sujet": "La connaissance tacite : ce que les organisations ne savent pas qu'elles savent",
-    "post_x": "Dans la plupart des PME, la vraie connaissance métier n'est ni dans le SI, ni dans les docs. Elle est dans trois têtes. Personne ne le sait vraiment, jusqu'au jour où une de ces têtes part.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2093993384473932200",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-092407-weekend.png?v=092408"
-  },
-  {
-    "date": "Dimanche 30 août 2026",
     "timestamp": "2026-08-30T14:19:59.337324",
     "theme": "Regard de fond",
     "sujet": "Le temps du dirigeant comme révélateur de ses vraies priorités face à la transformation IA",
@@ -268,5 +259,14 @@
     "post_x": "La formation IA donne des compétences à des individus. Elle ne change pas la façon dont l'organisation décide, stocke, partage. Ce n'est pas la même chose.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2103365925286338919",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-25-060807.png?v=060807"
+  },
+  {
+    "date": "Samedi 26 septembre 2026",
+    "timestamp": "2026-09-26T09:25:23.855147",
+    "theme": "Actualité décryptée",
+    "sujet": "Microsoft Copilot Autopilot : quand l'agent travaille sans vous, êtes-vous prêts ?",
+    "post_x": "Microsoft Copilot devient Autopilot. Un agent qui surveille Teams, gère des tâches, agit seul quand vous êtes déconnecté. L'outil arrive dans les prochaines semaines pour toute PME sous M365. La question n'est pas \"comment ça marche ?\" Elle est : \"qu'est-ce qu'on lui confie, et sur quelle base ?\"",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2103777913124368454",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-092409-weekend.png?v=092409"
   }
 ]
