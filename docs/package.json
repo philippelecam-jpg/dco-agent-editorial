@@ -1,10 +1,10 @@
 {
   "date": "Samedi 26 septembre 2026",
-  "theme": "Actualité décryptée",
-  "generated_at": "2026-09-26T09:24:09.785524",
-  "sujet": "Microsoft Copilot Autopilot : quand l'agent travaille sans vous, êtes-vous prêts ?",
-  "post_x": "Microsoft Copilot devient Autopilot. Un agent qui surveille Teams, gère des tâches, agit seul quand vous êtes déconnecté. L'outil arrive dans les prochaines semaines pour toute PME sous M365. La question n'est pas \"comment ça marche ?\" Elle est : \"qu'est-ce qu'on lui confie, et sur quelle base ?\"",
-  "post_linkedin": "Microsoft vient de refondre Copilot. L'annonce est passée vite. Ce qu'elle contient mérite qu'on s'y arrête.\n\nAutopilot est un agent persistant. Il surveille des canaux Teams, gère des tâches récurrentes, prend en charge des suivis, même quand vous êtes déconnecté. Word, Excel, PowerPoint s'ouvrent directement depuis Copilot. L'IA devient la porte d'entrée de la suite.\n\nPour toute PME sous Microsoft 365, c'est concret et immédiat.\n\nMais voilà ce qu'on observe à chaque déploiement d'agent autonome : l'outil amplifie ce qui existe. S'il n'existe rien de structuré, pas de règles claires, pas de connaissance codifiée, pas de gouvernance, il amplifie le vide.\n\nConfier une tâche à un agent qui agit sans supervision, c'est lui faire confiance. Cette confiance doit reposer sur quelque chose : des processus explicites, une connaissance documentée, des décisions qui ont une forme écrite.\n\nLa vraie question pour un dirigeant de PME n'est pas \"comment activer Autopilot ?\" Elle est : \"sur quoi est-ce qu'on le fait reposer ?\"\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #MicrosoftCopilot #Autopilot #TransformationIA #PME #Gouvernance #AgentIA",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-092409-weekend.png?v=092409"
+  "theme": "Conviction D&Co",
+  "generated_at": "2026-09-26T13:39:36.543225",
+  "sujet": "Piloter les coûts IA sans gouvernance : une dépense qu'on ne voit pas arriver",
+  "post_x": "Les PME déploient l'IA par couches. Un abonnement ici, un agent là, une licence oubliée. Les coûts grossissent sans qu'on les voie. Ce n'est pas un problème de budget. C'est un problème de gouvernance.",
+  "post_linkedin": "Les dépenses IA ne s'enflamment pas d'un coup.\n\nElles grossissent par capillarité.\n\nUn abonnement Copilot ici. Un outil no-code là. Trois licences prises à l'essai, jamais résiliées. Un agent déployé par un collaborateur enthousiaste, facturé à l'usage, sans plafond.\n\nÀ la fin du trimestre, personne ne sait vraiment ce que l'IA coûte. Ni ce qu'elle rapporte.\n\nCe n'est pas un problème de budget. C'est un problème de gouvernance.\n\nPiloter les coûts IA, c'est d'abord savoir ce qui tourne, pour qui, sur quelles données, avec quelle utilité réelle. Avant de couper, il faut voir.\n\nUne organisation qui déploie sans gouvernance ne fait pas d'économies demain. Elle accumule du désordre aujourd'hui.\n\nLa visibilité précède la maîtrise. Toujours.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#GouvernanceIA #PME #TransformationIA #CostsIA #DecisionsCo",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-133936-weekend.png?v=133936"
 }
