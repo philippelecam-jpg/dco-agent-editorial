@@ -39,7 +39,8 @@
     "https://www.clubic.com/actualite-630841-orange-se-lance-dans-le-e-commerce-avec-une-marketplace-garnie-de-40000-produits-tech-d-ici-quelques-semaines.html",
     "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/",
     "https://www.01net.com/actualites/nouveau-deluge-failles-chrome-google-corrige-plus-100-failles-11-breches-critiques.html",
-    "https://www.actuia.com/actualite/gpt-6-sol-claude-opus-55-ce-que-coute-une-session-dagent/"
+    "https://www.actuia.com/actualite/gpt-6-sol-claude-opus-55-ce-que-coute-une-session-dagent/",
+    "https://www.01net.com/actualites/microsoft-devoile-son-nouveau-copilot-une-super-app-pour-toutes-ses-ia.html"
   ],
   "scripts": [
     {
@@ -275,6 +276,12 @@
       "source": "actualite",
       "titre": "Vos agents IA coûtent deux fois moins cher : et alors ?",
       "video_id": "LPGPaNYwxYE"
+    },
+    {
+      "date": "2026-09-26T16:38:23.229499",
+      "source": "actualite",
+      "titre": "Copilot unifié : ce que ça change vraiment pour vous",
+      "video_id": "-7E97Yb5Psw"
     }
   ]
 }
