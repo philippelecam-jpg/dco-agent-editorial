@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 30 août 2026",
-    "timestamp": "2026-08-30T14:19:59.337324",
-    "theme": "Regard de fond",
-    "sujet": "Le temps du dirigeant comme révélateur de ses vraies priorités face à la transformation IA",
-    "post_x": "Ce qu'un dirigeant reporte n'est jamais anodin. Structurer la connaissance, c'est toujours urgent demain. Jusqu'au jour où ce n'est plus possible.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2094067583481770301",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-08-30-141857-weekend.png?v=141857"
-  },
-  {
     "date": "Lundi 31 août 2026",
     "timestamp": "2026-08-31T06:08:48.743046",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Microsoft Copilot devient Autopilot. Un agent qui surveille Teams, gère des tâches, agit seul quand vous êtes déconnecté. L'outil arrive dans les prochaines semaines pour toute PME sous M365. La question n'est pas \"comment ça marche ?\" Elle est : \"qu'est-ce qu'on lui confie, et sur quelle base ?\"",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2103777913124368454",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-092409-weekend.png?v=092409"
+  },
+  {
+    "date": "Samedi 26 septembre 2026",
+    "timestamp": "2026-09-26T13:40:29.322589",
+    "theme": "Conviction D&Co",
+    "sujet": "Piloter les coûts IA sans gouvernance : une dépense qu'on ne voit pas arriver",
+    "post_x": "Les PME déploient l'IA par couches. Un abonnement ici, un agent là, une licence oubliée. Les coûts grossissent sans qu'on les voie. Ce n'est pas un problème de budget. C'est un problème de gouvernance.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2103842111057735933",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-133936-weekend.png?v=133936"
   }
 ]
