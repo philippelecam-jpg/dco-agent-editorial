@@ -1,10 +1,10 @@
 {
-  "date": "Samedi 26 septembre 2026",
-  "theme": "Conviction D&Co",
-  "generated_at": "2026-09-26T13:39:36.543225",
-  "sujet": "Piloter les coûts IA sans gouvernance : une dépense qu'on ne voit pas arriver",
-  "post_x": "Les PME déploient l'IA par couches. Un abonnement ici, un agent là, une licence oubliée. Les coûts grossissent sans qu'on les voie. Ce n'est pas un problème de budget. C'est un problème de gouvernance.",
-  "post_linkedin": "Les dépenses IA ne s'enflamment pas d'un coup.\n\nElles grossissent par capillarité.\n\nUn abonnement Copilot ici. Un outil no-code là. Trois licences prises à l'essai, jamais résiliées. Un agent déployé par un collaborateur enthousiaste, facturé à l'usage, sans plafond.\n\nÀ la fin du trimestre, personne ne sait vraiment ce que l'IA coûte. Ni ce qu'elle rapporte.\n\nCe n'est pas un problème de budget. C'est un problème de gouvernance.\n\nPiloter les coûts IA, c'est d'abord savoir ce qui tourne, pour qui, sur quelles données, avec quelle utilité réelle. Avant de couper, il faut voir.\n\nUne organisation qui déploie sans gouvernance ne fait pas d'économies demain. Elle accumule du désordre aujourd'hui.\n\nLa visibilité précède la maîtrise. Toujours.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#GouvernanceIA #PME #TransformationIA #CostsIA #DecisionsCo",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-26-133936-weekend.png?v=133936"
+  "date": "Dimanche 27 septembre 2026",
+  "theme": "Regard de fond",
+  "generated_at": "2026-09-27T09:24:13.913330",
+  "sujet": "Les benchmarks des LLM ne sont pas votre réalité opérationnelle",
+  "post_x": "Claude Opus 5.5, GPT-6 Sol : plus puissants, 40 % moins chers. Les éditeurs publient des scores impressionnants. Mais 40 % de réussite sur les tâches complexes, c'est le leur. Pas le vôtre. Vos processus ne ressemblent à aucun benchmark.",
+  "post_linkedin": "Claude Opus 5.5 et GPT-6 Sol sont sortis le 22 septembre. Deux modèles présentés comme plus performants, avec des coûts d'exploitation en baisse de 40 %.\n\nLes éditeurs publient leurs benchmarks. Recherche de connaissances, raisonnement, tâches autonomes : les scores progressent.\n\nMais un benchmark, c'est un test conçu par celui qui vend le modèle.\n\nCe que vous devez mesurer, c'est différent : comment ce modèle se comporte sur vos données, vos processus, vos cas d'usage réels. Un taux de réussite de 40 % sur une tâche complexe générique ne dit rien sur ce qu'il fera dans votre gestion des devis, votre suivi client ou votre reporting.\n\nLa baisse des coûts est réelle. Elle rend viables des projets qui ne l'étaient pas. C'est utile.\n\nMais choisir un modèle parce qu'il score bien sur les tests de son éditeur, c'est recruter quelqu'un sur la base de sa propre lettre de recommandation.\n\nLa performance IA se valide sur le terrain. Le vôtre.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#IA #LLM #TransformationIA #PME #Gouvernance",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-27-092413-weekend.png?v=092413"
 }
