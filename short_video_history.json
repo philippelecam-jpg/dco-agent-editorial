@@ -40,7 +40,8 @@
     "https://www.blogdumoderateur.com/openai-lance-gpt-6-sol-luna-tarifs-api-divises-deux/",
     "https://www.01net.com/actualites/nouveau-deluge-failles-chrome-google-corrige-plus-100-failles-11-breches-critiques.html",
     "https://www.actuia.com/actualite/gpt-6-sol-claude-opus-55-ce-que-coute-une-session-dagent/",
-    "https://www.01net.com/actualites/microsoft-devoile-son-nouveau-copilot-une-super-app-pour-toutes-ses-ia.html"
+    "https://www.01net.com/actualites/microsoft-devoile-son-nouveau-copilot-une-super-app-pour-toutes-ses-ia.html",
+    "https://www.blogdumoderateur.com/linkedin-pages-entreprise-supprimer-faux-employes/"
   ],
   "scripts": [
     {
@@ -282,6 +283,12 @@
       "source": "actualite",
       "titre": "Copilot unifié : ce que ça change vraiment pour vous",
       "video_id": "-7E97Yb5Psw"
+    },
+    {
+      "date": "2026-09-27T16:38:14.452715",
+      "source": "actualite",
+      "titre": "LinkedIn vous force à nettoyer votre marque employeur",
+      "video_id": "OzkUE4F0wPk"
     }
   ]
 }
