@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mardi 1 septembre 2026",
-    "timestamp": "2026-09-01T06:08:55.422421",
-    "theme": "Terrain et missions clients",
-    "sujet": "Retour terrain : quand l'IA agentique révèle l'état réel d'une organisation",
-    "post_x": "Un client ETI nous appelle pour déployer des agents IA. On commence par cartographier. On trouve : 3 bases de données contradictoires, 0 processus documenté, 2 experts métier sur le départ. Le sujet n'était pas l'IA.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2094668594512638008",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-01-060802.png?v=060802"
-  },
-  {
     "date": "Mercredi 2 septembre 2026",
     "timestamp": "2026-09-02T06:08:59.721613",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
@@ -268,5 +259,14 @@
     "post_x": "Claude Opus 5.5, GPT-6 Sol : plus puissants, 40 % moins chers. Les éditeurs publient des scores impressionnants. Mais 40 % de réussite sur les tâches complexes, c'est le leur. Pas le vôtre. Vos processus ne ressemblent à aucun benchmark.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-27-092413-weekend.png?v=092413"
+  },
+  {
+    "date": "Lundi 28 septembre 2026",
+    "timestamp": "2026-09-28T06:08:48.325145",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS, La fonction Diffuser : quand la connaissance sort enfin des silos",
+    "post_x": "Copilot Autopilot peut travailler seul. Mais sur quelle matière ? Si votre connaissance n'est pas codifiée, l'agent autonome diffuse du vide plus vite que jamais.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2104453076585492674",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-28-060804.png?v=060804"
   }
 ]
