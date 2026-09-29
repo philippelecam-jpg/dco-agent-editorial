@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 2 septembre 2026",
-    "timestamp": "2026-09-02T06:08:59.721613",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte",
-    "post_x": "La plupart des entreprises codifient sans avoir élicité. Et élicitent sans avoir cartographié. Résultat : elles documentent du bruit. La méthode, ça commence par regarder avant de toucher.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095030997662175527",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-02-060805.png?v=060806"
-  },
-  {
     "date": "Jeudi 3 septembre 2026",
     "timestamp": "2026-09-03T06:08:47.237713",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Copilot Autopilot peut travailler seul. Mais sur quelle matière ? Si votre connaissance n'est pas codifiée, l'agent autonome diffuse du vide plus vite que jamais.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2104453076585492674",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-28-060804.png?v=060804"
+  },
+  {
+    "date": "Mardi 29 septembre 2026",
+    "timestamp": "2026-09-29T06:08:43.129116",
+    "theme": "Terrain et missions clients",
+    "sujet": "67 % des entreprises utilisent l'IA générative. La productivité, elle, n'a pas suivi.",
+    "post_x": "67 % des entreprises françaises ont adopté l'IA générative. La Banque de France le confirme. Et pointe aussitôt le paradoxe : la productivité n'a pas suivi. On le voit chaque semaine sur le terrain.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2104815441650622877",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-29-060757.png?v=060758"
   }
 ]
