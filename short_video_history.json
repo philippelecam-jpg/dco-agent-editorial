@@ -42,7 +42,8 @@
     "https://www.actuia.com/actualite/gpt-6-sol-claude-opus-55-ce-que-coute-une-session-dagent/",
     "https://www.01net.com/actualites/microsoft-devoile-son-nouveau-copilot-une-super-app-pour-toutes-ses-ia.html",
     "https://www.blogdumoderateur.com/linkedin-pages-entreprise-supprimer-faux-employes/",
-    "https://www.blogdumoderateur.com/microsoft-devoile-copilot-trois-espaces-home-code-autopilot/"
+    "https://www.blogdumoderateur.com/microsoft-devoile-copilot-trois-espaces-home-code-autopilot/",
+    "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/"
   ],
   "scripts": [
     {
@@ -296,6 +297,12 @@
       "source": "actualite",
       "titre": "Copilot évolue : ce que ça change pour vous",
       "video_id": "pfL7_WTyt4E"
+    },
+    {
+      "date": "2026-09-29T16:38:13.862125",
+      "source": "actualite",
+      "titre": "IA en RH : ce qui pourrait changer pour vous",
+      "video_id": "i1_OJnqht2g"
     }
   ]
 }
