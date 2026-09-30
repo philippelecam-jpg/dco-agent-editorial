@@ -2,6 +2,7 @@
 No provider is called at import. All paid operations are checkpointed by the worker.
 """
 import html, http.client, json, os, socket, ssl, subprocess, time, unicodedata
+from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, urljoin
 from .core import Rejected, public_ips
@@ -146,9 +147,13 @@ def duration(path):
 
 def avatar_start(audio,title):
     key=required('HEYGEN_API_KEY')
+    photo=Path(os.getenv('RACHEL_ENTERPRISE_PHOTO_PATH',str(Path(__file__).resolve().parents[2]/'assets'/'Rachel_Enterprise.png')))
+    if not photo.is_file(): raise Rejected('Image Rachel Entreprises absente : Rachel_Enterprise.png.')
+    with photo.open('rb') as handle:
+        photo_asset=req('POST','https://api.heygen.com/v3/assets',headers={'x-api-key':key},files={'file':('Rachel_Enterprise.png',handle,'image/png')}).json()['data']['asset_id']
     with audio.open('rb') as handle:
         asset=req('POST','https://api.heygen.com/v3/assets',headers={'x-api-key':key},files={'file':('voice.mp3',handle,'audio/mpeg')}).json()['data']['asset_id']
-    return req('POST','https://api.heygen.com/v3/videos',headers={'x-api-key':key},json={'type':'image','image':{'type':'asset_id','asset_id':required('RACHEL_PHOTO_ASSET_ID')},'audio_asset_id':asset,'title':title[:100],'resolution':'1080p','aspect_ratio':'16:9'}).json()['data']['video_id']
+    return req('POST','https://api.heygen.com/v3/videos',headers={'x-api-key':key},json={'type':'image','image':{'type':'asset_id','asset_id':photo_asset},'audio_asset_id':asset,'title':title[:100],'resolution':'1080p','aspect_ratio':'16:9'}).json()['data']['video_id']
 
 def avatar_get(video_id):
     return req('GET','https://api.heygen.com/v3/videos/'+video_id,headers={'x-api-key':required('HEYGEN_API_KEY')}).json()['data']
