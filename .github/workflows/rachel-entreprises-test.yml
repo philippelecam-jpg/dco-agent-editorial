@@ -19,6 +19,15 @@ on:
         type: string
         default: 'https://www.decisionsandco.com'
         required: true
+      rachel_image:
+        description: 'Image Rachel utilisée par HeyGen'
+        type: choice
+        options:
+          - Rachel Entreprises
+          - Rachel Super U
+          - Rachel originale
+        default: Rachel Entreprises
+        required: true
 
 permissions:
   contents: read
@@ -54,6 +63,16 @@ jobs:
           pip install -r backend/requirements.txt
           sudo apt-get update
           sudo apt-get install -y ffmpeg
+      - name: Choisir l'image Rachel
+        env:
+          RACHEL_IMAGE: ${{ inputs.rachel_image }}
+        run: |
+          case "$RACHEL_IMAGE" in
+            'Rachel Entreprises') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel_Enterprise.png' >> "$GITHUB_ENV" ;;
+            'Rachel Super U') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Super U.png' >> "$GITHUB_ENV" ;;
+            'Rachel originale') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel.PNG' >> "$GITHUB_ENV" ;;
+            *) echo "Image Rachel inconnue : $RACHEL_IMAGE"; exit 1 ;;
+          esac
       - name: Tester la capsule avec les accès Rachel existants
         env:
           PYTHONUNBUFFERED: '1'
@@ -64,7 +83,6 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
           HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
-          RACHEL_ENTERPRISE_PHOTO_PATH: ../assets/Rachel_Enterprise.png
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
