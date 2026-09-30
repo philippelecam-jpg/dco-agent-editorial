@@ -27,9 +27,9 @@ class ClaudeTests(unittest.TestCase):
         script={'blocked':False,'reason':'','title':'Portrait express','voice':'x','format':'portrait','claims':[{'text':'x','quote':'x','source_index':True}],'sensitive':False}
         with self.assertRaises(Rejected): self.call(json.dumps(script),schema=p.SCRIPT_SCHEMA)
     def test_script_uses_schema(self):
-        with patch.object(p,'claude',return_value=({},{})) as claude:
+        with patch.object(p,'sourced_draft',return_value=({},{})) as draft:
             p.script('Entreprise',[])
-            self.assertEqual(claude.call_args.args[2],p.SCRIPT_SCHEMA)
+            self.assertEqual(draft.call_args.args[1:],('Entreprise',[]))
     def test_verification_uses_schema(self):
         script={'voice':' '.join(['mot']*20),'claims':[{'source_index':0,'quote':'Une source suffisamment longue'}]}
         with patch.object(p,'claude',return_value=({'approved':True,'reason':''},{})) as claude:
