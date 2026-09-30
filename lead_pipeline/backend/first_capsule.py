@@ -28,7 +28,12 @@ def main():
         state['pending']=operation;save()
         result=action();state.pop('pending',None);return result
     if 'script' not in state:
-        sources=p.collect_company(host)
+        try:
+            sources=p.collect_company(host)
+        except Exception as exc:
+            reason=str(exc) if isinstance(exc,Rejected) else 'Connexion au site échouée : '+type(exc).__name__
+            (out/'report.json').write_text(json.dumps({'company':company,'domain':host,'status':'blocked','stage':'collection','reason':reason},ensure_ascii=False,indent=2))
+            raise
         usage=[]
         try:
             script=p.verified_script(company,sources,lambda operation,value:usage.append({'operation':operation,'usage':value}))
