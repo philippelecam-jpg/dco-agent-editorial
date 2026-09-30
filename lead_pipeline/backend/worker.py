@@ -15,11 +15,7 @@ def run(store,request_id):
     try:
         if configuration(): raise Rejected('Fournisseurs non raccordés : '+', '.join(configuration()))
         if 'sources' not in data:
-            sources=[p.collect('https://'+row['domain'])]
-            # V1: official site + bounded common news pages; no invented external search.
-            for path in ('/actualites','/news'):
-                try: sources.append(p.collect('https://'+row['domain']+path))
-                except Exception: pass
+            sources=p.collect_company(row['domain'])
             data['sources']=sources; save('writing')
         if 'script' not in data:
             result=p.verified_script(row['company'],data['sources'],lambda operation,usage:store.usage(request_id,'anthropic',operation,usage))
