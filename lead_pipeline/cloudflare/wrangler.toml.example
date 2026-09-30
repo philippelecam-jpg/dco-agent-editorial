@@ -1,0 +1,21 @@
+name = "rachel-entreprises"
+main = "src/index.js"
+compatibility_date = "2026-09-30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rachel-entreprises"
+database_id = "replace-with-cloudflare-d1-id"
+
+[vars]
+PUBLIC_BASE_URL = "https://rachel.decisionsandco.fr"
+GITHUB_OWNER = "philippelecam-jpg"
+GITHUB_REPO = "dco-agent-editorial"
+GITHUB_WORKFLOW_ID = "rachel-entreprises-test.yml"
+GITHUB_REF = "main"
+EMAIL_FROM = "Rachel Entreprises <rachel@decisionsandco.fr>"
+
+# Secrets to set with wrangler secret put:
+# RESEND_API_KEY
+# GITHUB_TOKEN
+# ADMIN_TOKEN
