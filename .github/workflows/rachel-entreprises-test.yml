@@ -56,6 +56,7 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Tester la capsule avec les accès Rachel existants
         env:
+          PYTHONUNBUFFERED: '1'
           TEST_MODE: ${{ inputs.mode }}
           COMPANY_NAME: ${{ inputs.company_name }}
           COMPANY_SITE: ${{ inputs.company_site }}
@@ -67,7 +68,7 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-        run: python -m backend.first_capsule
+        run: python -u -m backend.first_capsule
       - name: Conserver la vidéo et le rapport
         if: always() && inputs.mode != 'check'
         uses: actions/upload-artifact@v4
@@ -78,4 +79,3 @@ jobs:
             lead_pipeline/test-output/report.json
           if-no-files-found: ignore
           retention-days: 7
-
