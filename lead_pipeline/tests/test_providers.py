@@ -20,11 +20,11 @@ class ClaudeTests(unittest.TestCase):
         for stop in ('refusal','max_tokens','tool_use',None):
             with self.subTest(stop=stop),self.assertRaises(Rejected): self.call('{}',stop)
     def test_blocked_script(self):
-        script={'blocked':True,'title':'','voice':'','format':'portrait','claims':[],'sensitive':False}
+        script={'blocked':True,'reason':'Sources insuffisantes','title':'','voice':'','format':'portrait','claims':[],'sensitive':False}
         value,_=self.call(json.dumps(script),schema=p.SCRIPT_SCHEMA)
         with self.assertRaises(Rejected): p.verify_script(value,[])
     def test_claim_index_boolean_rejected(self):
-        script={'blocked':False,'title':'Portrait express','voice':'x','format':'portrait','claims':[{'text':'x','quote':'x','source_index':True}],'sensitive':False}
+        script={'blocked':False,'reason':'','title':'Portrait express','voice':'x','format':'portrait','claims':[{'text':'x','quote':'x','source_index':True}],'sensitive':False}
         with self.assertRaises(Rejected): self.call(json.dumps(script),schema=p.SCRIPT_SCHEMA)
     def test_script_uses_schema(self):
         with patch.object(p,'claude',return_value=({},{})) as claude:
@@ -35,3 +35,4 @@ class ClaudeTests(unittest.TestCase):
         with patch.object(p,'claude',return_value=({'approved':True,'reason':''},{})) as claude:
             p.verify_script(script,[{'text':'Une source suffisamment longue'}])
             self.assertEqual(claude.call_args.args[2],p.VERIFY_SCHEMA)
+
