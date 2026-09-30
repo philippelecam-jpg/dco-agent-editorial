@@ -237,11 +237,118 @@ function page() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rachel Entreprises</title>
+<style>
+  :root { color-scheme: light; --ink:#162033; --muted:#5f6b7a; --line:#d9dee8; --accent:#1d4ed8; --soft:#f5f7fb; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:#fff; }
+  main { max-width: 1040px; margin: 0 auto; padding: 48px 20px 64px; }
+  header { display:grid; gap: 12px; max-width: 760px; margin-bottom: 32px; }
+  h1 { margin:0; font-size: clamp(32px, 5vw, 56px); line-height:1; letter-spacing:0; }
+  h2 { margin:0 0 16px; font-size: 22px; }
+  p { color:var(--muted); line-height:1.55; }
+  .grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items:start; }
+  section { border:1px solid var(--line); border-radius:8px; padding:22px; background:#fff; }
+  label { display:block; font-size: 14px; font-weight: 650; margin: 14px 0 6px; }
+  input, textarea, select { width:100%; border:1px solid var(--line); border-radius:6px; padding:12px; font:inherit; background:#fff; color:var(--ink); }
+  textarea { min-height: 120px; resize: vertical; }
+  button { margin-top:16px; border:0; border-radius:6px; padding:12px 16px; font:inherit; font-weight:700; color:#fff; background:var(--accent); cursor:pointer; }
+  button:disabled { opacity:.55; cursor:not-allowed; }
+  .status { margin-top:16px; padding:12px; border-radius:6px; background:var(--soft); color:var(--muted); white-space:pre-wrap; }
+  .hidden { display:none; }
+  .fine { font-size:13px; color:var(--muted); }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } main { padding-top: 28px; } }
+</style>
 <body>
-  <main style="max-width:720px;margin:48px auto;font-family:system-ui,sans-serif;line-height:1.5">
-    <h1>Rachel Entreprises</h1>
-    <p>Prototype Cloudflare pour capter une demande, vérifier l’email et déclencher une capsule Rachel.</p>
+  <main>
+    <header>
+      <h1>Rachel Entreprises</h1>
+      <p>Créez une capsule vidéo de démonstration à partir de votre site ou d’un texte source factuel. Un email professionnel est vérifié avant toute génération.</p>
+    </header>
+    <div class="grid">
+      <section id="signup-card">
+        <h2>1. Demander un accès</h2>
+        <form id="signup">
+          <label for="email">Email professionnel</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+          <label for="name">Nom</label>
+          <input id="name" name="name" autocomplete="name" required>
+          <label for="company">Société</label>
+          <input id="company" name="company" autocomplete="organization" required>
+          <button type="submit">Recevoir le lien</button>
+        </form>
+        <div id="signup-status" class="status hidden"></div>
+      </section>
+      <section id="request-card">
+        <h2>2. Préparer la capsule</h2>
+        <form id="request">
+          <label for="site">Site officiel ou page publique</label>
+          <input id="site" name="site" placeholder="https://www.entreprise.fr" required>
+          <label for="siren">SIREN optionnel</label>
+          <input id="siren" name="siren" inputmode="numeric" maxlength="9">
+          <label for="rachelImage">Image Rachel</label>
+          <select id="rachelImage" name="rachelImage">
+            <option>Rachel Entreprises</option>
+            <option>Rachel Super U</option>
+            <option>Rachel originale</option>
+          </select>
+          <label for="sourceText">Source texte optionnelle</label>
+          <textarea id="sourceText" name="sourceText" placeholder="À utiliser si le site bloque la collecte : collez un texte factuel de 120 à 12 000 caractères."></textarea>
+          <p class="fine">Une seule demande est possible par email, domaine et SIREN.</p>
+          <button type="submit">Lancer la génération</button>
+        </form>
+        <div id="request-status" class="status hidden"></div>
+      </section>
+    </div>
   </main>
+  <script>
+    const show = (id, message) => {
+      const node = document.getElementById(id);
+      node.textContent = message;
+      node.classList.remove("hidden");
+    };
+    const post = async (url, payload) => {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Erreur");
+      return data;
+    };
+    document.getElementById("signup").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      try {
+        await post("/api/signup", Object.fromEntries(form));
+        show("signup-status", "Lien envoyé si l’adresse est valide. Vérifiez votre messagerie.");
+      } catch (error) {
+        show("signup-status", error.message);
+      }
+    });
+    document.getElementById("request").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const payload = Object.fromEntries(form);
+      try {
+        const data = await post("/api/request", payload);
+        show("request-status", "Demande enregistrée. Identifiant : " + data.id);
+      } catch (error) {
+        show("request-status", error.message);
+      }
+    });
+    (async () => {
+      try {
+        const response = await fetch("/api/me");
+        if (!response.ok) return;
+        const data = await response.json();
+        const message = data.request
+          ? "Connecté : " + data.company + "\\nDernière demande : " + data.request.status
+          : "Connecté : " + data.company + "\\nVous pouvez lancer une demande.";
+        show("request-status", message);
+      } catch (_) {}
+    })();
+  </script>
 </body>
 </html>`);
 }
