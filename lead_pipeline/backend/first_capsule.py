@@ -8,6 +8,14 @@ VIDEO_KEYS=('ANTHROPIC_API_KEY','ELEVENLABS_API_KEY','ELEVENLABS_VOICE_ID','HEYG
 YOUTUBE_KEYS=('YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN')
 
 
+def manual_source(source_url):
+    text=' '.join(os.getenv('SOURCE_TEXT','').split())
+    if not text: return None
+    if len(text)<120: raise Rejected('Source texte trop courte : fournir au moins 120 caractères factuels.')
+    if len(text)>12000: raise Rejected('Source texte trop longue : limiter à 12 000 caractères.')
+    return {'url':source_url+'#source-text','text':text,'collected_at':time.strftime('%Y-%m-%d'),'manual':True}
+
+
 def log(event,**fields):
     payload={'event':event,**fields}
     print(json.dumps(payload,ensure_ascii=False),flush=True)
@@ -66,13 +74,14 @@ def main():
     try:
         if state.get('domain',host)!=host or state.get('company',company)!=company: raise Rejected('Le checkpoint appartient à une autre société.')
         if state.get('pending'): raise Rejected('Appel fournisseur interrompu. Vérifier son résultat avant de relancer.')
-        state.update({'domain':host,'company':company,'site_url':source_url});save()
+        supplied_source=manual_source(source_url)
+        state.update({'domain':host,'company':company,'site_url':source_url,'source_mode':'text' if supplied_source else 'site'});save()
         if 'script' not in state:
             stage='collection'
-            log('stage_started',stage=stage,site_url=source_url)
-            sources=p.collect_company(source_url)
+            log('stage_started',stage=stage,site_url=source_url,source_mode=state['source_mode'])
+            sources=[supplied_source] if supplied_source else p.collect_company(source_url)
             state['sources']=sources;save()
-            log('stage_completed',stage=stage,sources=len(sources))
+            log('stage_completed',stage=stage,sources=len(sources),source_mode=state['source_mode'])
             usage=[]
             stage='script'
             log('stage_started',stage=stage)
