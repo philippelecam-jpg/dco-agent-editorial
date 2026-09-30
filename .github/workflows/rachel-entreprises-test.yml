@@ -63,7 +63,7 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
           HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
-          RACHEL_PHOTO_ASSET_ID: ${{ secrets.RACHEL_PHOTO_ASSET_ID }}
+          RACHEL_ENTERPRISE_PHOTO_PATH: ../assets/Rachel_Enterprise.png
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -78,3 +78,4 @@ jobs:
             lead_pipeline/test-output/report.json
           if-no-files-found: ignore
           retention-days: 7
+
