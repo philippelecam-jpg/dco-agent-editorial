@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 3 septembre 2026",
-    "timestamp": "2026-09-03T06:08:47.237713",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "La gouvernance IA n'est pas un sujet juridique. C'est un sujet de management.",
-    "post_x": "Une charte IA sans usage réel dans l'organisation, c'est un document de plus dans un tiroir. La gouvernance IA commence par les pratiques, pas par les textes.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095393376833093803",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-03-060803.png?v=060803"
-  },
-  {
     "date": "Vendredi 4 septembre 2026",
     "timestamp": "2026-09-04T06:08:43.646221",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "67 % des entreprises françaises ont adopté l'IA générative. La Banque de France le confirme. Et pointe aussitôt le paradoxe : la productivité n'a pas suivi. On le voit chaque semaine sur le terrain.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2104815441650622877",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-29-060757.png?v=060758"
+  },
+  {
+    "date": "Mercredi 30 septembre 2026",
+    "timestamp": "2026-09-30T06:08:47.771084",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Éliciter : faire sortir la connaissance avant de la coder",
+    "post_x": "L'étape qu'on saute toujours : éliciter. Faire sortir la connaissance des têtes avant de toucher à un outil. Sans ça, on automatise du flou.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2105177843390968015",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-30-060802.png?v=060802"
   }
 ]
