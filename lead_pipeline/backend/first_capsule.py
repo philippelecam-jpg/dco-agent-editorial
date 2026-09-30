@@ -28,15 +28,12 @@ def main():
         state['pending']=operation;save()
         result=action();state.pop('pending',None);return result
     if 'script' not in state:
-        sources=[p.collect('https://'+host)]
-        for path in ('/actualites','/news'):
-            try: sources.append(p.collect('https://'+host+path))
-            except Exception: pass
+        sources=p.collect_company(host)
         usage=[]
         try:
             script=p.verified_script(company,sources,lambda operation,value:usage.append({'operation':operation,'usage':value}))
         except Rejected as exc:
-            (out/'report.json').write_text(json.dumps({'company':company,'domain':host,'status':'blocked','reason':str(exc),'anthropic_usage':usage},ensure_ascii=False,indent=2))
+            (out/'report.json').write_text(json.dumps({'company':company,'domain':host,'status':'blocked','reason':str(exc),'anthropic_usage':usage,'sources':[{'url':x['url'],'characters':len(x['text']),'excerpt':x['text'][:1200]} for x in sources]},ensure_ascii=False,indent=2))
             raise
         state.update({'script':script,'sources':sources,'anthropic_usage':usage});save()
     audio=out/'voice.mp3'
