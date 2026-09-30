@@ -62,6 +62,17 @@ class QuoteTests(unittest.TestCase):
         with patch.object(p,'script',return_value=(good,{})),patch.object(p,'claude',return_value=({'approved':False,'reason':'Identité incertaine'},{})) as claude,self.assertRaises(Rejected):
             p.verified_script('Entreprise',[{'text':'Une société développe des outils fiables.'}],lambda op,u:None)
         self.assertEqual(claude.call_count,1)
+    def test_voice_text_removes_final_rachel_signature(self):
+        self.assertEqual(p.prepare_voice_text('Une capsule sobre et factuelle. Rachel'),'Une capsule sobre et factuelle')
+        self.assertEqual(p.prepare_voice_text('Une capsule sobre et factuelle — Rachel.'),'Une capsule sobre et factuelle')
+        self.assertEqual(p.prepare_voice_text('Rachel présente une actualité utile.'),'Rachel présente une actualité utile.')
+    def test_voice_text_spells_large_numbers_and_amounts(self):
+        text=p.prepare_voice_text('La société annonce 600 clients, 1 million d’euros, 2,5 M€, 40 % de croissance et 2026.')
+        self.assertIn('six cents clients',text)
+        self.assertIn("un million d'euros",text)
+        self.assertIn("deux virgule cinq millions d'euros",text)
+        self.assertIn('quarante pour cent',text)
+        self.assertIn('2026',text)
     def test_sensitive_content_is_not_rewritten(self):
         bad=self.script('Une société développe des outils');bad['sensitive']=True
         with patch.object(p,'script',return_value=(bad,{})),patch.object(p,'claude') as claude,self.assertRaises(Rejected):
