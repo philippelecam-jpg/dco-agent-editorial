@@ -15,7 +15,7 @@ def run(store,request_id):
     try:
         if configuration(): raise Rejected('Fournisseurs non raccordés : '+', '.join(configuration()))
         if 'sources' not in data:
-            sources=p.collect_company(row['domain'])
+            sources=p.collect_company(data.get('site_url',row['domain']))
             data['sources']=sources; save('writing')
         if 'script' not in data:
             result=p.verified_script(row['company'],data['sources'],lambda operation,usage:store.usage(request_id,'anthropic',operation,usage))

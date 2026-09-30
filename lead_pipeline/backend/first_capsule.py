@@ -1,7 +1,7 @@
 """Controlled first capsule using existing GitHub secrets, without emailing prospects."""
 import json,os,time
 from pathlib import Path
-from .core import domain,Rejected
+from .core import domain,site_url,Rejected
 from . import providers as p
 
 VIDEO_KEYS=('ANTHROPIC_API_KEY','ELEVENLABS_API_KEY','ELEVENLABS_VOICE_ID','HEYGEN_API_KEY')
@@ -15,21 +15,22 @@ def main():
     if missing: raise Rejected('Secrets requis absents : '+', '.join(missing))
     if mode=='check':
         print('Configuration présente. Aucun appel payant et aucune vidéo créée.'); return
-    host=domain(os.environ['COMPANY_SITE']); company=os.environ['COMPANY_NAME'].strip()
+    source_url=site_url(os.environ['COMPANY_SITE'])
+    host=domain(source_url); company=os.environ['COMPANY_NAME'].strip()
     if not company or len(company)>150: raise Rejected('Nom de société invalide.')
     out=Path('test-output');out.mkdir(exist_ok=True)
     state_path=out/'checkpoint.json'
     state=json.loads(state_path.read_text()) if state_path.exists() else {}
     if state.get('domain',host)!=host or state.get('company',company)!=company: raise Rejected('Le checkpoint appartient à une autre société.')
     if state.get('pending'): raise Rejected('Appel fournisseur interrompu. Vérifier son résultat avant de relancer.')
-    state.update({'domain':host,'company':company})
+    state.update({'domain':host,'company':company,'site_url':source_url})
     def save(): state_path.write_text(json.dumps(state,ensure_ascii=False,indent=2))
     def paid(operation, action):
         state['pending']=operation;save()
         result=action();state.pop('pending',None);return result
     if 'script' not in state:
         try:
-            sources=p.collect_company(host)
+            sources=p.collect_company(source_url)
         except Exception as exc:
             reason=str(exc) if isinstance(exc,Rejected) else 'Connexion au site échouée : '+type(exc).__name__
             (out/'report.json').write_text(json.dumps({'company':company,'domain':host,'status':'blocked','stage':'collection','reason':reason},ensure_ascii=False,indent=2))
