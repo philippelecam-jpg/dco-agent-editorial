@@ -1,7 +1,7 @@
 """Durable reservations and email verification; Python 3.11 standard library."""
 import hashlib, ipaddress, json, os, re, secrets, socket, sqlite3, time
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit
 
 class Rejected(ValueError):
     pass
@@ -31,6 +31,16 @@ def domain(value):
     if host.endswith(('.localhost', '.local', '.internal', '.test')):
         raise Rejected('Le site doit être public.')
     return host
+
+def site_url(value):
+    """Normalize pasted input without discarding www, path or query."""
+    if not isinstance(value,str): raise Rejected('Adresse du site invalide.')
+    value=value.strip()
+    if not value or any(char.isspace() for char in value): raise Rejected('Adresse du site invalide.')
+    parsed=urlsplit(value if '://' in value else 'https://'+value)
+    domain(value)  # Shared validation; canonical domain is used only for uniqueness.
+    host=(parsed.hostname or '').lower().rstrip('.').encode('idna').decode()
+    return urlunsplit(('https',host,parsed.path or '/',parsed.query,''))
 
 def public_ips(host):
     addresses = sorted({r[4][0] for r in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)})
@@ -94,7 +104,8 @@ class Store:
         return dict(row)
     def reserve(self, session, site, acknowledged, siren=None):
         lead = self.lead(session)
-        host = domain(site)
+        source_url = site_url(site)
+        host = domain(source_url)
         if acknowledged is not True: raise Rejected('Confirmez avoir lu les conditions de diffusion.')
         mail_host = domain(lead['email'].split('@')[1])
         if mail_host != host and not mail_host.endswith('.'+host):
@@ -103,7 +114,7 @@ class Store:
         now, request_id = time.time(), secrets.token_hex(16)
         try:
             with self.connect() as db:
-                db.execute('INSERT INTO requests VALUES (?,?,?,?,?,?,?,?,?)', (request_id,lead['id'],host,siren,'queued',json.dumps({'acknowledged_at':now,'terms_version':'2026-09-v1'}),None,now,now))
+                db.execute('INSERT INTO requests VALUES (?,?,?,?,?,?,?,?,?)', (request_id,lead['id'],host,siren,'queued',json.dumps({'acknowledged_at':now,'terms_version':'2026-09-v1','site_url':source_url}),None,now,now))
         except sqlite3.IntegrityError:
             raise Rejected('Une démonstration a déjà été demandée avec cet email, ce site ou ce SIREN.')
         return request_id

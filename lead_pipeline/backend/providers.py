@@ -5,7 +5,7 @@ import html, http.client, json, os, socket, ssl, subprocess, time, unicodedata
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, urljoin
-from .core import Rejected, public_ips
+from .core import Rejected, public_ips, domain, site_url
 
 def required(name):
     value=os.getenv(name)
@@ -68,9 +68,25 @@ def collect(url, redirects=0, attempt=0):
         return {'url':url,'text':' '.join(parser.parts)[:18000],'collected_at':time.strftime('%Y-%m-%d'),'links':parser.links[:500]}
     finally: connection.close()
 
-def collect_company(host):
-    """Bounded same-site discovery using the same pinned HTTPS collector."""
-    first=collect('https://'+host)
+def collect_company(site):
+    """Preserve submitted URL; try its bare/www equivalent once on failure."""
+    initial=site_url(site)
+    parsed=urlsplit(initial)
+    canonical=domain(initial)
+    candidates=[initial]
+    if parsed.hostname in (canonical,'www.'+canonical):
+        alternate=canonical if parsed.hostname.startswith('www.') else 'www.'+canonical
+        candidates.append(parsed._replace(netloc=alternate).geturl())
+    errors=[]
+    for candidate in candidates:
+        try:
+            first=collect(candidate)
+            break
+        except (Rejected,OSError,http.client.HTTPException) as exc:
+            message=str(exc) if isinstance(exc,Rejected) else type(exc).__name__
+            errors.append('%s : %s' % (urlsplit(candidate).hostname,message))
+    else:
+        raise Rejected('Collecte du site impossible. '+' | '.join(errors))
     sources=[first]; seen={first['url']}
     origin=urlsplit(first['url']).hostname
     candidates=[]

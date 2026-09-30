@@ -20,7 +20,7 @@ class QuoteTests(unittest.TestCase):
     def test_company_discovery_reads_linked_pages_and_excludes_external(self):
         home={'url':'https://example.com/','text':'Accueil '*30,'links':['/fr/presentation','https://other.com/news'],'collected_at':'2026-09-30'}
         def collect(url):
-            if url=='https://example.com': return home
+            if url=='https://example.com/': return home
             if url=='https://example.com/fr/presentation': return {'url':url,'text':'Présentation entreprise '*20,'collected_at':'2026-09-30','links':[]}
             raise Rejected('Page absente')
         with patch.object(p,'collect',side_effect=collect) as fetch:
