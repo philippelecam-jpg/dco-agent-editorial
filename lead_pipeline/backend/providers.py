@@ -38,7 +38,7 @@ class PinnedHTTPS(http.client.HTTPSConnection):
         self.sock=socket.create_connection((self.address,443),self.timeout)
         self.sock=self._context.wrap_socket(self.sock,server_hostname=self.host)
 
-def collect(url, redirects=0):
+def collect(url, redirects=0, attempt=0):
     """HTTPS only; DNS checked and connection pinned, bounded redirects/body."""
     p=urlsplit(url)
     if p.scheme!='https' or not p.hostname or p.username or p.password or p.port not in (None,443): raise Rejected('Source HTTPS publique requise.')
@@ -52,7 +52,14 @@ def collect(url, redirects=0):
             target=urljoin(url,response.getheader('Location',''))
             connection.close()
             return collect(target,redirects+1)
-        if response.status!=200 or 'text/html' not in response.getheader('Content-Type',''): raise Rejected('Page inaccessible ou format non pris en charge.')
+        content_type=response.getheader('Content-Type','').split(';')[0].strip().lower()
+        if response.status in (429,500,502,503,504) and attempt<2:
+            connection.close(); time.sleep(2)
+            return collect(url,redirects,attempt+1)
+        if response.status!=200:
+            raise Rejected('Source inaccessible : %s — HTTP %s.' % (p.hostname,response.status))
+        if content_type not in ('text/html','application/xhtml+xml'):
+            raise Rejected('Format de source non pris en charge : %s — Content-Type %s.' % (p.hostname,content_type or 'absent'))
         content=response.read(1_000_001)
         if len(content)>1_000_000: raise Rejected('Page trop volumineuse.')
         parser=Text(); parser.feed(content.decode('utf-8','replace'))
