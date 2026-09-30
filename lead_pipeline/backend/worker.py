@@ -22,8 +22,7 @@ def run(store,request_id):
                 except Exception: pass
             data['sources']=sources; save('writing')
         if 'script' not in data:
-            result,usage=p.script(row['company'],data['sources']); store.usage(request_id,'anthropic','script',usage)
-            usage=p.verify_script(result,data['sources']); store.usage(request_id,'anthropic','verification',usage)
+            result=p.verified_script(row['company'],data['sources'],lambda operation,usage:store.usage(request_id,'anthropic',operation,usage))
             data['script']=result; save('voice')
         audio=work/'voice.mp3'
         if not data.get('audio_ready'):
