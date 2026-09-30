@@ -53,9 +53,11 @@ def collect(url, redirects=0, attempt=0):
             connection.close()
             return collect(target,redirects+1)
         content_type=response.getheader('Content-Type','').split(';')[0].strip().lower()
-        if response.status in (429,500,502,503,504) and attempt<2:
+        if response.status in (202,429,500,502,503,504) and attempt<2:
             connection.close(); time.sleep(2)
             return collect(url,redirects,attempt+1)
+        if response.status==202:
+            raise Rejected('Le site %s renvoie HTTP 202 après trois tentatives : réponse différée ou contrôle anti-robot possible. Collecte arrêtée avant Claude.' % p.hostname)
         if response.status!=200:
             raise Rejected('Source inaccessible : %s — HTTP %s.' % (p.hostname,response.status))
         if content_type not in ('text/html','application/xhtml+xml'):
