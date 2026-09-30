@@ -1,0 +1,80 @@
+name: Rachel Entreprises — premier test
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'check = présence des accès ; video = génération ; youtube_private = téléversement privé'
+        type: choice
+        options: [check, video, youtube_private]
+        default: check
+        required: true
+      company_name:
+        description: 'Entreprise à présenter'
+        type: string
+        default: 'Décisions & Co'
+        required: true
+      company_site:
+        description: 'Site officiel public'
+        type: string
+        default: 'https://www.decisionsandco.com'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rachel-entreprises-first-test
+  cancel-in-progress: false
+
+jobs:
+  capsule:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: lead_pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Refuser les reprises automatiques de génération
+        env:
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          if [ "$RUN_ATTEMPT" != "1" ]; then
+            echo 'Reprise refusée : vérifier les résultats fournisseurs avant un nouveau lancement.'
+            exit 1
+          fi
+      - name: Vérifier le moteur
+        run: python -m unittest discover -s tests -v
+      - name: Installer les dépendances
+        run: |
+          pip install -r backend/requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Tester la capsule avec les accès Rachel existants
+        env:
+          TEST_MODE: ${{ inputs.mode }}
+          COMPANY_NAME: ${{ inputs.company_name }}
+          COMPANY_SITE: ${{ inputs.company_site }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          RACHEL_PHOTO_ASSET_ID: ${{ secrets.RACHEL_PHOTO_ASSET_ID }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python -m backend.first_capsule
+      - name: Conserver la vidéo et le rapport
+        if: always() && inputs.mode != 'check'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rachel-capsule-${{ github.run_id }}
+          path: |
+            lead_pipeline/test-output/rachel.mp4
+            lead_pipeline/test-output/report.json
+          if-no-files-found: ignore
+          retention-days: 7

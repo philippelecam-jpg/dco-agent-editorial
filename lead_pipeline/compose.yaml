@@ -1,0 +1,18 @@
+services:
+  portal:
+    build: .
+    env_file: .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - rachel-data:/data
+    restart: unless-stopped
+  worker:
+    build: .
+    command: ["python", "-m", "backend.worker"]
+    env_file: .env
+    volumes:
+      - rachel-data:/data
+    restart: unless-stopped
+volumes:
+  rachel-data:
