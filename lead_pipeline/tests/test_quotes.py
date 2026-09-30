@@ -4,6 +4,17 @@ from backend import providers as p
 from backend.core import Rejected
 
 class QuoteTests(unittest.TestCase):
+    def test_company_discovery_reads_linked_pages_and_excludes_external(self):
+        home={'url':'https://example.com/','text':'Accueil '*30,'links':['/fr/presentation','https://other.com/news'],'collected_at':'2026-09-30'}
+        def collect(url):
+            if url=='https://example.com': return home
+            if url=='https://example.com/fr/presentation': return {'url':url,'text':'Présentation entreprise '*20,'collected_at':'2026-09-30','links':[]}
+            raise Rejected('Page absente')
+        with patch.object(p,'collect',side_effect=collect) as fetch:
+            sources=p.collect_company('example.com')
+        self.assertEqual(len(sources),2)
+        self.assertNotIn('links',sources[0])
+        self.assertTrue(all('other.com' not in call.args[0] for call in fetch.call_args_list))
     def script(self,quote,index=0):
         return {'voice':' '.join(['mot']*20),'claims':[{'quote':quote,'source_index':index}]}
     def test_whitespace_and_unicode_only_then_editorial_check(self):
