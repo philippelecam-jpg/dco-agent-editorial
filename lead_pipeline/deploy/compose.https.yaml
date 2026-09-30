@@ -1,0 +1,18 @@
+# À combiner avec compose.yaml pour un serveur sans reverse proxy existant.
+services:
+  proxy:
+    image: caddy:2
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - portal
+    restart: unless-stopped
+volumes:
+  caddy-data:
+  caddy-config:

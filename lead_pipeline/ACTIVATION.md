@@ -21,3 +21,7 @@ Les secrets de test sont ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, ELEVENLABS_VOICE
 Depuis le dossier lead_pipeline, suivre README.md et config.example.env. Installer les deux services sur le serveur cible, raccorder Resend et Turnstile, configurer le domaine HTTPS et le volume privé persistant. Le portail Sites demeure une démonstration indépendante ; les secrets de GitHub Actions ne deviennent pas accessibles au serveur par magie et doivent être installés dans son gestionnaire de secrets.
 
 Le code frontend livré reste en mode démo lorsqu’il est servi statiquement. Le backend sert sa propre configuration live sur /config.js. Les données prospects restent dans /data, jamais dans GitHub.
+
+## Installation prête à adapter
+
+Voir deploy/INSTALLATION.md pour la recette sur serveur existant, le contrôle sans appels payants et la variante HTTPS intégrée.
