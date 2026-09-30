@@ -1,0 +1,4 @@
+{$PORTAL_HOST} {
+    encode gzip
+    reverse_proxy portal:8000
+}
