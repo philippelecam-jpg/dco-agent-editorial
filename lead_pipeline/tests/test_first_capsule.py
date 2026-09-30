@@ -56,5 +56,30 @@ class FirstCapsuleDiagnosticsTests(unittest.TestCase):
             self.assertEqual(report['reason'],'Sources insuffisantes')
             self.assertIn('excerpt',report['sources'][0])
         self.run_in_tmp(scenario)
+    def test_source_text_bypasses_site_collection(self):
+        def scenario(directory):
+            script={'title':'Portrait express','format':'portrait','voice':' '.join(['mot']*20),'claims':[]}
+            source_text='Entreprise exploite un magasin alimentaire à Vertou. Elle propose des produits du quotidien et des promotions locales pour ses clients.'*2
+            captured=[]
+            with self.env(), \
+                 patch.dict(os.environ,{'SOURCE_TEXT':source_text},clear=False), \
+                 patch.object(first_capsule.p,'collect_company',side_effect=AssertionError('collecte web appelée')), \
+                 patch.object(first_capsule.p,'verified_script',side_effect=lambda company,sources,record: captured.extend(sources) or script), \
+                 patch.object(first_capsule.p,'voice',side_effect=Rejected('stop')):
+                with self.assertRaises(Rejected): first_capsule.main()
+            self.assertEqual(captured[0]['url'],'https://www.entreprise.fr/#source-text')
+            self.assertEqual(captured[0]['text'],' '.join(source_text.split()))
+            report=json.loads((directory/'test-output'/'report.json').read_text())
+            self.assertEqual(report['source_mode'],'text')
+            self.assertEqual(report['sources'][0]['url'],'https://www.entreprise.fr/#source-text')
+        self.run_in_tmp(scenario)
+    def test_short_source_text_is_rejected_before_generation(self):
+        def scenario(directory):
+            with self.env(), patch.dict(os.environ,{'SOURCE_TEXT':'trop court'},clear=False):
+                with self.assertRaisesRegex(Rejected,'Source texte trop courte'): first_capsule.main()
+            report=json.loads((directory/'test-output'/'report.json').read_text())
+            self.assertEqual(report['status'],'blocked')
+            self.assertEqual(report['stage'],'initialisation')
+        self.run_in_tmp(scenario)
 
 if __name__=='__main__': unittest.main()
