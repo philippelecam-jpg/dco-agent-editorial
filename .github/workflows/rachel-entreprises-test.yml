@@ -1,8 +1,13 @@
 name: Rachel Entreprises — premier test
+run-name: La Fabrik · ${{ inputs.request_key || github.run_id }}
 
 on:
   workflow_dispatch:
     inputs:
+      request_key:
+        description: 'Identifiant de suivi La Fabrik (automatique, laisser vide en test manuel)'
+        type: string
+        required: false
       mode:
         description: 'check = présence des accès ; video = génération ; youtube_private = téléversement privé'
         type: choice
