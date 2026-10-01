@@ -39,15 +39,18 @@ CREATE TABLE IF NOT EXISTS requests (
   status TEXT NOT NULL,
   error TEXT,
   created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
+  updated_at TEXT NOT NULL,
+  is_internal INTEGER NOT NULL DEFAULT 0 CHECK(is_internal IN (0,1))
 );
 
 CREATE INDEX IF NOT EXISTS idx_tokens_lead ON verification_tokens(lead_id);
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status, updated_at);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_lead ON requests(lead_id)
-  WHERE company_domain <> 'decisionsandco.com';
+  WHERE company_domain <> 'decisionsandco.com' AND is_internal=0;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_domain ON requests(company_domain)
-  WHERE company_domain <> 'decisionsandco.com';
+  WHERE company_domain <> 'decisionsandco.com' AND is_internal=0;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_siren ON requests(siren)
-  WHERE company_domain <> 'decisionsandco.com';
+  WHERE company_domain <> 'decisionsandco.com' AND is_internal=0;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_internal_active ON requests(lead_id) WHERE is_internal=1 AND status IN ('queued','processing');
