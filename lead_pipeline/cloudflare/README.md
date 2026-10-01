@@ -32,9 +32,14 @@ The GitHub token needs permission to dispatch workflows on `philippelecam-jpg/dc
 
 `rachelImage` must be one of:
 
-- `Rachel Entreprises`
-- `Rachel Super U`
-- `Rachel originale`
+- `Rachel Tertiaire`
+- `Rachel BTP`
+- `Rachel Agriculture`
+- `Rachel Industrie`
+- `Rachel Restauration`
+- `Rachel Logistique et Transport`
+
+Default: `Rachel Tertiaire`. Selecting a sector also updates the interface portrait.
 
 ## La Fabrik interface
 
@@ -47,7 +52,7 @@ opened on another device. No generation starts before that form is submitted.
 The source text and the existing Rachel image choices remain available in the
 verified form. Existing requests display their status instead of inviting a second
 submission. The play link opens Rachel's YouTube Shorts channel; it is not a sample
-video embedded in the page. The portrait uses `assets/Rachel_Enterprise.png`.
+video embedded in the page. The portrait uses `assets/Rachel Tertiaire.png`.
 
 This change does not add the YouTube publication callback or automatic result email.
 
