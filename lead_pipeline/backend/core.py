@@ -107,9 +107,6 @@ class Store:
         source_url = site_url(site)
         host = domain(source_url)
         if acknowledged is not True: raise Rejected('Confirmez avoir lu les conditions de diffusion.')
-        mail_host = domain(lead['email'].split('@')[1])
-        if mail_host != host and not mail_host.endswith('.'+host):
-            raise Rejected('Utilisez une adresse professionnelle correspondant au domaine du site.')
         if siren and not re.fullmatch(r'\d{9}', siren): raise Rejected('SIREN invalide.')
         now, request_id = time.time(), secrets.token_hex(16)
         try:

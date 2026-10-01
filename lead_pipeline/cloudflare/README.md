@@ -44,7 +44,7 @@ Default: `Rachel Tertiaire`. Selecting a sector also updates the interface portr
 ## La Fabrik interface
 
 The landing page follows the approved La Fabrik design and adapts to mobile screens.
-The first step asks for a professional email and company website; clicking the button
+The first step asks for an email and company website; clicking the button
 reveals the name/company fields required by the existing API. An email link then
 verifies access and redirects to the capsule form, carrying the website even when
 opened on another device. No generation starts before that form is submitted.
@@ -79,8 +79,8 @@ subdomains are not exempt. Backslashes in pasted HTTP(S) URLs and trailing comma
 are normalized before validation.
 
 The verified session's latest D&Co request offers a **Create another capsule**
-button. Previous requests are retained. Other companies keep the existing email
-match and atomic quota constraints.
+button. Previous requests are retained. Other companies keep the atomic quota constraints. All companies accept any
+verified email, including personal email or a holding company domain.
 
 **Existing D1 databases must apply the migration before deploying the Worker.**
 It rebuilds the requests table with partial unique indexes and copies every row.
@@ -99,3 +99,5 @@ Additional SQLite migration/constraint checks:
 ```bash
 python tests/test_quota_migration.py
 ```
+
+Email verification confirms access to the mailbox, not a management role in the submitted company.
