@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS verification_tokens (
 
 CREATE TABLE IF NOT EXISTS requests (
   id TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL UNIQUE,
+  lead_id TEXT NOT NULL,
   company_site TEXT NOT NULL,
-  company_domain TEXT NOT NULL UNIQUE,
-  siren TEXT UNIQUE,
+  company_domain TEXT NOT NULL,
+  siren TEXT,
   source_text TEXT,
   rachel_image TEXT NOT NULL,
   github_run_status TEXT NOT NULL,
@@ -33,3 +33,10 @@ CREATE TABLE IF NOT EXISTS requests (
 
 CREATE INDEX IF NOT EXISTS idx_tokens_lead ON verification_tokens(lead_id);
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status, updated_at);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_lead ON requests(lead_id)
+  WHERE company_domain <> 'decisionsandco.com';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_domain ON requests(company_domain)
+  WHERE company_domain <> 'decisionsandco.com';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_siren ON requests(siren)
+  WHERE company_domain <> 'decisionsandco.com';
