@@ -213,21 +213,52 @@ test('admin finalization requires authentication, preserves the known ID and dis
 
 test('internal trials require admin plus verified session, ignore prospect quotas and reject double launch',async()=>{
  const {sqlite,req,env}=await fixture();let calls=0;
- await mockedFetch(async()=>{calls++;return new Response(null,{status:204})},async()=>{
+ await mockedFetch(async(url,options)=>{if(options?.method==='POST'){calls++;return new Response(null,{status:204})}return ok({workflow_runs:[]})},async()=>{
   assert.equal((await req('/api/admin/test',body)).status,403);
   const noSession=new Request(origin+'/api/admin/test',{method:'POST',headers:{authorization:'Bearer admin-secret','content-type':'application/json'},body:JSON.stringify(body)});
   assert.equal((await worker.fetch(noSession,env)).status,400);
   // An existing prospect request continues to consume its quota.
   const original=(await (await req('/api/request',body)).json()).id;
-  sqlite.prepare("UPDATE requests SET status='published' WHERE id=?").run(original);
+  // A legacy prospect row still queued must not occupy the separate internal slot.
+  assert.equal(sqlite.prepare('SELECT status FROM requests WHERE id=?').get(original).status,'queued');
   assert.equal((await req('/api/request',{...body,site:'https://geoliance.fr/',is_internal:1})).status,400);
   const first=await req('/api/admin/test',{...body,site:'https://geoliance.fr/',companyName:'Geoliance'},true);
   assert.equal(first.status,201);const id=(await first.json()).id;
   assert.equal(sqlite.prepare('SELECT is_internal FROM requests WHERE id=?').get(id).is_internal,1);
-  assert.equal((await req('/api/admin/test',body,true)).status,400);
+  const blocked=await req('/api/admin/test',body,true);assert.equal(blocked.status,400);
+  assert.match((await blocked.json()).error,new RegExp(id));
   sqlite.prepare("UPDATE requests SET status='completed' WHERE id=?").run(id);
   assert.equal((await req('/api/admin/test',body,true)).status,201);
   assert.equal(calls,3);
+ });
+});
+
+test('a finished internal run is synchronized before accepting the next trial',async()=>{
+ const {sqlite,req}=await fixture();let key;let posts=0;
+ await mockedFetch(async(url,options)=>{
+  if(options?.method==='POST'){posts++;key=JSON.parse(options.body).inputs.request_key;return new Response(null,{status:204})}
+  if(url.includes('/jobs'))return ok({jobs:[{steps:[{name:step,conclusion:'success'}]}]});
+  return ok({workflow_runs:[{id:42,display_title:'La Fabrik · '+key,status:'completed',conclusion:'success'}]});
+ },async()=>{
+  const previous=(await (await req('/api/admin/test',body,true)).json()).id;
+  assert.equal(sqlite.prepare('SELECT status FROM requests WHERE id=?').get(previous).status,'queued');
+  const next=await req('/api/admin/test',{...body,companyName:'Geoliance',site:'https://www.groupe-geoliance.com/fr'},true);
+  assert.equal(next.status,201);
+  assert.equal(sqlite.prepare('SELECT status FROM requests WHERE id=?').get(previous).status,'completed');
+  assert.equal(sqlite.prepare('SELECT count(*) as n FROM requests').get().n,2);assert.equal(posts,2);
+ });
+});
+
+test('an unavailable internal run status preserves its slot and does not dispatch again',async()=>{
+ const {sqlite,req}=await fixture();let posts=0;
+ await mockedFetch(async(url,options)=>{
+  if(options?.method==='POST'){posts++;return new Response(null,{status:204})}
+  return new Response(null,{status:403});
+ },async()=>{
+  const id=(await (await req('/api/admin/test',body,true)).json()).id;
+  const blocked=await req('/api/admin/test',body,true);assert.equal(blocked.status,400);
+  const message=(await blocked.json()).error;assert.match(message,/Suivi GitHub indisponible/);assert.ok(message.includes(id));
+  assert.equal(sqlite.prepare('SELECT status FROM requests WHERE id=?').get(id).status,'queued');assert.equal(posts,1);
  });
 });
 
