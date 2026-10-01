@@ -173,7 +173,7 @@ test("verified emails can repeatedly request D&Co across pasted URL variants", a
     assert.equal(db.inserted.length, 6);
     assert.equal(dispatches.length, 6);
     assert.equal(new Set(db.inserted.map((row) => row[0])).size, 6);
-    for (const row of db.inserted) assert.equal(row[3], "decisionsandco.com");
+    for (const row of db.inserted) assert.equal(row[4], "decisionsandco.com");
   } finally {
     globalThis.fetch = savedFetch;
   }
