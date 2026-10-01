@@ -43,7 +43,8 @@
     "https://www.01net.com/actualites/microsoft-devoile-son-nouveau-copilot-une-super-app-pour-toutes-ses-ia.html",
     "https://www.blogdumoderateur.com/linkedin-pages-entreprise-supprimer-faux-employes/",
     "https://www.blogdumoderateur.com/microsoft-devoile-copilot-trois-espaces-home-code-autopilot/",
-    "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/"
+    "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/",
+    "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/"
   ],
   "scripts": [
     {
@@ -303,6 +304,12 @@
       "source": "actualite",
       "titre": "IA en RH : ce qui pourrait changer pour vous",
       "video_id": "i1_OJnqht2g"
+    },
+    {
+      "date": "2026-10-01T17:02:16.616392",
+      "source": "actualite",
+      "titre": "IA gratuite = IA sans valeur pour votre boîte",
+      "video_id": "yyRTH25QIAc"
     }
   ]
 }
