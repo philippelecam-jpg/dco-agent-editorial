@@ -337,8 +337,14 @@ async function handleRequest(env, request, internal=false) {
   if (!env.LEAD_CALLBACK_SECRET || !env.RESEND_API_KEY) throw new Error('Configurez LEAD_CALLBACK_SECRET et Resend avant la génération YouTube.');
   const data = await readJson(request);
   if (internal) {
-    const active=await env.DB.prepare("SELECT id FROM requests WHERE lead_id=? AND status IN ('queued','processing') LIMIT 1").bind(lead.id).first();
-    if (active) throw new Error('Une demande est déjà en cours. Attendez sa fin avant un nouvel essai.');
+    // Prospect history has separate quotas. Only another internal trial occupies this slot.
+    const active=await env.DB.prepare("SELECT * FROM requests WHERE lead_id=? AND is_internal=1 AND status IN ('queued','processing') LIMIT 1").bind(lead.id).first();
+    if (active) {
+      let checked;
+      try { checked=await syncRequest(env,active); }
+      catch (_) { throw new Error(`Suivi GitHub indisponible pour l’essai ${active.company_name || active.company_domain} (référence : ${active.id}). Aucun nouvel essai lancé. Consultez le suivi avant de relancer.`); }
+      if (['queued','processing'].includes(checked.status)) throw new Error(`Un essai interne est encore en cours ou son résultat n’est pas confirmé : ${checked.company_name || checked.company_domain} (référence : ${checked.id}). Consultez le suivi avant de relancer.`);
+    }
   }
   const companyName = requireText(data.companyName ?? lead.company, 2, 150, 'Entreprise à présenter');
   const companySite = siteUrl(data.site);
