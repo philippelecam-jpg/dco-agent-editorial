@@ -14,6 +14,7 @@ test("the JavaScript actually emitted in the page parses", async () => {
   assert.equal(new Set(ids).size, ids.length);
   assert(page.includes("La Fabrik"));
   assert(page.includes("Rachel%20Tertiaire.png"));
+  assert(page.includes('name="companyName"'));
 });
 
 test("rejected async handlers return JSON instead of escaping the worker", async () => {
@@ -108,6 +109,31 @@ function leadDatabase(address) {
     },
   };
 }
+
+test("the requested company is dispatched instead of the account company", async () => {
+  const db = leadDatabase('philippe@example.com');
+  const savedFetch = globalThis.fetch;
+  const dispatches = [];
+  globalThis.fetch = async (_url, options) => {
+    dispatches.push(JSON.parse(options.body));
+    return new Response(null, {status: 204});
+  };
+  try {
+    const submit = companyName => worker.fetch(new Request(origin + '/api/request', {
+      method: 'POST', headers: {'content-type': 'application/json', cookie: 'rachel_session=test'},
+      body: JSON.stringify({site: 'https://baresto.fr/', companyName}),
+    }), {DB: db});
+    assert.equal((await submit('  Baresto  ')).status, 201);
+    assert.equal(dispatches[0].inputs.company_name, 'Baresto');
+    assert.equal(dispatches[0].inputs.company_site, 'https://baresto.fr/');
+    assert.equal((await submit('')).status, 400);
+    assert.equal((await submit('x'.repeat(151))).status, 400);
+    assert.equal(dispatches.length, 1);
+    assert.equal(db.inserted.length, 1);
+    assert.equal((await submit(undefined)).status, 201);
+    assert.equal(dispatches[1].inputs.company_name, 'Décisions & Co');
+  } finally { globalThis.fetch = savedFetch; }
+});
 
 test("verified emails can repeatedly request D&Co across pasted URL variants", async () => {
   const db = leadDatabase("test@another-company.fr");
