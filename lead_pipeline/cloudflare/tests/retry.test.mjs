@@ -100,6 +100,9 @@ test('the emitted retry button restores fields and sends the same attempt refere
  let payload;let polls=0;
  const context={document:{hidden:false,getElementById:id=>nodes.get(id)},location:{href:origin},history:{replaceState(){}},localStorage:{getItem(){return ''},setItem(){}},URL,Event:class{constructor(type){this.type=type}},setInterval(){polls++},FormData:class{*[Symbol.iterator](){for(const key of ['companyName','site','sourceText','siren','rachelImage'])yield [key,nodes.get(key).value]}},fetch:async(url,options)=>({ok:true,text:async()=>JSON.stringify(url==='/api/me'?{company:'Décisions & Co',request:previous}:{...(payload=JSON.parse(options.body)),id:'failed-id',status:'queued'})})};
  vm.createContext(context);vm.runInContext(script,context);await new Promise(r=>setImmediate(r));
+ vm.runInContext("renderRequest({id:'video-only',status:'completed',github_run_id:'99'})",context);
+ assert.equal(nodes.get('done-title').textContent,'Votre vidéo est générée.');assert.match(nodes.get('done-status').textContent,/Il reste à publier/);assert.equal(nodes.get('publish').hidden,false);
+ vm.runInContext('renderRequest('+JSON.stringify(previous)+')',context);
  assert.equal(nodes.get('retry').hidden,false);nodes.get('retry').listeners.click();
  assert.equal(nodes.get('request-stage').hidden,false);assert.equal(nodes.get('companyName').value,'Baresto');assert.equal(nodes.get('sourceText').value,previous.source_text);assert.match(nodes.get('rachel-preview').src,/Restauration/);
  await nodes.get('request').listeners.submit({preventDefault(){},currentTarget:nodes.get('request')});
