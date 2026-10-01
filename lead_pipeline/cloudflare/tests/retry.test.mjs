@@ -192,3 +192,21 @@ test('YouTube delivery migration preserves existing request and tracking fields'
  sqlite.exec(readFileSync(new URL('../migrations/0003_youtube_delivery.sql',import.meta.url),'utf8'));
  const row=sqlite.prepare('SELECT * FROM requests').get();assert.equal(row.generation_key,'key');assert.equal(row.github_run_id,'99');assert.equal(row.youtube_url,null);assert.equal(row.status,'completed');
 });
+
+test('admin finalization requires authentication, preserves the known ID and dispatches once without generation',async()=>{
+ const {sqlite,req}=await fixture();
+ sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,generation_key,github_run_id,github_run_status,status,publication_status,created_at,updated_at) VALUES('uploaded','lead','https://baresto.fr/','baresto.fr','Rachel Restauration','old','123','completed','completed','review_required','2026-01-01','2026-01-01')").run();
+ assert.equal((await req('/api/admin/finalize',{id:'uploaded',youtubeId:'ycEDPSGCZDo'})).status,403);
+ assert.equal((await req('/api/admin/finalize',{id:'uploaded',youtubeId:'invalid'},true)).status,400);
+ let calls=0;
+ await mockedFetch(async(url,options)=>{
+   if(options?.method!=='POST') return ok({workflow_runs:[]});
+   const inputs=JSON.parse(options.body).inputs;calls++;
+   assert.equal(inputs.mode,'youtube_finalize');assert.equal(inputs.existing_youtube_id,'ycEDPSGCZDo');assert.equal(inputs.video_run_id,'123');assert.notEqual(inputs.request_key,'old');
+   return new Response(null,{status:204});
+ },async()=>{
+   assert.equal((await req('/api/admin/finalize',{id:'uploaded',youtubeId:'ycEDPSGCZDo'},true)).status,201);
+   assert.equal((await req('/api/admin/finalize',{id:'uploaded',youtubeId:'ycEDPSGCZDo'},true)).status,400);
+ });
+ assert.equal(calls,1);assert.equal(sqlite.prepare("SELECT youtube_id FROM requests WHERE id='uploaded'").get().youtube_id,'ycEDPSGCZDo');
+});
