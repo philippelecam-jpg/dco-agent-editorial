@@ -8,7 +8,7 @@ from .first_capsule import log, failure_reason, public_report
 
 def main():
     mode=os.getenv('TEST_MODE','youtube_unlisted')
-    if mode not in ('youtube_private','youtube_unlisted','youtube_existing'):
+    if mode not in ('youtube_private','youtube_unlisted','youtube_existing','youtube_finalize'):
         raise Rejected('Mode de publication inconnu.')
     out=Path('test-output')
     report_path=out/'report.json'
@@ -18,11 +18,15 @@ def main():
     if not state.get('video_ready') or not state.get('script'): raise Rejected('La capsule source n’est pas terminée.')
     checkpoint=out/'publication-checkpoint.json'
     if checkpoint.exists(): state.update(json.loads(checkpoint.read_text()))
-    if state.get('pending'): raise Rejected('Téléversement interrompu. Vérifiez YouTube avant toute reprise.')
     existing_id=os.getenv('EXISTING_YOUTUBE_ID','')
     if existing_id:
         if not re.fullmatch(r'[A-Za-z0-9_-]{11}',existing_id): raise Rejected('Identifiant YouTube existant invalide.')
         state['youtube_id']=existing_id
+    if mode=='youtube_finalize':
+        if not existing_id: raise Rejected('Finalisation : identifiant YouTube existant obligatoire. Aucun upload autorisé.')
+        state.pop('pending',None)
+    elif state.get('pending'):
+        raise Rejected('Téléversement interrompu. Vérifiez YouTube avant toute reprise.')
     privacy='private' if mode=='youtube_private' else 'unlisted'
     os.environ['YOUTUBE_PRIVACY']=privacy
     stage='youtube_start'
