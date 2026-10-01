@@ -1,0 +1,107 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+import worker from '../src/index.js';
+const origin='https://fabrik.test';
+const step='Tester la capsule avec les accès Rachel existants';
+async function fixture(){
+ const sqlite=new DatabaseSync(':memory:');sqlite.exec(readFileSync(new URL('../schema.sql',import.meta.url),'utf8'));
+ const tokenHash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('session'))).toString('hex');
+ sqlite.prepare('INSERT INTO leads(id,email,name,company,created_at) VALUES(?,?,?,?,?)').run('lead','test@example.com','Philippe','Décisions & Co','2026-01-01');
+ sqlite.prepare('INSERT INTO verification_tokens(token_hash,lead_id,expires_at,used_at,created_at) VALUES(?,?,?,?,?)').run(tokenHash,'lead','2027-01-01','2026-01-01','2026-01-01');
+ const env={ADMIN_TOKEN:'admin-secret',GITHUB_TOKEN:'test',DB:{prepare(sql){let values=[];return {bind(...v){values=v;return this},async first(){return sqlite.prepare(sql).get(...values)||null},async run(){return {meta:{changes:Number(sqlite.prepare(sql).run(...values).changes)}}}}}}};
+ const req=(path,body,admin=false)=>worker.fetch(new Request(origin+path,{method:body?'POST':'GET',headers:{cookie:'rachel_session=session','content-type':'application/json',...(admin?{authorization:'Bearer admin-secret'}:{})},...(body?{body:JSON.stringify(body)}:{})}),env);
+ return {sqlite,env,req};
+}
+async function mockedFetch(handler,operation){const saved=globalThis.fetch;globalThis.fetch=handler;try{return await operation()}finally{globalThis.fetch=saved}}
+const ok=data=>new Response(JSON.stringify(data),{headers:{'content-type':'application/json'}});
+const body={companyName:'Baresto',site:'https://baresto.fr/',rachelImage:'Rachel Restauration',sourceText:'Texte factuel '.repeat(20)};
+
+test('failure is synchronized, inputs retained, retry reuses the row and rejects a double click',async()=>{
+ const {sqlite,req}=await fixture();let dispatched=0;let key;
+ await mockedFetch(async(url,options)=>{
+  if(options?.method==='POST'){dispatched++;key=JSON.parse(options.body).inputs.request_key;return new Response(null,{status:204})}
+  if(url.includes('/jobs'))return ok({jobs:[{steps:[{name:step,conclusion:'failure'}]}]});
+  return ok({workflow_runs:[{id:42,display_title:'La Fabrik · '+key,status:'completed',conclusion:'failure'}]});
+ },async()=>{
+  const first=await req('/api/request',body);assert.equal(first.status,201);const id=(await first.json()).id;
+  const me=await (await req('/api/me')).json();assert.equal(me.request.status,'failed');assert.equal(me.request.company_name,'Baresto');assert.equal(me.request.source_text,body.sourceText.trim());
+  const retryKey=me.request.generation_key;
+  const retry=await req('/api/request',{...body,retryId:id,retryKey});assert.equal(retry.status,201);assert.equal((await retry.json()).id,id);
+  const again=await req('/api/request',{...body,retryId:id,retryKey});assert.equal(again.status,400);assert.equal(dispatched,2);
+  assert.equal(sqlite.prepare('SELECT count(*) as n FROM requests').get().n,1);
+ });
+});
+test('successful generation blocks retry even when artifact upload failed',async()=>{
+ const {req}=await fixture();let key;
+ await mockedFetch(async(url,options)=>{
+  if(options?.method==='POST'){key=JSON.parse(options.body).inputs.request_key;return new Response(null,{status:204})}
+  if(url.includes('/jobs'))return ok({jobs:[{steps:[{name:step,conclusion:'success'}]}]});
+  return ok({workflow_runs:[{id:43,display_title:'La Fabrik · '+key,status:'completed',conclusion:'failure'}]});
+ },async()=>{
+  const id=(await (await req('/api/request',body)).json()).id;
+  assert.equal((await (await req('/api/me')).json()).request.status,'completed');
+  assert.equal((await req('/api/request',{...body,retryId:id})).status,400);
+ });
+});
+test('unknown GitHub status never unlocks a paid request',async()=>{
+ const {req}=await fixture();
+ await mockedFetch(async(url,options)=>options?.method==='POST'?new Response(null,{status:204}):ok({workflow_runs:[]}),async()=>{
+  const id=(await (await req('/api/request',body)).json()).id;
+  assert.equal((await req('/api/request',{...body,retryId:id})).status,400);
+  assert.equal((await req('/api/admin/unlock',{id,confirmFailed:true},true)).status,400);
+ });
+});
+test('legacy unlock is authenticated and keeps the record and quotas',async()=>{
+ const {sqlite,req}=await fixture();
+ sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at) VALUES('old','lead','https://baresto.fr/','baresto.fr','Rachel Restauration','dispatched','queued','2026-01-01','2026-01-01')").run();
+ assert.equal((await req('/api/admin/unlock',{id:'old',confirmFailed:true})).status,403);
+ assert.equal((await req('/api/admin/unlock',{id:'old'},true)).status,400);
+ assert.equal((await req('/api/admin/unlock',{id:'old',confirmFailed:true},true)).status,200);
+ assert.equal(sqlite.prepare("SELECT status FROM requests WHERE id='old'").get().status,'failed');
+ await mockedFetch(async()=>new Response(null,{status:204}),async()=>{
+  assert.equal((await req('/api/request',body)).status,400); // New request remains subject to quotas.
+  assert.equal((await req('/api/request',{...body,retryId:'old'})).status,201);
+ });
+});
+test('retry rejects a request owned by another lead and explicit dispatch refusal permits correction',async()=>{
+ const {sqlite,req}=await fixture();
+ await mockedFetch(async()=>new Response(null,{status:422}),async()=>{
+  assert.equal((await req('/api/request',body)).status,400);
+  const row=sqlite.prepare('SELECT * FROM requests').get();assert.equal(row.status,'failed');
+  sqlite.prepare("UPDATE requests SET lead_id='someone-else' WHERE id=?").run(row.id);
+  assert.equal((await req('/api/request',{...body,retryId:row.id})).status,400);
+ });
+});
+test('tracking API error preserves request and displays a warning',async()=>{
+ const {req}=await fixture();
+ await mockedFetch(async(url,options)=>options?.method==='POST'?new Response(null,{status:204}):new Response(null,{status:403}),async()=>{
+  assert.equal((await req('/api/request',body)).status,201);
+  const data=await (await req('/api/me')).json();assert.equal(data.request.status,'queued');assert.match(data.trackingWarning,/indisponible/);
+ });
+});
+test('migration preserves previous requests and constraints',()=>{
+ const sqlite=new DatabaseSync(':memory:');
+ const schema=readFileSync(new URL('../schema.sql',import.meta.url),'utf8').replace('  company_name TEXT,\n  generation_key TEXT,\n  github_run_id TEXT,\n','');sqlite.exec(schema);
+ sqlite.exec("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at) VALUES('old','lead','https://baresto.fr','baresto.fr','Rachel Restauration','dispatched','queued','2026-01-01','2026-01-01')");
+ sqlite.exec(readFileSync(new URL('../migrations/0002_request_retry_tracking.sql',import.meta.url),'utf8'));
+ assert.equal(sqlite.prepare('SELECT generation_key FROM requests').get().generation_key,null);
+ assert.equal(sqlite.prepare('SELECT count(*) as n FROM requests').get().n,1);
+});
+
+test('the emitted retry button restores fields and sends the same attempt reference',async()=>{
+ const {default:vm}=await import('node:vm');
+ const html=await (await worker.fetch(new Request(origin),{})).text();
+ const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+ const nodes=new Map([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],{value:'',hidden:true,textContent:'',dataset:{},classList:{toggle(){}},listeners:{},addEventListener(e,f){this.listeners[e]=f},dispatchEvent(e){this.listeners[e.type]?.()},focus(){},querySelector(){return this.button}}]));
+ nodes.get('request').button={dataset:{},textContent:'Lancer ma capsule'};
+ const previous={id:'failed-id',status:'failed',company_name:'Baresto',company_site:'https://baresto.fr/',source_text:'Texte factuel '.repeat(20),rachel_image:'Rachel Restauration',siren:'123456789',generation_key:'old-key'};
+ let payload;let polls=0;
+ const context={document:{hidden:false,getElementById:id=>nodes.get(id)},location:{href:origin},history:{replaceState(){}},localStorage:{getItem(){return ''},setItem(){}},URL,Event:class{constructor(type){this.type=type}},setInterval(){polls++},FormData:class{*[Symbol.iterator](){for(const key of ['companyName','site','sourceText','siren','rachelImage'])yield [key,nodes.get(key).value]}},fetch:async(url,options)=>({ok:true,text:async()=>JSON.stringify(url==='/api/me'?{company:'Décisions & Co',request:previous}:{...(payload=JSON.parse(options.body)),id:'failed-id',status:'queued'})})};
+ vm.createContext(context);vm.runInContext(script,context);await new Promise(r=>setImmediate(r));
+ assert.equal(nodes.get('retry').hidden,false);nodes.get('retry').listeners.click();
+ assert.equal(nodes.get('request-stage').hidden,false);assert.equal(nodes.get('companyName').value,'Baresto');assert.equal(nodes.get('sourceText').value,previous.source_text);assert.match(nodes.get('rachel-preview').src,/Restauration/);
+ await nodes.get('request').listeners.submit({preventDefault(){},currentTarget:nodes.get('request')});
+ assert.equal(payload.retryId,'failed-id');assert.equal(payload.retryKey,'old-key');assert.equal(payload.companyName,'Baresto');assert.equal(polls,1);
+});
