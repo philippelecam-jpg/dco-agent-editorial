@@ -15,6 +15,8 @@ test("the JavaScript actually emitted in the page parses", async () => {
   assert(page.includes("La Fabrik"));
   assert(page.includes("Rachel%20Tertiaire.png"));
   assert(page.includes('name="companyName"'));
+  assert(!page.includes("Consulter le résultat GitHub"));
+  assert(page.includes('id="done-title"'));
 });
 
 test("rejected async handlers return JSON instead of escaping the worker", async () => {
