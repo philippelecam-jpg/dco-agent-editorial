@@ -1,4 +1,5 @@
 const COOKIE = "rachel_session";
+const UNLIMITED_COMPANY_DOMAIN = "decisionsandco.com";
 const RACHEL_IMAGES = new Set([
   "Rachel Tertiaire",
   "Rachel BTP",
@@ -61,7 +62,10 @@ function email(value) {
 }
 
 function siteUrl(value) {
-  const raw = clean(value);
+  const raw = clean(value)
+    .replace(/\\/g, "/")
+    .replace(/^(https?):\/+/i, "$1://")
+    .replace(/[,;]+$/, "");
   if (!raw || /\s/.test(raw)) throw new Error("Adresse du site invalide.");
   const url = new URL(raw.includes("://") ? raw : `https://${raw}`);
   if (
@@ -278,7 +282,8 @@ async function handleRequest(env, request) {
   const data = await readJson(request);
   const companySite = siteUrl(data.site);
   const companyDomain = domainFromUrl(companySite);
-  if (!professionalEmailMatches(lead.email, companyDomain)) {
+  const canRepeat = companyDomain === UNLIMITED_COMPANY_DOMAIN;
+  if (!canRepeat && !professionalEmailMatches(lead.email, companyDomain)) {
     throw new Error(
       "Utilisez une adresse professionnelle correspondant au domaine du site.",
     );
@@ -328,7 +333,7 @@ async function handleRequest(env, request) {
   )
     .bind("dispatched", now(), now(), id)
     .run();
-  return json({ id, status: "queued" }, 201);
+  return json({ id, status: "queued", canRepeat }, 201);
 }
 
 async function handleMe(env, request) {
@@ -342,6 +347,7 @@ async function handleMe(env, request) {
     name: lead.name,
     company: lead.company,
     request: currentRequest,
+    canRepeat: currentRequest?.company_domain === UNLIMITED_COMPANY_DOMAIN,
   });
 }
 
@@ -359,8 +365,8 @@ function page() {
 <div id="signup-stage"><form id="signup"><div class="field"><label for="email">Email professionnel</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div><div class="field"><label for="signup-site">Site web de votre entreprise</label><input id="signup-site" name="site" type="text" inputmode="url" autocomplete="url" placeholder="https://votre-entreprise.fr" required></div>
 <div id="identity-fields" hidden><div class="row"><div class="field"><label for="name">Prénom et nom</label><input id="name" name="name" autocomplete="name" minlength="2" maxlength="100" required disabled></div><div class="field"><label for="company">Votre entreprise</label><input id="company" name="company" autocomplete="organization" minlength="2" maxlength="150" required disabled></div></div></div>
 <label class="consent"><input id="consent" type="checkbox" required><span>Je demande une capsule de démonstration et sa publication sur YouTube.</span></label><button class="primary" type="submit">Créer ma capsule</button><p class="note" id="signup-note">Une capsule offerte par entreprise. Email vérifié avant génération.</p></form><div id="signup-status" class="status" role="status" aria-live="polite" hidden></div></div>
-<div id="request-stage" hidden><h2>Votre sujet, votre capsule.</h2><p id="welcome" class="hint">Votre email est vérifié. Complétez votre demande.</p><form id="request"><div class="field"><label for="site">Site web de votre entreprise</label><input id="site" name="site" inputmode="url" placeholder="https://votre-entreprise.fr" required></div><div class="field"><label for="sourceText">Votre actualité <span class="hint">(facultatif)</span></label><textarea id="sourceText" name="sourceText" maxlength="12000" placeholder="Collez une actualité ou un texte factuel. Utile si le site est inaccessible."></textarea></div><details><summary>Personnaliser la présentation</summary><div class="field"><label for="rachelImage">Secteur d’activité</label><select id="rachelImage" name="rachelImage"><option value="Rachel Tertiaire">Tertiaire</option><option value="Rachel BTP">BTP</option><option value="Rachel Agriculture">Agriculture</option><option value="Rachel Industrie">Industrie</option><option value="Rachel Restauration">Restauration</option><option value="Rachel Logistique et Transport">Logistique et Transport</option></select></div><div class="field"><label for="siren">SIREN (facultatif)</label><input id="siren" name="siren" pattern="[0-9]{9}" maxlength="9" inputmode="numeric"></div></details><button class="primary" type="submit">Lancer ma capsule</button><p class="note">Une seule demande par entreprise.</p></form><div id="request-status" class="status" role="status" aria-live="polite" hidden></div></div>
-<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
+<div id="request-stage" hidden><h2>Votre sujet, votre capsule.</h2><p id="welcome" class="hint">Votre email est vérifié. Complétez votre demande.</p><form id="request"><div class="field"><label for="site">Site web de votre entreprise</label><input id="site" name="site" inputmode="url" placeholder="https://votre-entreprise.fr" required></div><div class="field"><label for="sourceText">Votre actualité <span class="hint">(facultatif)</span></label><textarea id="sourceText" name="sourceText" maxlength="12000" placeholder="Collez une actualité ou un texte factuel. Utile si le site est inaccessible."></textarea></div><details><summary>Personnaliser la présentation</summary><div class="field"><label for="rachelImage">Secteur d’activité</label><select id="rachelImage" name="rachelImage"><option value="Rachel Tertiaire">Tertiaire</option><option value="Rachel BTP">BTP</option><option value="Rachel Agriculture">Agriculture</option><option value="Rachel Industrie">Industrie</option><option value="Rachel Restauration">Restauration</option><option value="Rachel Logistique et Transport">Logistique et Transport</option></select></div><div class="field"><label for="siren">SIREN (facultatif)</label><input id="siren" name="siren" pattern="[0-9]{9}" maxlength="9" inputmode="numeric"></div></details><button class="primary" type="submit">Lancer ma capsule</button><p id="quota-note" class="note">Une seule demande par entreprise.</p></form><div id="request-status" class="status" role="status" aria-live="polite" hidden></div></div>
+<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="repeat" class="primary" type="button" hidden>Créer une autre capsule Décisions & Co</button><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
 <p id="session-status" class="loading" role="status">Vérification de votre accès…</p><noscript><p>Activez JavaScript pour demander votre capsule.</p></noscript></div></section>
 <div class="preview"><img id="rachel-preview" src="https://raw.githubusercontent.com/philippelecam-jpg/dco-agent-editorial/main/assets/Rachel%20Tertiaire.png" alt="Rachel, présentatrice IA de Décisions & Co" fetchpriority="high"><span class="pill">Rachel · Présentatrice IA</span><a class="play" href="https://www.youtube.com/@Rachel-DecisionsAndCo/shorts" target="_blank" rel="noopener noreferrer" aria-label="Découvrir les vidéos de Rachel sur YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3v18l16-9z"/></svg></a><span class="caption">Votre actualité en vidéo</span><span class="duration">0:30</span></div></div>
 <ol class="steps" aria-label="Comment ça marche"><li><span class="number">1</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="29" height="23" rx="2"/><path d="m4 9 13 11L31 9"/><circle cx="31" cy="30" r="7"/><path d="m28 33 6-6"/></svg><span class="step-title">Email + site web</span></li><li><span class="number">2</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m18 4 4 11 11 4-11 4-4 11-4-11-11-4 11-4zM33 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span class="step-title">L’IA prépare votre sujet</span></li><li><span class="number">3</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="5" width="36" height="30" rx="5"/><path d="m16 12 11 8-11 8z"/></svg><span class="step-title">Votre capsule sur YouTube<span class="step-note">Personnalisée pour votre entreprise</span></span></li></ol></main>
@@ -370,7 +376,7 @@ function page() {
 const $=id=>document.getElementById(id);
 const show=(id,message,error=false)=>{const node=$(id);node.textContent=message;node.classList.toggle('error',error);node.hidden=false;};
 const stage=name=>{['signup','request','done'].forEach(key=>$(key+'-stage').hidden=key!==name);};
-const normalizeSite=value=>{const raw=value.trim();const url=new URL(raw.includes('://')?raw:'https://'+raw);if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!url.hostname.includes('.'))throw new Error('Indiquez un site web public valide.');url.protocol='https:';url.hash='';return url.href;};
+const normalizeSite=value=>{const raw=value.trim().replace(/\\/g,'/').replace(/^(https?):\/+/i,'$1://').replace(/[,;]+$/,'');const url=new URL(raw.includes('://')?raw:'https://'+raw);if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!url.hostname.includes('.'))throw new Error('Indiquez un site web public valide.');url.protocol='https:';url.hash='';return url.href;};
 const api=async(url,payload)=>{const response=await fetch(url,payload?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}:{});const text=await response.text();let data;try{data=JSON.parse(text);}catch(_){throw new Error('Le service est momentanément indisponible. Réessayez dans quelques instants.');}if(!response.ok)throw new Error(data.error||'La demande a échoué.');return data;};
 const busy=(form,value,label)=>{const button=form.querySelector('button[type=submit]');if(value){button.dataset.label=button.textContent;button.textContent=label;}else{button.textContent=button.dataset.label||button.textContent;}button.disabled=value;};
 const saveSite=value=>{try{localStorage.setItem('fabrik_site',value);}catch(_){};};
@@ -384,9 +390,13 @@ $('rachelImage').addEventListener('change',()=>{
 let identityOpen=false;
 $('signup').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;let site;try{site=normalizeSite($('signup-site').value);}catch(error){show('signup-status',error.message,true);return;}$('signup-site').value=site;saveSite(site);if(!identityOpen){identityOpen=true;$('identity-fields').hidden=false;$('name').disabled=false;$('company').disabled=false;$('signup-note').textContent='Complétez votre nom et votre entreprise pour recevoir votre lien.';form.querySelector('button').textContent='Recevoir mon lien';$('name').focus();return;}busy(form,true,'Envoi du lien…');show('signup-status','Envoi en cours…');try{await api('/api/signup',Object.fromEntries(new FormData(form)));show('signup-status','Votre lien d’accès a été demandé. Vérifiez votre messagerie et les indésirables. Il est valable 15 minutes.');}catch(error){show('signup-status',error.message,true);}finally{busy(form,false);}});
 const statuses={queued:'Votre capsule est en attente de génération.',processing:'Votre capsule est en préparation.',generating:'Votre capsule est en préparation.',completed:'Votre capsule est prête.',published:'Votre capsule est publiée.',failed:'La génération a rencontré un problème.',blocked:'La demande nécessite une vérification.'};
-const renderRequest=request=>{stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent='Retrouvez ici le statut de votre demande.';$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
-async function loadSession(){try{const data=await api('/api/me');if(data.request){renderRequest(data.request);}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
-$('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
+const renderRequest=(request,canRepeat=false)=>{$('repeat').hidden=!canRepeat;stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent='Retrouvez ici le statut de votre demande.';$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
+async function loadSession(){try{const data=await api('/api/me');if(data.request){renderRequest(data.request,data.canRepeat);}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
+$('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data,data.canRepeat);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
+const updateQuotaNote=()=>{let exempt=false;try{exempt=new URL(normalizeSite($('site').value)).hostname.toLowerCase().replace(/^www\./,'')==='decisionsandco.com';}catch(_){}$('quota-note').textContent=exempt?'Décisions & Co : générations sans limite.':'Une seule demande par entreprise.';};
+$('site').addEventListener('input',updateQuotaNote);
+$('repeat').addEventListener('click',()=>{$('site').value='https://www.decisionsandco.com/';$('request-status').hidden=true;stage('request');updateQuotaNote();$('sourceText').focus();});
+updateQuotaNote();
 $('refresh').addEventListener('click',async()=>{$('refresh').disabled=true;try{await loadSession();}finally{$('refresh').disabled=false;}});
 loadSession();
 </script></body></html>`);
