@@ -286,10 +286,10 @@ def duration(path):
 
 def avatar_start(audio,title):
     key=required('HEYGEN_API_KEY')
-    photo=Path(os.getenv('RACHEL_ENTERPRISE_PHOTO_PATH',str(Path(__file__).resolve().parents[2]/'assets'/'Rachel_Enterprise.png')))
-    if not photo.is_file(): raise Rejected('Image Rachel Entreprises absente : Rachel_Enterprise.png.')
+    photo=Path(os.getenv('RACHEL_ENTERPRISE_PHOTO_PATH',str(Path(__file__).resolve().parents[2]/'assets'/'Rachel Tertiaire.png')))
+    if not photo.is_file(): raise Rejected('Image Rachel absente : '+photo.name+'.')
     with photo.open('rb') as handle:
-        photo_asset=req('POST','https://api.heygen.com/v3/assets',headers={'x-api-key':key},files={'file':('Rachel_Enterprise.png',handle,'image/png')}).json()['data']['asset_id']
+        photo_asset=req('POST','https://api.heygen.com/v3/assets',headers={'x-api-key':key},files={'file':(photo.name,handle,'image/png')}).json()['data']['asset_id']
     with audio.open('rb') as handle:
         asset=req('POST','https://api.heygen.com/v3/assets',headers={'x-api-key':key},files={'file':('voice.mp3',handle,'audio/mpeg')}).json()['data']['asset_id']
     return req('POST','https://api.heygen.com/v3/videos',headers={'x-api-key':key},json={'type':'image','image':{'type':'asset_id','asset_id':photo_asset},'audio_asset_id':asset,'title':title[:100],'resolution':'1080p','aspect_ratio':'16:9'}).json()['data']['video_id']
