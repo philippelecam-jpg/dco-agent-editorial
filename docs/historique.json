@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 4 septembre 2026",
-    "timestamp": "2026-09-04T06:08:43.646221",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : ce qu'on apprend aux individus ne change pas l'organisation",
-    "post_x": "Former des gens à l'IA, c'est nécessaire. Suffisant ? Non. Une organisation ne change pas parce que ses membres ont suivi un atelier. Elle change quand ses processus, ses décisions et sa connaissance sont restructurés.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2095755749779439894",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-04-060800.png?v=060800"
-  },
-  {
     "date": "Samedi 5 septembre 2026",
     "timestamp": "2026-09-05T09:25:00.333301",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "L'étape qu'on saute toujours : éliciter. Faire sortir la connaissance des têtes avant de toucher à un outil. Sans ça, on automatise du flou.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2105177843390968015",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-30-060802.png?v=060802"
+  },
+  {
+    "date": "Jeudi 1 octobre 2026",
+    "timestamp": "2026-10-01T06:09:16.929954",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "AI Act : ce que ça change concrètement pour une PME française",
+    "post_x": "L'AI Act n'est pas fait pour effrayer les PME. Il est fait pour clarifier. Ce que vous devez faire : savoir quels outils vous utilisez, à quoi ils servent, et qui en est responsable. Pas plus compliqué que ça.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2105540319647281587",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-01-060823.png?v=060824"
   }
 ]
