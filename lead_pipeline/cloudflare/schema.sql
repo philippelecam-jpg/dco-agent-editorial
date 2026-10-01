@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS verification_tokens (
 CREATE TABLE IF NOT EXISTS requests (
   id TEXT PRIMARY KEY,
   lead_id TEXT NOT NULL,
+  company_name TEXT,
+  generation_key TEXT,
+  github_run_id TEXT,
   company_site TEXT NOT NULL,
   company_domain TEXT NOT NULL,
   siren TEXT,
