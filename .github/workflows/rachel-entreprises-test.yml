@@ -9,11 +9,27 @@ on:
         type: string
         required: false
       mode:
-        description: 'check = présence des accès ; video = génération ; youtube_private = téléversement privé'
+        description: 'check = accès ; video = MP4 ; youtube_unlisted = génération + YouTube ; youtube_existing = publier un artifact existant'
         type: choice
-        options: [check, video, youtube_private]
+        options: [check, video, youtube_private, youtube_unlisted, youtube_existing]
         default: check
         required: true
+      request_id:
+        description: 'Référence de demande La Fabrik (automatique)'
+        type: string
+        required: false
+      callback_url:
+        description: 'URL de retour La Fabrik (automatique)'
+        type: string
+        required: false
+      video_run_id:
+        description: 'Pour youtube_existing : numéro du run contenant la vidéo'
+        type: string
+        required: false
+      existing_youtube_id:
+        description: 'Identifiant YouTube déjà téléversé (automatique, éviter un doublon)'
+        type: string
+        required: false
       company_name:
         description: 'Entreprise à présenter'
         type: string
@@ -44,6 +60,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: rachel-entreprises-first-test
@@ -69,6 +86,23 @@ jobs:
             echo 'Reprise refusée : vérifier les résultats fournisseurs avant un nouveau lancement.'
             exit 1
           fi
+      - name: Vérifier les accès de livraison
+        if: inputs.callback_url != ''
+        env:
+          CALLBACK_SECRET: ${{ secrets.LEAD_CALLBACK_SECRET }}
+        run: |
+          if [ -z "$CALLBACK_SECRET" ]; then
+            echo 'LEAD_CALLBACK_SECRET absent : aucun appel payant lancé.'
+            exit 1
+          fi
+      - name: Récupérer une capsule déjà générée
+        if: inputs.mode == 'youtube_existing'
+        uses: actions/download-artifact@v4
+        with:
+          name: rachel-capsule-${{ inputs.video_run_id }}
+          path: lead_pipeline/test-output
+          run-id: ${{ inputs.video_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Vérifier le moteur
         run: python -m unittest discover -s tests -v
       - name: Installer les dépendances
@@ -90,9 +124,10 @@ jobs:
             *) echo "Image Rachel inconnue : $RACHEL_IMAGE"; exit 1 ;;
           esac
       - name: Tester la capsule avec les accès Rachel existants
+        if: inputs.mode != 'youtube_existing'
         env:
           PYTHONUNBUFFERED: '1'
-          TEST_MODE: ${{ inputs.mode }}
+          TEST_MODE: ${{ inputs.mode == 'check' && 'check' || 'video' }}
           COMPANY_NAME: ${{ inputs.company_name }}
           COMPANY_SITE: ${{ inputs.company_site }}
           SOURCE_TEXT: ${{ inputs.source_text }}
@@ -104,6 +139,23 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: python -u -m backend.first_capsule
+      - name: Publier la capsule sur YouTube
+        if: inputs.mode == 'youtube_private' || inputs.mode == 'youtube_unlisted' || inputs.mode == 'youtube_existing'
+        env:
+          TEST_MODE: ${{ inputs.mode }}
+          EXISTING_YOUTUBE_ID: ${{ inputs.existing_youtube_id }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python -u -m backend.publish_capsule
+      - name: Transmettre le résultat à La Fabrik
+        if: always() && inputs.callback_url != '' && inputs.mode != 'check'
+        env:
+          LEAD_CALLBACK_URL: ${{ inputs.callback_url }}
+          LEAD_REQUEST_ID: ${{ inputs.request_id }}
+          LEAD_REQUEST_KEY: ${{ inputs.request_key }}
+          LEAD_CALLBACK_SECRET: ${{ secrets.LEAD_CALLBACK_SECRET }}
+        run: python -u -m backend.lead_callback
       - name: Conserver la vidéo et le rapport
         if: always() && inputs.mode != 'check'
         uses: actions/upload-artifact@v4
