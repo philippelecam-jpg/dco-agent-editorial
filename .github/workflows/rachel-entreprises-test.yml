@@ -25,13 +25,16 @@ on:
         default: ''
         required: false
       rachel_image:
-        description: 'Image Rachel utilisée par HeyGen'
+        description: 'Secteur et image Rachel utilisés par HeyGen'
         type: choice
         options:
-          - Rachel Entreprises
-          - Rachel Super U
-          - Rachel originale
-        default: Rachel Entreprises
+          - Rachel Tertiaire
+          - Rachel BTP
+          - Rachel Agriculture
+          - Rachel Industrie
+          - Rachel Restauration
+          - Rachel Logistique et Transport
+        default: Rachel Tertiaire
         required: true
 
 permissions:
@@ -73,9 +76,12 @@ jobs:
           RACHEL_IMAGE: ${{ inputs.rachel_image }}
         run: |
           case "$RACHEL_IMAGE" in
-            'Rachel Entreprises') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel_Enterprise.png' >> "$GITHUB_ENV" ;;
-            'Rachel Super U') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Super U.png' >> "$GITHUB_ENV" ;;
-            'Rachel originale') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel.PNG' >> "$GITHUB_ENV" ;;
+            'Rachel Tertiaire') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Tertiaire.png' >> "$GITHUB_ENV" ;;
+            'Rachel BTP') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel BTP.png' >> "$GITHUB_ENV" ;;
+            'Rachel Agriculture') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Agriculture.png' >> "$GITHUB_ENV" ;;
+            'Rachel Industrie') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Industrie.png' >> "$GITHUB_ENV" ;;
+            'Rachel Restauration') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Restauration.png' >> "$GITHUB_ENV" ;;
+            'Rachel Logistique et Transport') echo 'RACHEL_ENTERPRISE_PHOTO_PATH=../assets/Rachel Logistique et Transport.png' >> "$GITHUB_ENV" ;;
             *) echo "Image Rachel inconnue : $RACHEL_IMAGE"; exit 1 ;;
           esac
       - name: Tester la capsule avec les accès Rachel existants

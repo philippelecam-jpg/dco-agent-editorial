@@ -13,7 +13,7 @@ test("the JavaScript actually emitted in the page parses", async () => {
   const ids = [...page.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length);
   assert(page.includes("La Fabrik"));
-  assert(page.includes("Rachel_Enterprise.png"));
+  assert(page.includes("Rachel%20Tertiaire.png"));
 });
 
 test("rejected async handlers return JSON instead of escaping the worker", async () => {
