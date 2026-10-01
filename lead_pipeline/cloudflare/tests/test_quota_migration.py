@@ -31,6 +31,7 @@ class QuotaMigrationTests(unittest.TestCase):
         schema = schema.replace('  company_name TEXT,\n  generation_key TEXT,\n  github_run_id TEXT,\n', '')
         for column in ('youtube_id TEXT', 'youtube_url TEXT', "publication_status TEXT DEFAULT 'none'", "delivery_status TEXT DEFAULT 'pending'", 'delivery_error TEXT', 'delivery_attempted_at TEXT', 'delivery_lease_until TEXT', 'notified_at TEXT'):
             schema = schema.replace('  '+column+',\n', '')
+        schema = schema.replace(',\n  is_internal INTEGER NOT NULL DEFAULT 0 CHECK(is_internal IN (0,1))', '')
         schema = schema.replace('lead_id TEXT NOT NULL,\n  company_site', 'lead_id TEXT NOT NULL UNIQUE,\n  company_site')
         schema = schema.replace('company_domain TEXT NOT NULL,', 'company_domain TEXT NOT NULL UNIQUE,')
         schema = schema.replace('siren TEXT,', 'siren TEXT UNIQUE,')
