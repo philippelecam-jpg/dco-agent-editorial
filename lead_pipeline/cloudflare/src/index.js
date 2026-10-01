@@ -272,74 +272,117 @@ async function handleVerify(env, request) {
   });
 }
 
+function githubRoot(env) {
+  return `https://api.github.com/repos/${env.GITHUB_OWNER || "philippelecam-jpg"}/${env.GITHUB_REPO || "dco-agent-editorial"}`;
+}
+async function githubRead(env, path) {
+  const response = await fetch(githubRoot(env) + path, {headers: {
+    authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: "application/vnd.github+json", "user-agent": "dco-rachel-entreprises",
+  }});
+  if (!response.ok) throw new Error(`Suivi GitHub indisponible (${response.status}).`);
+  return response.json();
+}
+async function syncRequest(env, row) {
+  if (!row || !['queued','processing'].includes(row.status) || !row.generation_key) return row;
+  let run;
+  if (row.github_run_id) {
+    run = await githubRead(env, `/actions/runs/${row.github_run_id}`);
+  } else {
+    const workflow = encodeURIComponent(env.GITHUB_WORKFLOW_ID || 'rachel-entreprises-test.yml');
+    const since = (row.github_dispatch_at || row.created_at).slice(0,10);
+    for (let page=1; page<=3 && !run; page++) {
+      const result = await githubRead(env, `/actions/workflows/${workflow}/runs?event=workflow_dispatch&per_page=100&page=${page}&created=${encodeURIComponent('>='+since)}`);
+      run = result.workflow_runs?.find(item => item.display_title === `La Fabrik · ${row.generation_key}`);
+      if ((result.workflow_runs?.length || 0) < 100) break;
+    }
+  }
+  if (!run) return row; // Unknown is never treated as failed: avoid duplicate paid jobs.
+  let status = run.status === 'queued' ? 'queued' : 'processing';
+  let error = null;
+  if (run.status === 'completed') {
+    // An artifact upload failure must not regenerate an already-created paid video.
+    const jobs = await githubRead(env, `/actions/runs/${run.id}/jobs?per_page=100`);
+    const generated = jobs.jobs?.some(job => job.steps?.some(step => step.name === 'Tester la capsule avec les accès Rachel existants' && step.conclusion === 'success'));
+    status = generated ? 'completed' : 'failed';
+    error = generated ? null : `La génération a échoué (${run.conclusion || 'inconnu'}). Modifiez la demande avant de réessayer.`;
+  }
+  await env.DB.prepare('UPDATE requests SET status=?,error=?,github_run_status=?,github_run_id=?,updated_at=? WHERE id=? AND generation_key=? AND status IN (\'queued\',\'processing\')')
+    .bind(status,error,run.status,String(run.id),now(),row.id,row.generation_key).run();
+  return {...row,status,error,github_run_status:run.status,github_run_id:String(run.id)};
+}
+async function launchRequest(env, row, inputs) {
+  try {
+    await dispatchWorkflow(env, {...inputs, request_key: row.generation_key});
+  } catch (error) {
+    // Explicit HTTP refusal means no run was accepted. Transport errors are ambiguous.
+    if (/GitHub dispatch refusé/.test(error.message)) {
+      await env.DB.prepare('UPDATE requests SET status=\'failed\',error=?,updated_at=? WHERE id=? AND generation_key=?')
+        .bind(error.message,now(),row.id,row.generation_key).run();
+    }
+    throw error;
+  }
+  await env.DB.prepare('UPDATE requests SET github_run_status=?,github_dispatch_at=?,updated_at=? WHERE id=? AND generation_key=?')
+    .bind('dispatched',now(),now(),row.id,row.generation_key).run();
+}
 async function handleRequest(env, request) {
   const lead = await currentLead(env, request);
   const data = await readJson(request);
-  const companyName = requireText(data.companyName ?? lead.company, 2, 150, "Entreprise à présenter");
+  const companyName = requireText(data.companyName ?? lead.company, 2, 150, 'Entreprise à présenter');
   const companySite = siteUrl(data.site);
   const companyDomain = domainFromUrl(companySite);
-  const canRepeat = companyDomain === UNLIMITED_COMPANY_DOMAIN;
-  const sourceText = clean(data.sourceText).replace(/\s+/g, " ");
-  if (sourceText && (sourceText.length < 120 || sourceText.length > 12000)) {
-    throw new Error(
-      "La source texte doit contenir entre 120 et 12 000 caractères.",
-    );
-  }
-  const rachelImage = clean(data.rachelImage || "Rachel Tertiaire");
-  if (!RACHEL_IMAGES.has(rachelImage))
-    throw new Error("Image Rachel inconnue.");
+  const sourceText = clean(data.sourceText).replace(/\s+/g, ' ');
+  if (sourceText && (sourceText.length < 120 || sourceText.length > 12000)) throw new Error('La source texte doit contenir entre 120 et 12 000 caractères.');
+  const rachelImage = clean(data.rachelImage || 'Rachel Tertiaire');
+  if (!RACHEL_IMAGES.has(rachelImage)) throw new Error('Image Rachel inconnue.');
   const siren = clean(data.siren);
-  if (siren && !/^\d{9}$/.test(siren)) throw new Error("SIREN invalide.");
-  const id = crypto.randomUUID();
+  if (siren && !/^\d{9}$/.test(siren)) throw new Error('SIREN invalide.');
+  const generationKey = crypto.randomUUID();
   const created = now();
-  await env.DB.prepare(
-    `
-    INSERT INTO requests(id,lead_id,company_site,company_domain,siren,source_text,rachel_image,github_run_status,status,created_at,updated_at)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?)
-  `,
-  )
-    .bind(
-      id,
-      lead.id,
-      companySite,
-      companyDomain,
-      siren || null,
-      sourceText || null,
-      rachelImage,
-      "dispatching",
-      "queued",
-      created,
-      created,
-    )
-    .run();
-  await dispatchWorkflow(env, {
-    mode: "video",
-    company_name: companyName,
-    company_site: companySite,
-    source_text: sourceText,
-    rachel_image: rachelImage,
-  });
-  await env.DB.prepare(
-    "UPDATE requests SET github_run_status=?, github_dispatch_at=?, updated_at=? WHERE id=?",
-  )
-    .bind("dispatched", now(), now(), id)
-    .run();
-  return json({ id, status: "queued", canRepeat }, 201);
+  let id = crypto.randomUUID();
+  if (data.retryId) {
+    const existing = await env.DB.prepare('SELECT * FROM requests WHERE id=? AND lead_id=?').bind(clean(data.retryId),lead.id).first();
+    if (!existing) throw new Error('Demande introuvable.');
+    if ((data.retryKey || null) !== (existing.generation_key || null)) throw new Error('La tentative a changé. Actualisez le statut.');
+    const checked = await syncRequest(env,existing);
+    if (checked.status !== 'failed') throw new Error('Seule une demande échouée peut être relancée.');
+    id = existing.id;
+    const result = await env.DB.prepare(`UPDATE requests SET company_name=?,company_site=?,company_domain=?,siren=?,source_text=?,rachel_image=?,generation_key=?,github_run_id=NULL,github_run_status='dispatching',github_dispatch_at=NULL,status='queued',error=NULL,updated_at=? WHERE id=? AND lead_id=? AND status='failed' AND generation_key IS ?`)
+      .bind(companyName,companySite,companyDomain,siren||null,sourceText||null,rachelImage,generationKey,created,id,lead.id,existing.generation_key||null).run();
+    if (result.meta?.changes !== 1) throw new Error('Cette demande vient déjà d’être relancée. Actualisez son statut.');
+  } else {
+    await env.DB.prepare(`INSERT INTO requests(id,lead_id,company_name,company_site,company_domain,siren,source_text,rachel_image,generation_key,github_run_status,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      .bind(id,lead.id,companyName,companySite,companyDomain,siren||null,sourceText||null,rachelImage,generationKey,'dispatching','queued',created,created).run();
+  }
+  await launchRequest(env,{id,generation_key:generationKey},{mode:'video',company_name:companyName,company_site:companySite,source_text:sourceText,rachel_image:rachelImage});
+  return json({id,status:'queued',canRepeat:companyDomain===UNLIMITED_COMPANY_DOMAIN},201);
 }
-
 async function handleMe(env, request) {
   const lead = await currentLead(env, request);
-  const currentRequest = await env.DB.prepare(
-    "SELECT * FROM requests WHERE lead_id=? ORDER BY created_at DESC LIMIT 1",
-  )
-    .bind(lead.id)
-    .first();
-  return json({
-    name: lead.name,
-    company: lead.company,
-    request: currentRequest,
-    canRepeat: currentRequest?.company_domain === UNLIMITED_COMPANY_DOMAIN,
-  });
+  let row = await env.DB.prepare('SELECT * FROM requests WHERE lead_id=? ORDER BY created_at DESC LIMIT 1').bind(lead.id).first();
+  let trackingWarning;
+  try { row = await syncRequest(env,row); } catch (_) { trackingWarning='Le suivi GitHub est temporairement indisponible. Votre demande est conservée.'; }
+  return json({name:lead.name,company:lead.company,request:row,canRepeat:row?.company_domain===UNLIMITED_COMPANY_DOMAIN,trackingWarning});
+}
+async function handleUnlock(env, request) {
+  const supplied = (request.headers.get('authorization') || '').replace(/^Bearer /,'');
+  if (!env.ADMIN_TOKEN || await sha256(supplied) !== await sha256(env.ADMIN_TOKEN)) return json({error:'Accès administrateur requis.'},403);
+  const data = await readJson(request);
+  const row = await env.DB.prepare('SELECT * FROM requests WHERE id=?').bind(clean(data.id)).first();
+  if (!row) throw new Error('Demande introuvable.');
+  if (row.generation_key) {
+    const checked = await syncRequest(env,row);
+    if (checked.status !== 'failed') throw new Error('Cette demande est active ou terminée. Le déblocage est refusé.');
+    return json({message:'La demande a échoué : le bouton Modifier et réessayer est disponible.'});
+  }
+  if (!['queued','failed','blocked'].includes(row.status)) throw new Error('Cette demande ne peut pas être débloquée.');
+  if (Date.now()-Date.parse(row.created_at) < 60*60*1000) throw new Error('Attendez une heure et vérifiez la fin du workflow GitHub.');
+  if (data.confirmFailed !== true) throw new Error('Confirmez que le workflow est terminé en échec, sans vidéo créée.');
+  await env.DB.prepare("UPDATE requests SET status='failed',error=?,updated_at=? WHERE id=? AND generation_key IS NULL AND status IN ('queued','failed','blocked')")
+    .bind('Ancien essai échoué, débloqué par l’administrateur.',now(),row.id).run();
+  return json({message:'Demande débloquée. Rechargez la page prospect pour modifier et réessayer.'});
+}
+function adminPage() {
+  return html(String.raw`<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Fabrik · Déblocage</title><style>body{font:16px Arial;max-width:520px;margin:60px auto;padding:20px;color:#101a30}input,button{box-sizing:border-box;width:100%;padding:12px;margin:10px 0}button{background:#197d86;color:white;border:0;border-radius:6px}label{display:block}#confirmed{width:auto}p{line-height:1.6}</style><h1>Débloquer une demande</h1><p>Pour les anciens essais : vérifiez dans GitHub que le workflow est terminé en échec et qu’aucune vidéo n’a été créée.</p><form id="unlock"><label>Token administrateur<input id="token" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="reference" required></label><label><input id="confirmed" type="checkbox" required> Je confirme l’échec et l’absence de vidéo.</label><button>Débloquer</button></form><p id="message" role="status"></p><script>document.getElementById('unlock').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const response=await fetch('/api/admin/unlock',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({id:document.getElementById('reference').value,confirmFailed:document.getElementById('confirmed').checked})});const data=await response.json();document.getElementById('message').textContent=data.message||data.error;}catch(_){document.getElementById('message').textContent='Service indisponible.';}finally{document.getElementById('token').value='';b.disabled=false;}};</script></html>`);
 }
 
 function page() {
@@ -358,7 +401,7 @@ function page() {
 <div id="identity-fields" hidden><div class="row"><div class="field"><label for="name">Prénom et nom</label><input id="name" name="name" autocomplete="name" minlength="2" maxlength="100" required disabled></div><div class="field"><label for="company">Votre entreprise</label><input id="company" name="company" autocomplete="organization" minlength="2" maxlength="150" required disabled></div></div></div>
 <label class="consent"><input id="consent" type="checkbox" required><span>Je demande une capsule de démonstration et sa publication sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span>.</span></label><button class="primary" type="submit">Créer ma capsule</button><p class="note" id="signup-note">Une capsule offerte par entreprise. Email vérifié avant génération.</p></form><div id="signup-status" class="status" role="status" aria-live="polite" hidden></div></div>
 <div id="request-stage" hidden><h2>Votre sujet, votre capsule.</h2><p id="welcome" class="hint">Votre email est vérifié. Complétez votre demande.</p><form id="request"><div class="field"><label for="companyName">Entreprise à présenter</label><input id="companyName" name="companyName" autocomplete="organization" minlength="2" maxlength="150" required></div><div class="field"><label for="site">Site web de votre entreprise</label><input id="site" name="site" inputmode="url" placeholder="https://votre-entreprise.fr" required></div><div class="field"><label for="sourceText">Votre actualité <span class="hint">(facultatif)</span></label><textarea id="sourceText" name="sourceText" maxlength="12000" placeholder="Collez une actualité ou un texte factuel. Utile si le site est inaccessible."></textarea></div><details><summary>Personnaliser la présentation</summary><div class="field"><label for="rachelImage">Secteur d’activité</label><select id="rachelImage" name="rachelImage"><option value="Rachel Tertiaire">Tertiaire</option><option value="Rachel BTP">BTP</option><option value="Rachel Agriculture">Agriculture</option><option value="Rachel Industrie">Industrie</option><option value="Rachel Restauration">Restauration</option><option value="Rachel Logistique et Transport">Logistique et Transport</option></select></div><div class="field"><label for="siren">SIREN (facultatif)</label><input id="siren" name="siren" pattern="[0-9]{9}" maxlength="9" inputmode="numeric"></div></details><button class="primary" type="submit">Lancer ma capsule</button><p id="quota-note" class="note">Une seule demande par entreprise.</p></form><div id="request-status" class="status" role="status" aria-live="polite" hidden></div></div>
-<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="repeat" class="primary" type="button" hidden>Créer une autre capsule Décisions & Co</button><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
+<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="retry" class="primary" type="button" hidden>Modifier et réessayer</button><a id="run-link" class="back" hidden target="_blank" rel="noopener noreferrer">Consulter le résultat GitHub ↗</a><p id="tracking-warning" class="hint" hidden></p><button id="repeat" class="primary" type="button" hidden>Créer une autre capsule Décisions & Co</button><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
 <p id="session-status" class="loading" role="status">Vérification de votre accès…</p><noscript><p>Activez JavaScript pour demander votre capsule.</p></noscript></div></section>
 <div class="preview"><img id="rachel-preview" src="https://raw.githubusercontent.com/philippelecam-jpg/dco-agent-editorial/main/assets/Rachel%20Tertiaire.png" alt="Rachel, présentatrice IA de Décisions & Co" fetchpriority="high"><span class="pill">Rachel · Présentatrice IA</span><a class="play" href="https://www.youtube.com/@Rachel-DecisionsAndCo/shorts" target="_blank" rel="noopener noreferrer" aria-label="Découvrir les vidéos de Rachel sur YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3v18l16-9z"/></svg></a><span class="caption">Votre actualité en vidéo</span><span class="duration">0:30</span></div></div>
 <ol class="steps" aria-label="Comment ça marche"><li><span class="number">1</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="29" height="23" rx="2"/><path d="m4 9 13 11L31 9"/><circle cx="31" cy="30" r="7"/><path d="m28 33 6-6"/></svg><span class="step-title">Email + site web</span></li><li><span class="number">2</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m18 4 4 11 11 4-11 4-4 11-4-11-11-4 11-4zM33 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span class="step-title">L’IA prépare votre sujet</span></li><li><span class="number">3</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="5" width="36" height="30" rx="5"/><path d="m16 12 11 8-11 8z"/></svg><span class="step-title">Votre capsule sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span><span class="step-note">Personnalisée pour votre entreprise</span></span></li></ol></main>
@@ -380,17 +423,21 @@ $('rachelImage').addEventListener('change',()=>{
   $('rachel-preview').alt=name+', présentatrice IA de Décisions & Co';
 });
 let identityOpen=false;
+let currentRequest=null;
+let retryId=null;
 $('signup').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;let site;try{site=normalizeSite($('signup-site').value);}catch(error){show('signup-status',error.message,true);return;}$('signup-site').value=site;saveSite(site);if(!identityOpen){identityOpen=true;$('identity-fields').hidden=false;$('name').disabled=false;$('company').disabled=false;$('signup-note').textContent='Complétez votre nom et votre entreprise pour recevoir votre lien.';form.querySelector('button').textContent='Recevoir mon lien';$('name').focus();return;}busy(form,true,'Envoi du lien…');show('signup-status','Envoi en cours…');try{await api('/api/signup',Object.fromEntries(new FormData(form)));show('signup-status','Votre lien d’accès a été demandé. Vérifiez votre messagerie et les indésirables. Il est valable 15 minutes.');}catch(error){show('signup-status',error.message,true);}finally{busy(form,false);}});
 const statuses={queued:'Votre capsule est en attente de génération.',processing:'Votre capsule est en préparation.',generating:'Votre capsule est en préparation.',completed:'Votre capsule est prête.',published:'Votre capsule est publiée.',failed:'La génération a rencontré un problème.',blocked:'La demande nécessite une vérification.'};
-const renderRequest=(request,canRepeat=false)=>{$('repeat').hidden=!canRepeat;stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent='Retrouvez ici le statut de votre demande.';$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
-async function loadSession(){try{const data=await api('/api/me');if(!$('companyName').value)$('companyName').value=data.company;if(data.request){renderRequest(data.request,data.canRepeat);}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
-$('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data,data.canRepeat);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
+const renderRequest=(request,canRepeat=false)=>{currentRequest=request;retryId=null;$('retry').hidden=request.status!=='failed';$('run-link').hidden=!request.github_run_id;if(request.github_run_id)$('run-link').href='https://github.com/philippelecam-jpg/dco-agent-editorial/actions/runs/'+encodeURIComponent(request.github_run_id);$('repeat').hidden=!canRepeat;stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent=request.error||'Retrouvez ici le statut de votre demande.';$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
+async function loadSession(){try{const data=await api('/api/me');if(!$('companyName').value)$('companyName').value=data.company;if(data.request){renderRequest(data.request,data.canRepeat);$('tracking-warning').hidden=!data.trackingWarning;$('tracking-warning').textContent=data.trackingWarning||'';}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
+$('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));if(retryId){payload.retryId=retryId;payload.retryKey=currentRequest?.generation_key||null;}try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data,data.canRepeat);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
 const updateQuotaNote=()=>{let exempt=false;try{exempt=new URL(normalizeSite($('site').value)).hostname.toLowerCase().replace(/^www\./,'')==='decisionsandco.com';}catch(_){}$('quota-note').textContent=exempt?'Démonstrateur':'Une seule demande par entreprise.';};
 $('site').addEventListener('input',updateQuotaNote);
-$('repeat').addEventListener('click',()=>{$('companyName').value='Décisions & Co';$('site').value='https://www.decisionsandco.com/';$('request-status').hidden=true;stage('request');updateQuotaNote();$('sourceText').focus();});
+$('retry').addEventListener('click',()=>{if(!currentRequest||currentRequest.status!=='failed')return;retryId=currentRequest.id;$('companyName').value=currentRequest.company_name||$('companyName').value;$('site').value=currentRequest.company_site;$('sourceText').value=currentRequest.source_text||'';$('siren').value=currentRequest.siren||'';$('rachelImage').value=currentRequest.rachel_image||'Rachel Tertiaire';$('rachelImage').dispatchEvent(new Event('change'));$('request-status').hidden=true;stage('request');updateQuotaNote();$('welcome').textContent='Corrigez votre demande. La relance peut générer de nouveaux frais si des appels fournisseurs avaient déjà eu lieu.';$('companyName').focus();});
+$('repeat').addEventListener('click',()=>{retryId=null;$('companyName').value='Décisions & Co';$('site').value='https://www.decisionsandco.com/';$('request-status').hidden=true;stage('request');updateQuotaNote();$('sourceText').focus();});
 updateQuotaNote();
 $('refresh').addEventListener('click',async()=>{$('refresh').disabled=true;try{await loadSession();}finally{$('refresh').disabled=false;}});
 loadSession();
+setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&['queued','processing'].includes(currentRequest?.status))loadSession();},30000);
 </script></body></html>`);
 }
 
@@ -399,6 +446,8 @@ export default {
     try {
       const url = new URL(request.url);
       if (request.method === "GET" && url.pathname === "/") return page();
+      if (request.method === "GET" && url.pathname === "/admin") return adminPage();
+      if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
       if (request.method === "GET" && url.pathname === "/api/health")
         return json({ ok: true });
       if (request.method === "POST" && url.pathname === "/api/signup")

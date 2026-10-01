@@ -28,6 +28,7 @@ class QuotaMigrationTests(unittest.TestCase):
         db = sqlite3.connect(':memory:')
         # Reproduce the original inline constraints in the deployed database.
         schema = (ROOT / 'schema.sql').read_text().split('CREATE UNIQUE INDEX')[0]
+        schema = schema.replace('  company_name TEXT,\n  generation_key TEXT,\n  github_run_id TEXT,\n', '')
         schema = schema.replace('lead_id TEXT NOT NULL,\n  company_site', 'lead_id TEXT NOT NULL UNIQUE,\n  company_site')
         schema = schema.replace('company_domain TEXT NOT NULL,', 'company_domain TEXT NOT NULL UNIQUE,')
         schema = schema.replace('siren TEXT,', 'siren TEXT UNIQUE,')

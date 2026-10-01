@@ -101,3 +101,23 @@ python tests/test_quota_migration.py
 ```
 
 Email verification confirms access to the mailbox, not a management role in the submitted company.
+
+
+## Suivi et reprise après échec
+
+Après fusion, depuis le dossier Cloudflare, exécuter une seule fois la migration **avant** le déploiement :
+
+```powershell
+wrangler d1 execute rachel-entreprises --remote --file=migrations/0002_request_retry_tracking.sql
+wrangler deploy --config wrangler.toml
+```
+
+La migration ajoute les champs de suivi sans supprimer les demandes. Elle suppose que la migration 0001 (quotas Décisions & Co) a déjà été appliquée. Une installation neuve peut utiliser directement `schema.sql`, sans ces migrations.
+
+Les nouveaux workflows portent un identifiant de tentative unique. Quand la page de suivi est ouverte, le statut GitHub est consulté toutes les 30 secondes ; le bouton Actualiser permet également une consultation immédiate. Le token GitHub du Worker doit autoriser la lecture des Actions (déjà incluse dans Actions write utilisé pour le lancement).
+
+Après un échec confirmé, « Modifier et réessayer » restaure entreprise, site, source, secteur et SIREN. La même demande est réutilisée : les quotas ne bloquent pas cette reprise. La génération peut toutefois entraîner de nouveaux appels payants. Une nouvelle clé de tentative et une mise à jour conditionnelle empêchent une double relance. Une capsule générée avec succès n’est jamais relancée par ce bouton, même si l’envoi de l’artifact échoue ensuite ; le lien GitHub permet de consulter les résultats. Le statut inconnu ou une indisponibilité GitHub ne débloquent pas la demande automatiquement.
+
+Les anciens essais ne contiennent pas d’identifiant de suivi. Ouvrir `/admin`, saisir le secret **ADMIN_TOKEN** configuré sur le Worker et la référence de la demande. Après vérification manuelle que le workflow est terminé en échec et qu’aucune vidéo n’a été créée, confirmer et cliquer Débloquer. Les anciennes demandes de moins d’une heure sont protégées. Le token est envoyé dans l’en-tête Authorization, jamais dans l’URL ni stocké dans le navigateur. Les demandes sont conservées, puis la page prospect propose une correction et une reprise.
+
+Tests Node du suivi avec une base SQLite réelle : Node 22.13+ (ou Node 24), `node --test tests/*.test.mjs` depuis ce dossier.
