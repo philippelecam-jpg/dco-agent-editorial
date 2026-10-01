@@ -435,6 +435,27 @@ async function handlePublishExisting(env, request) {
   return json({id:row.id,status:'processing',publication_status:'uploading'},201);
 }
 
+async function handleFinalize(env, request) {
+  const supplied=(request.headers.get('authorization')||'').replace(/^Bearer /,'');
+  if (!env.ADMIN_TOKEN || await sha256(supplied)!==await sha256(env.ADMIN_TOKEN)) return json({error:'Accès administrateur requis.'},403);
+  if (!env.LEAD_CALLBACK_SECRET) throw new Error('LEAD_CALLBACK_SECRET doit être configuré.');
+  const data=await readJson(request);
+  const youtubeId=clean(data.youtubeId);
+  if (!/^[A-Za-z0-9_-]{11}$/.test(youtubeId)) throw new Error('Identifiant YouTube invalide.');
+  let row=await env.DB.prepare('SELECT * FROM requests WHERE id=?').bind(clean(data.id)).first();
+  if (!row) throw new Error('Demande introuvable.');
+  row=await syncRequest(env,row);
+  if (row.status!=='completed' || !row.github_run_id) throw new Error('Attendez la fin du workflow existant : la capsule doit être générée.');
+  if (row.youtube_id && row.youtube_id!==youtubeId) throw new Error('Cette demande possède un autre identifiant YouTube.');
+  const sourceRun=row.github_run_id;
+  const generationKey=crypto.randomUUID();
+  const updated=await env.DB.prepare("UPDATE requests SET status='processing',publication_status='processing',youtube_id=?,generation_key=?,github_run_id=NULL,github_dispatch_at=NULL,github_run_status='dispatching',error=NULL,updated_at=? WHERE id=? AND status='completed' AND generation_key IS ?")
+    .bind(youtubeId,generationKey,now(),row.id,row.generation_key||null).run();
+  if (updated.meta?.changes!==1) throw new Error('Finalisation déjà lancée.');
+  await launchRequest(env,{id:row.id,generation_key:generationKey,source_run_id:sourceRun},{mode:'youtube_finalize',company_name:row.company_name||'Entreprise',company_site:row.company_site,source_text:'',rachel_image:row.rachel_image,video_run_id:sourceRun,existing_youtube_id:youtubeId});
+  return json({message:'Finalisation lancée : vérification YouTube et livraison, sans nouvel upload.'},201);
+}
+
 async function handleUnlock(env, request) {
   const supplied = (request.headers.get('authorization') || '').replace(/^Bearer /,'');
   if (!env.ADMIN_TOKEN || await sha256(supplied) !== await sha256(env.ADMIN_TOKEN)) return json({error:'Accès administrateur requis.'},403);
@@ -476,7 +497,7 @@ async function handleUnlock(env, request) {
   return json({message:'Demande débloquée. Rechargez la page prospect pour modifier et réessayer.'});
 }
 function adminPage() {
-  return html(String.raw`<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Fabrik · Déblocage</title><style>body{font:16px Arial;max-width:520px;margin:60px auto;padding:20px;color:#101a30}input,button{box-sizing:border-box;width:100%;padding:12px;margin:10px 0}button{background:#197d86;color:white;border:0;border-radius:6px}label{display:block}#confirmed{width:auto}p{line-height:1.6}</style><h1>Débloquer une demande</h1><p>Pour les anciens essais : vérifiez dans GitHub que le workflow est terminé en échec et qu’aucune vidéo n’a été créée.</p><form id="unlock"><label>Token administrateur<input id="token" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="reference" required></label><label>Lien du workflow GitHub échoué <small>(pour débloquer immédiatement)</small><input id="runId" placeholder="https://github.com/…/actions/runs/…"></label><label><input id="confirmed" type="checkbox" required> Je confirme que ce workflow correspond à cette demande, a échoué et n’a créé aucune vidéo.</label><button>Débloquer</button></form><p id="message" role="status"></p><script>document.getElementById('unlock').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const response=await fetch('/api/admin/unlock',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({id:document.getElementById('reference').value,runId:document.getElementById('runId').value,confirmFailed:document.getElementById('confirmed').checked})});const data=await response.json();document.getElementById('message').textContent=data.message||data.error;}catch(_){document.getElementById('message').textContent='Service indisponible.';}finally{document.getElementById('token').value='';b.disabled=false;}};</script></html>`);
+  return html(String.raw`<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Fabrik · Déblocage</title><style>body{font:16px Arial;max-width:520px;margin:60px auto;padding:20px;color:#101a30}input,button{box-sizing:border-box;width:100%;padding:12px;margin:10px 0}button{background:#197d86;color:white;border:0;border-radius:6px}label{display:block}#confirmed{width:auto}p{line-height:1.6}</style><h1>Débloquer une demande</h1><p>Pour les anciens essais : vérifiez dans GitHub que le workflow est terminé en échec et qu’aucune vidéo n’a été créée.</p><form id="unlock"><label>Token administrateur<input id="token" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="reference" required></label><label>Lien du workflow GitHub échoué <small>(pour débloquer immédiatement)</small><input id="runId" placeholder="https://github.com/…/actions/runs/…"></label><label><input id="confirmed" type="checkbox" required> Je confirme que ce workflow correspond à cette demande, a échoué et n’a créé aucune vidéo.</label><button>Débloquer</button></form><p id="message" role="status"></p><hr><h2>Finaliser une vidéo YouTube existante</h2><p>À utiliser après un upload réussi et un échec du retour. Vérifiez que la vidéo correspond à cette demande dans YouTube Studio.</p><form id="finalize"><label>Token administrateur<input id="finalToken" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="finalReference" required></label><label>Identifiant YouTube<input id="youtubeId" pattern="[A-Za-z0-9_-]{11}" required placeholder="ycEDPSGCZDo"></label><button>Vérifier et livrer</button></form><p id="finalMessage" role="status"></p><script>document.getElementById('finalize').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const r=await fetch('/api/admin/finalize',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('finalToken').value},body:JSON.stringify({id:document.getElementById('finalReference').value,youtubeId:document.getElementById('youtubeId').value})});const data=await r.json();document.getElementById('finalMessage').textContent=data.message||data.error;}catch(_){document.getElementById('finalMessage').textContent='Service indisponible.';}finally{document.getElementById('finalToken').value='';b.disabled=false;}};</script><script>document.getElementById('unlock').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const response=await fetch('/api/admin/unlock',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({id:document.getElementById('reference').value,runId:document.getElementById('runId').value,confirmFailed:document.getElementById('confirmed').checked})});const data=await response.json();document.getElementById('message').textContent=data.message||data.error;}catch(_){document.getElementById('message').textContent='Service indisponible.';}finally{document.getElementById('token').value='';b.disabled=false;}};</script></html>`);
 }
 
 function page() {
@@ -545,6 +566,7 @@ export default {
       if (request.method === "POST" && url.pathname === "/api/publish") return await handlePublishExisting(env, request);
       if (request.method === "GET" && url.pathname === "/admin") return adminPage();
       if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
+      if (request.method === "POST" && url.pathname === "/api/admin/finalize") return await handleFinalize(env, request);
       if (request.method === "GET" && url.pathname === "/api/health")
         return json({ ok: true });
       if (request.method === "POST" && url.pathname === "/api/signup")
