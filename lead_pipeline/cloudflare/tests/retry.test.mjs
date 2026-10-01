@@ -138,10 +138,10 @@ test('signed publication displays the link and emails the stored recipient exact
   return new Response(null,{status:204});
  },async()=>{
   const id=(await (await req('/api/request',body)).json()).id;const row=sqlite.prepare('SELECT * FROM requests WHERE id=?').get(id);
-  const result={request_id:id,request_key:row.generation_key,github_run_id:'99',status:'published',youtube_id:'aBcD1234_-Z',email:'attacker@example.com'};
+  const result={request_id:id,request_key:row.generation_key,github_run_id:'99',status:'published',youtube_id:'aBcD1234_-Z',error:'YouTube : HTTP 403 (insufficientPermissions).',email:'attacker@example.com'};
   assert.equal((await signedResult(env,result,false)).status,403);assert.equal(sends,0);
   assert.equal((await signedResult(env,result)).status,200);assert.equal((await signedResult(env,result)).status,200);
-  const data=await (await req('/api/me')).json();assert.equal(data.request.status,'published');assert.equal(data.request.delivery_status,'sent');assert.equal(data.request.youtube_url,'https://www.youtube.com/watch?v=aBcD1234_-Z');assert.equal(sends,1);
+  const data=await (await req('/api/me')).json();assert.equal(data.request.status,'published');assert.equal(data.request.error,null);assert.equal(data.request.delivery_status,'sent');assert.equal(data.request.youtube_url,'https://www.youtube.com/watch?v=aBcD1234_-Z');assert.equal(sends,1);
   assert.equal((await signedResult(env,{...result,request_key:'outdated'})).status,409);
  });
 });
@@ -209,4 +209,35 @@ test('admin finalization requires authentication, preserves the known ID and dis
    assert.equal((await req('/api/admin/finalize',{id:'uploaded',youtubeId:'ycEDPSGCZDo'},true)).status,400);
  });
  assert.equal(calls,1);assert.equal(sqlite.prepare("SELECT youtube_id FROM requests WHERE id='uploaded'").get().youtube_id,'ycEDPSGCZDo');
+});
+
+test('internal trials require admin plus verified session, ignore prospect quotas and reject double launch',async()=>{
+ const {sqlite,req,env}=await fixture();let calls=0;
+ await mockedFetch(async()=>{calls++;return new Response(null,{status:204})},async()=>{
+  assert.equal((await req('/api/admin/test',body)).status,403);
+  const noSession=new Request(origin+'/api/admin/test',{method:'POST',headers:{authorization:'Bearer admin-secret','content-type':'application/json'},body:JSON.stringify(body)});
+  assert.equal((await worker.fetch(noSession,env)).status,400);
+  // An existing prospect request continues to consume its quota.
+  const original=(await (await req('/api/request',body)).json()).id;
+  sqlite.prepare("UPDATE requests SET status='published' WHERE id=?").run(original);
+  assert.equal((await req('/api/request',{...body,site:'https://geoliance.fr/',is_internal:1})).status,400);
+  const first=await req('/api/admin/test',{...body,site:'https://geoliance.fr/',companyName:'Geoliance'},true);
+  assert.equal(first.status,201);const id=(await first.json()).id;
+  assert.equal(sqlite.prepare('SELECT is_internal FROM requests WHERE id=?').get(id).is_internal,1);
+  assert.equal((await req('/api/admin/test',body,true)).status,400);
+  sqlite.prepare("UPDATE requests SET status='completed' WHERE id=?").run(id);
+  assert.equal((await req('/api/admin/test',body,true)).status,201);
+  assert.equal(calls,3);
+ });
+});
+
+test('internal migration preserves history and the normal email/domain quotas',()=>{
+ const sqlite=new DatabaseSync(':memory:');
+ const old=readFileSync(new URL('../schema.sql',import.meta.url),'utf8').replace(',\n  is_internal INTEGER NOT NULL DEFAULT 0 CHECK(is_internal IN (0,1))','').replaceAll(' AND is_internal=0','').replace(/CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_internal_active[^;]+;/,'');
+ sqlite.exec(old);
+ sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at) VALUES('old','lead','https://baresto.fr/','baresto.fr','Rachel Restauration','completed','published','2026-01-01','2026-01-01')").run();
+ sqlite.exec(readFileSync(new URL('../migrations/0004_internal_tests.sql',import.meta.url),'utf8'));
+ assert.equal(sqlite.prepare("SELECT is_internal FROM requests WHERE id='old'").get().is_internal,0);
+ const insert=sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at,is_internal) VALUES(?,'lead','https://baresto.fr/','baresto.fr','Rachel Restauration','completed',?,'2026-01-01','2026-01-01',?)");
+ assert.throws(()=>insert.run('prospect','published',0));insert.run('test','queued',1);assert.throws(()=>insert.run('double','queued',1));
 });
