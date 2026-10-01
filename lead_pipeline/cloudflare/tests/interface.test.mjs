@@ -81,3 +81,98 @@ test("an expired email link does not set a session cookie", async () => {
   assert.equal(response.headers.get("set-cookie"), null);
   assert.match((await response.json()).error, /expiré/);
 });
+
+function leadDatabase(address) {
+  const inserted = [];
+  return {
+    inserted,
+    prepare(sql) {
+      let values;
+      return {
+        bind(...args) {
+          values = args;
+          return this;
+        },
+        async first() {
+          return {
+            id: "verified-lead",
+            email: address,
+            company: "Décisions & Co",
+          };
+        },
+        async run() {
+          if (sql.includes("INSERT INTO requests")) inserted.push(values);
+          return {};
+        },
+      };
+    },
+  };
+}
+
+test("verified emails can repeatedly request D&Co across pasted URL variants", async () => {
+  const db = leadDatabase("test@another-company.fr");
+  const savedFetch = globalThis.fetch;
+  const dispatches = [];
+  globalThis.fetch = async (_url, options) => {
+    dispatches.push(JSON.parse(options.body));
+    return new Response(null, { status: 204 });
+  };
+  try {
+    for (const site of [
+      "decisionsandco.com",
+      "www.decisionsandco.com",
+      "https://www.decisionsandco.com",
+      "https://decisionsandco.com",
+      "https:\\www.decisionsandco.com",
+      "https:\\\\decisionsandco.com,",
+    ]) {
+      const response = await worker.fetch(
+        new Request(origin + "/api/request", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            cookie: "rachel_session=test",
+          },
+          body: JSON.stringify({
+            site,
+            rachelImage: "Rachel Tertiaire",
+            siren: "123456789",
+          }),
+        }),
+        { DB: db },
+      );
+      assert.equal(response.status, 201, site);
+      assert.equal((await response.json()).canRepeat, true);
+    }
+    assert.equal(db.inserted.length, 6);
+    assert.equal(dispatches.length, 6);
+    assert.equal(new Set(db.inserted.map((row) => row[0])).size, 6);
+    for (const row of db.inserted) assert.equal(row[3], "decisionsandco.com");
+  } finally {
+    globalThis.fetch = savedFetch;
+  }
+});
+
+test("lookalike and other domains still require a matching professional email", async () => {
+  for (const site of [
+    "https://decisionsandco.com.example.fr",
+    "https://other-company.fr",
+    "https://test.decisionsandco.com",
+  ]) {
+    const db = leadDatabase("test@another-company.fr");
+    const response = await worker.fetch(
+      new Request(origin + "/api/request", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          cookie: "rachel_session=test",
+        },
+        body: JSON.stringify({ site }),
+      }),
+      { DB: db },
+    );
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /adresse professionnelle/);
+    assert.equal(db.inserted.length, 0);
+  }
+});
