@@ -123,12 +123,13 @@ async function readJson(request) {
   return JSON.parse(text);
 }
 
-async function sendMail(env, to, subject, messageHtml) {
+async function sendMail(env, to, subject, messageHtml, idempotencyKey = null) {
   if (!env.RESEND_API_KEY) return { skipped: true };
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       authorization: `Bearer ${env.RESEND_API_KEY}`,
+      ...(idempotencyKey ? {"Idempotency-Key": idempotencyKey} : {}),
       "content-type": "application/json",
     },
     body: JSON.stringify({
@@ -299,25 +300,28 @@ async function syncRequest(env, row) {
   if (!run) return row; // Unknown is never treated as failed: avoid duplicate paid jobs.
   let status = run.status === 'queued' ? 'queued' : 'processing';
   let error = null;
+  let publicationStatus = row.publication_status || 'none';
   if (run.status === 'completed') {
     // An artifact upload failure must not regenerate an already-created paid video.
     const jobs = await githubRead(env, `/actions/runs/${run.id}/jobs?per_page=100`);
-    const generated = jobs.jobs?.some(job => job.steps?.some(step => step.name === 'Tester la capsule avec les accès Rachel existants' && step.conclusion === 'success'));
+    const generated = jobs.jobs?.some(job => job.steps?.some(step => ['Tester la capsule avec les accès Rachel existants','Récupérer une capsule déjà générée','Publier la capsule sur YouTube'].includes(step.name) && step.conclusion === 'success')); 
     status = generated ? 'completed' : 'failed';
+    const publicationAttempted=jobs.jobs?.some(job=>job.steps?.some(step=>step.name==='Publier la capsule sur YouTube'&&step.conclusion!=='skipped'));
+    if (publicationAttempted) publicationStatus='review_required';
     error = generated ? null : `La génération a échoué (${run.conclusion || 'inconnu'}). Modifiez la demande avant de réessayer.`;
   }
-  await env.DB.prepare('UPDATE requests SET status=?,error=?,github_run_status=?,github_run_id=?,updated_at=? WHERE id=? AND generation_key=? AND status IN (\'queued\',\'processing\')')
-    .bind(status,error,run.status,String(run.id),now(),row.id,row.generation_key).run();
-  return {...row,status,error,github_run_status:run.status,github_run_id:String(run.id)};
+  await env.DB.prepare('UPDATE requests SET status=?,error=?,github_run_status=?,github_run_id=?,updated_at=?,publication_status=? WHERE id=? AND generation_key=? AND status IN (\'queued\',\'processing\')')
+    .bind(status,error,run.status,String(run.id),now(),publicationStatus,row.id,row.generation_key).run();
+  return {...row,status,error,publication_status:publicationStatus,github_run_status:run.status,github_run_id:String(run.id)};
 }
 async function launchRequest(env, row, inputs) {
   try {
-    await dispatchWorkflow(env, {...inputs, request_key: row.generation_key});
+    await dispatchWorkflow(env, {...inputs, request_key: row.generation_key, request_id: row.id, callback_url: new URL('/api/capsule-result',env.PUBLIC_BASE_URL).href});
   } catch (error) {
     // Explicit HTTP refusal means no run was accepted. Transport errors are ambiguous.
     if (/GitHub dispatch refusé/.test(error.message)) {
-      await env.DB.prepare('UPDATE requests SET status=\'failed\',error=?,updated_at=? WHERE id=? AND generation_key=?')
-        .bind(error.message,now(),row.id,row.generation_key).run();
+      await env.DB.prepare('UPDATE requests SET status=?,error=?,updated_at=?,github_run_id=COALESCE(?,github_run_id) WHERE id=? AND generation_key=?')
+        .bind(row.source_run_id?'completed':'failed',error.message,now(),row.source_run_id||null,row.id,row.generation_key).run();
     }
     throw error;
   }
@@ -326,6 +330,7 @@ async function launchRequest(env, row, inputs) {
 }
 async function handleRequest(env, request) {
   const lead = await currentLead(env, request);
+  if (!env.LEAD_CALLBACK_SECRET || !env.RESEND_API_KEY) throw new Error('Configurez LEAD_CALLBACK_SECRET et Resend avant la génération YouTube.');
   const data = await readJson(request);
   const companyName = requireText(data.companyName ?? lead.company, 2, 150, 'Entreprise à présenter');
   const companySite = siteUrl(data.site);
@@ -353,7 +358,7 @@ async function handleRequest(env, request) {
     await env.DB.prepare(`INSERT INTO requests(id,lead_id,company_name,company_site,company_domain,siren,source_text,rachel_image,generation_key,github_run_status,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(id,lead.id,companyName,companySite,companyDomain,siren||null,sourceText||null,rachelImage,generationKey,'dispatching','queued',created,created).run();
   }
-  await launchRequest(env,{id,generation_key:generationKey},{mode:'video',company_name:companyName,company_site:companySite,source_text:sourceText,rachel_image:rachelImage});
+  await launchRequest(env,{id,generation_key:generationKey},{mode:'youtube_unlisted',company_name:companyName,company_site:companySite,source_text:sourceText,rachel_image:rachelImage});
   return json({id,status:'queued',canRepeat:companyDomain===UNLIMITED_COMPANY_DOMAIN},201);
 }
 async function handleMe(env, request) {
@@ -361,8 +366,75 @@ async function handleMe(env, request) {
   let row = await env.DB.prepare('SELECT * FROM requests WHERE lead_id=? ORDER BY created_at DESC LIMIT 1').bind(lead.id).first();
   let trackingWarning;
   try { row = await syncRequest(env,row); } catch (_) { trackingWarning='Le suivi GitHub est temporairement indisponible. Votre demande est conservée.'; }
+  if (row?.status==='published' && !row.notified_at) {await deliverVideo(env,row.id);row=await env.DB.prepare('SELECT * FROM requests WHERE id=?').bind(row.id).first();}
   return json({name:lead.name,company:lead.company,request:row,canRepeat:row?.company_domain===UNLIMITED_COMPANY_DOMAIN,trackingWarning});
 }
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+async function deliverVideo(env, id) {
+  const row = await env.DB.prepare('SELECT requests.*,leads.email FROM requests JOIN leads ON leads.id=requests.lead_id WHERE requests.id=?').bind(id).first();
+  if (!row || row.status !== 'published' || !row.youtube_url || row.notified_at) return;
+  // Resend deduplicates for 24h. Beyond that, an ambiguous delivery is reviewed manually.
+  if (row.delivery_attempted_at && Date.now()-Date.parse(row.delivery_attempted_at)>23*60*60*1000) {
+    await env.DB.prepare("UPDATE requests SET delivery_status='review_required',delivery_error=? WHERE id=? AND notified_at IS NULL").bind('Vérifiez Resend avant un nouvel envoi : fenêtre de dédoublonnage expirée.',id).run();return;
+  }
+  const claim = await env.DB.prepare("UPDATE requests SET delivery_status='sending',delivery_attempted_at=COALESCE(delivery_attempted_at,?),delivery_lease_until=? WHERE id=? AND youtube_id=? AND notified_at IS NULL AND (delivery_lease_until IS NULL OR delivery_lease_until<?)")
+    .bind(now(),new Date(Date.now()+120000).toISOString(),id,row.youtube_id,now()).run();
+  if (claim.meta?.changes !== 1) return;
+  try {
+    if (!env.RESEND_API_KEY) throw new Error('Resend non configuré.');
+    await sendMail(env,row.email,'Votre capsule La Fabrik est prête',`<p>Votre capsule pour <strong>${escapeHtml(row.company_name || 'votre entreprise')}</strong> est prête.</p><p><a href="${row.youtube_url}">Voir ma capsule sur YouTube</a></p><p>Vidéo non répertoriée, accessible avec ce lien.</p><p>Créée avec La Fabrik, par Décisions &amp; Co.</p>`,`capsule-${id}-${row.youtube_id}`);
+    await env.DB.prepare("UPDATE requests SET notified_at=?,delivery_status='sent',delivery_error=NULL,delivery_lease_until=NULL WHERE id=? AND youtube_id=?").bind(now(),id,row.youtube_id).run();
+  } catch (_) {
+    await env.DB.prepare("UPDATE requests SET delivery_status='failed',delivery_error=?,delivery_lease_until=NULL WHERE id=? AND notified_at IS NULL").bind('Le lien est disponible ici, mais l’envoi email a échoué. Vérifiez la configuration Resend.',id).run();
+  }
+}
+async function handleCapsuleResult(env, request) {
+  if (!env.LEAD_CALLBACK_SECRET) return json({error:'Retour non configuré.'},503);
+  const timestamp=request.headers.get('x-lead-timestamp') || '';
+  const signature=request.headers.get('x-lead-signature') || '';
+  if (!/^\d{10}$/.test(timestamp) || Math.abs(Date.now()/1000-Number(timestamp))>900 || !/^[a-f0-9]{64}$/.test(signature)) return json({error:'Signature invalide.'},403);
+  const text=await request.text();
+  if (text.length>4000) return json({error:'Résultat trop volumineux.'},400);
+  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(env.LEAD_CALLBACK_SECRET),{name:'HMAC',hash:'SHA-256'},false,['verify']);
+  const bytes=Uint8Array.from(signature.match(/../g),part=>parseInt(part,16));
+  if (!await crypto.subtle.verify('HMAC',key,bytes,new TextEncoder().encode(timestamp+'.'+text))) return json({error:'Signature invalide.'},403);
+  const data=JSON.parse(text);
+  if (!['published','completed','failed'].includes(data.status) || !/^\d+$/.test(String(data.github_run_id))) throw new Error('Résultat invalide.');
+  if (data.youtube_id && !/^[A-Za-z0-9_-]{11}$/.test(data.youtube_id)) throw new Error('Identifiant YouTube invalide.');
+  if (data.status==='published' && !data.youtube_id) throw new Error('Lien vidéo manquant.');
+  let row=await env.DB.prepare('SELECT * FROM requests WHERE id=? AND generation_key=?').bind(clean(data.request_id),clean(data.request_key)).first();
+  if (!row) return json({error:'Tentative obsolète ou inconnue.'},409);
+  if (row.status==='published') {
+    if (row.youtube_id!==data.youtube_id) return json({error:'Résultat déjà enregistré.'},409);
+  } else {
+    const youtubeId=data.youtube_id || row.youtube_id || null;
+    const youtubeUrl=data.status==='published'?'https://www.youtube.com/watch?v='+youtubeId:null;
+    const publicationStatus=data.status==='published'?'published':(data.publication_pending?'review_required':(youtubeId?'processing':'failed'));
+    await env.DB.prepare('UPDATE requests SET status=?,error=?,youtube_id=?,youtube_url=?,publication_status=?,github_run_id=?,github_run_status=?,updated_at=? WHERE id=? AND generation_key=? AND status<>\'published\'')
+      .bind(data.status,clean(data.error).slice(0,500)||null,youtubeId,youtubeUrl,publicationStatus,String(data.github_run_id),'completed',now(),row.id,row.generation_key).run();
+  }
+  await deliverVideo(env,row.id);
+  return json({ok:true});
+}
+async function handlePublishExisting(env, request) {
+  const lead=await currentLead(env,request);
+  if (!env.LEAD_CALLBACK_SECRET) throw new Error('LEAD_CALLBACK_SECRET doit être configuré avant la publication.');
+  const data=await readJson(request);
+  let row=await env.DB.prepare('SELECT * FROM requests WHERE id=? AND lead_id=?').bind(clean(data.id),lead.id).first();
+  if (!row) throw new Error('Demande introuvable.');
+  row=await syncRequest(env,row);
+  if (row.status!=='completed' || !row.github_run_id || row.publication_status==='review_required') throw new Error('Publication indisponible : vérifiez le résultat GitHub existant.');
+  const sourceRun=row.github_run_id;
+  const generationKey=crypto.randomUUID();
+  const updated=await env.DB.prepare("UPDATE requests SET status='processing',publication_status='uploading',generation_key=?,github_run_id=NULL,github_dispatch_at=NULL,github_run_status='dispatching',error=NULL,updated_at=? WHERE id=? AND lead_id=? AND status='completed' AND generation_key IS ?")
+    .bind(generationKey,now(),row.id,lead.id,row.generation_key||null).run();
+  if (updated.meta?.changes!==1) throw new Error('Publication déjà lancée.');
+  await launchRequest(env,{id:row.id,generation_key:generationKey,source_run_id:sourceRun},{mode:'youtube_existing',company_name:row.company_name||lead.company,company_site:row.company_site,source_text:'',rachel_image:row.rachel_image,video_run_id:sourceRun,existing_youtube_id:row.youtube_id||''});
+  return json({id:row.id,status:'processing'},201);
+}
+
 async function handleUnlock(env, request) {
   const supplied = (request.headers.get('authorization') || '').replace(/^Bearer /,'');
   if (!env.ADMIN_TOKEN || await sha256(supplied) !== await sha256(env.ADMIN_TOKEN)) return json({error:'Accès administrateur requis.'},403);
@@ -423,7 +495,7 @@ function page() {
 <div id="identity-fields" hidden><div class="row"><div class="field"><label for="name">Prénom et nom</label><input id="name" name="name" autocomplete="name" minlength="2" maxlength="100" required disabled></div><div class="field"><label for="company">Votre entreprise</label><input id="company" name="company" autocomplete="organization" minlength="2" maxlength="150" required disabled></div></div></div>
 <label class="consent"><input id="consent" type="checkbox" required><span>Je demande une capsule de démonstration et sa publication sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span>.</span></label><button class="primary" type="submit">Créer ma capsule</button><p class="note" id="signup-note">Une capsule offerte par entreprise. Email vérifié avant génération.</p></form><div id="signup-status" class="status" role="status" aria-live="polite" hidden></div></div>
 <div id="request-stage" hidden><h2>Votre sujet, votre capsule.</h2><p id="welcome" class="hint">Votre email est vérifié. Complétez votre demande.</p><form id="request"><div class="field"><label for="companyName">Entreprise à présenter</label><input id="companyName" name="companyName" autocomplete="organization" minlength="2" maxlength="150" required></div><div class="field"><label for="site">Site web de votre entreprise</label><input id="site" name="site" inputmode="url" placeholder="https://votre-entreprise.fr" required></div><div class="field"><label for="sourceText">Votre actualité <span class="hint">(facultatif)</span></label><textarea id="sourceText" name="sourceText" maxlength="12000" placeholder="Collez une actualité ou un texte factuel. Utile si le site est inaccessible."></textarea></div><details><summary>Personnaliser la présentation</summary><div class="field"><label for="rachelImage">Secteur d’activité</label><select id="rachelImage" name="rachelImage"><option value="Rachel Tertiaire">Tertiaire</option><option value="Rachel BTP">BTP</option><option value="Rachel Agriculture">Agriculture</option><option value="Rachel Industrie">Industrie</option><option value="Rachel Restauration">Restauration</option><option value="Rachel Logistique et Transport">Logistique et Transport</option></select></div><div class="field"><label for="siren">SIREN (facultatif)</label><input id="siren" name="siren" pattern="[0-9]{9}" maxlength="9" inputmode="numeric"></div></details><button class="primary" type="submit">Lancer ma capsule</button><p id="quota-note" class="note">Une seule demande par entreprise.</p></form><div id="request-status" class="status" role="status" aria-live="polite" hidden></div></div>
-<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="retry" class="primary" type="button" hidden>Modifier et réessayer</button><a id="run-link" class="back" hidden target="_blank" rel="noopener noreferrer">Consulter le résultat GitHub ↗</a><p id="tracking-warning" class="hint" hidden></p><button id="repeat" class="primary" type="button" hidden>Créer une autre capsule Décisions & Co</button><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
+<div id="done-stage" hidden><h2>Votre demande est enregistrée.</h2><p id="done-copy" class="hint">La préparation de votre capsule est lancée.</p><div id="done-status" class="status" role="status" aria-live="polite"></div><p id="request-id" class="reference"></p><a id="video-link" class="channel" hidden target="_blank" rel="noopener noreferrer">Voir ma capsule ↗</a><button id="publish" class="primary" type="button" hidden>Publier la capsule sur YouTube</button><button id="retry" class="primary" type="button" hidden>Modifier et réessayer</button><a id="run-link" class="back" hidden target="_blank" rel="noopener noreferrer">Consulter le résultat GitHub ↗</a><p id="tracking-warning" class="hint" hidden></p><button id="repeat" class="primary" type="button" hidden>Créer une autre capsule Décisions & Co</button><button id="refresh" type="button" class="back">Actualiser le statut ↻</button></div>
 <p id="session-status" class="loading" role="status">Vérification de votre accès…</p><noscript><p>Activez JavaScript pour demander votre capsule.</p></noscript></div></section>
 <div class="preview"><img id="rachel-preview" src="https://raw.githubusercontent.com/philippelecam-jpg/dco-agent-editorial/main/assets/Rachel%20Tertiaire.png" alt="Rachel, présentatrice IA de Décisions & Co" fetchpriority="high"><span class="pill">Rachel · Présentatrice IA</span><a class="play" href="https://www.youtube.com/@Rachel-DecisionsAndCo/shorts" target="_blank" rel="noopener noreferrer" aria-label="Découvrir les vidéos de Rachel sur YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3v18l16-9z"/></svg></a><span class="caption">Votre actualité en vidéo</span><span class="duration">0:30</span></div></div>
 <ol class="steps" aria-label="Comment ça marche"><li><span class="number">1</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="29" height="23" rx="2"/><path d="m4 9 13 11L31 9"/><circle cx="31" cy="30" r="7"/><path d="m28 33 6-6"/></svg><span class="step-title">Email + site web</span></li><li><span class="number">2</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m18 4 4 11 11 4-11 4-4 11-4-11-11-4 11-4zM33 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span class="step-title">L’IA prépare votre sujet</span></li><li><span class="number">3</span><svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="5" width="36" height="30" rx="5"/><path d="m16 12 11 8-11 8z"/></svg><span class="step-title">Votre capsule sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span><span class="step-note">Personnalisée pour votre entreprise</span></span></li></ol></main>
@@ -449,17 +521,18 @@ let currentRequest=null;
 let retryId=null;
 $('signup').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;let site;try{site=normalizeSite($('signup-site').value);}catch(error){show('signup-status',error.message,true);return;}$('signup-site').value=site;saveSite(site);if(!identityOpen){identityOpen=true;$('identity-fields').hidden=false;$('name').disabled=false;$('company').disabled=false;$('signup-note').textContent='Complétez votre nom et votre entreprise pour recevoir votre lien.';form.querySelector('button').textContent='Recevoir mon lien';$('name').focus();return;}busy(form,true,'Envoi du lien…');show('signup-status','Envoi en cours…');try{await api('/api/signup',Object.fromEntries(new FormData(form)));show('signup-status','Votre lien d’accès a été demandé. Vérifiez votre messagerie et les indésirables. Il est valable 15 minutes.');}catch(error){show('signup-status',error.message,true);}finally{busy(form,false);}});
 const statuses={queued:'Votre capsule est en attente de génération.',processing:'Votre capsule est en préparation.',generating:'Votre capsule est en préparation.',completed:'Votre capsule est prête.',published:'Votre capsule est publiée.',failed:'La génération a rencontré un problème.',blocked:'La demande nécessite une vérification.'};
-const renderRequest=(request,canRepeat=false)=>{currentRequest=request;retryId=null;$('retry').hidden=request.status!=='failed';$('run-link').hidden=!request.github_run_id;if(request.github_run_id)$('run-link').href='https://github.com/philippelecam-jpg/dco-agent-editorial/actions/runs/'+encodeURIComponent(request.github_run_id);$('repeat').hidden=!canRepeat;stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent=request.error||'Retrouvez ici le statut de votre demande.';$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
+const renderRequest=(request,canRepeat=false)=>{currentRequest=request;retryId=null;$('publish').hidden=!(request.status==='completed'&&request.github_run_id&&request.publication_status!=='review_required');$('publish').textContent=request.youtube_id?'Finaliser la publication YouTube':'Publier la capsule sur YouTube';$('retry').hidden=request.status!=='failed';$('run-link').hidden=!request.github_run_id;if(request.github_run_id)$('run-link').href='https://github.com/philippelecam-jpg/dco-agent-editorial/actions/runs/'+encodeURIComponent(request.github_run_id);$('repeat').hidden=!canRepeat;stage('done');$('done-status').textContent=statuses[request.status]||'Votre demande est enregistrée.';$('request-id').textContent='Référence : '+request.id;$('done-copy').textContent=request.delivery_error||request.error||(request.notified_at?'Le lien a été envoyé à votre adresse email.':'Retrouvez ici le statut de votre demande.');$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
 async function loadSession(){try{const data=await api('/api/me');if(!$('companyName').value)$('companyName').value=data.company;if(data.request){renderRequest(data.request,data.canRepeat);$('tracking-warning').hidden=!data.trackingWarning;$('tracking-warning').textContent=data.trackingWarning||'';}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
 $('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));if(retryId){payload.retryId=retryId;payload.retryKey=currentRequest?.generation_key||null;}try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data,data.canRepeat);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
 const updateQuotaNote=()=>{let exempt=false;try{exempt=new URL(normalizeSite($('site').value)).hostname.toLowerCase().replace(/^www\./,'')==='decisionsandco.com';}catch(_){}$('quota-note').textContent=exempt?'Démonstrateur':'Une seule demande par entreprise.';};
 $('site').addEventListener('input',updateQuotaNote);
+$('publish').addEventListener('click',async()=>{if(!currentRequest)return;$('publish').disabled=true;try{const data=await api('/api/publish',{id:currentRequest.id});renderRequest(data);}catch(error){show('done-status',error.message,true);}finally{$('publish').disabled=false;}});
 $('retry').addEventListener('click',()=>{if(!currentRequest||currentRequest.status!=='failed')return;retryId=currentRequest.id;$('companyName').value=currentRequest.company_name||$('companyName').value;$('site').value=currentRequest.company_site;$('sourceText').value=currentRequest.source_text||'';$('siren').value=currentRequest.siren||'';$('rachelImage').value=currentRequest.rachel_image||'Rachel Tertiaire';$('rachelImage').dispatchEvent(new Event('change'));$('request-status').hidden=true;stage('request');updateQuotaNote();$('welcome').textContent='Corrigez votre demande. La relance peut générer de nouveaux frais si des appels fournisseurs avaient déjà eu lieu.';$('companyName').focus();});
 $('repeat').addEventListener('click',()=>{retryId=null;$('companyName').value='Décisions & Co';$('site').value='https://www.decisionsandco.com/';$('request-status').hidden=true;stage('request');updateQuotaNote();$('sourceText').focus();});
 updateQuotaNote();
 $('refresh').addEventListener('click',async()=>{$('refresh').disabled=true;try{await loadSession();}finally{$('refresh').disabled=false;}});
 loadSession();
-setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&['queued','processing'].includes(currentRequest?.status))loadSession();},30000);
+setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&(['queued','processing'].includes(currentRequest?.status)||(currentRequest?.status==='published'&&!currentRequest.notified_at&&currentRequest.delivery_status!=='review_required')))loadSession();},30000);
 </script></body></html>`);
 }
 
@@ -468,6 +541,8 @@ export default {
     try {
       const url = new URL(request.url);
       if (request.method === "GET" && url.pathname === "/") return page();
+      if (request.method === "POST" && url.pathname === "/api/capsule-result") return await handleCapsuleResult(env, request);
+      if (request.method === "POST" && url.pathname === "/api/publish") return await handlePublishExisting(env, request);
       if (request.method === "GET" && url.pathname === "/admin") return adminPage();
       if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
       if (request.method === "GET" && url.pathname === "/api/health")

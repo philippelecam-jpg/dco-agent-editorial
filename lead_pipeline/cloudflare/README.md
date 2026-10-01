@@ -121,3 +121,36 @@ Après un échec confirmé, « Modifier et réessayer » restaure entreprise, si
 Les anciens essais ne contiennent pas d’identifiant de suivi. Ouvrir `/admin`, saisir le secret **ADMIN_TOKEN** configuré sur le Worker et la référence de la demande. Après vérification manuelle que le workflow est terminé en échec et qu’aucune vidéo n’a été créée, confirmer et cliquer Débloquer. Pour un déblocage immédiat, ajouter le lien ou l’identifiant du workflow GitHub échoué : le serveur vérifie le workflow du moteur, sa date (de -1 à +15 minutes autour du lancement de la demande), sa fin en échec et l’absence d’une étape de génération réussie. Pour ces anciens essais sans clé, l’administrateur confirme explicitement que le workflow est celui de la demande et qu’aucune vidéo n’a été créée. Sans lien GitHub, le délai d’une heure reste applicable. Le token est envoyé dans l’en-tête Authorization, jamais dans l’URL ni stocké dans le navigateur. Les demandes sont conservées, puis la page prospect propose une correction et une reprise.
 
 Tests Node du suivi avec une base SQLite réelle : Node 22.13+ (ou Node 24), `node --test tests/*.test.mjs` depuis ce dossier.
+
+
+## Publication YouTube et email de restitution
+
+Les nouvelles demandes de l’interface utilisent `youtube_unlisted` : génération du MP4, téléversement sur la chaîne liée aux accès OAuth existants, attente du traitement YouTube et de la visibilité non répertoriée, retour signé au Worker puis email Resend. Une vidéo non répertoriée est accessible avec le lien mais n’est pas listée sur la chaîne publique.
+
+Configuration après fusion, avant le premier test :
+
+1. Créer une valeur aléatoire longue (au moins 32 caractères), la conserver dans un gestionnaire de mots de passe.
+2. Ajouter **la même valeur** en secret `LEAD_CALLBACK_SECRET` dans GitHub, Settings → Secrets and variables → Actions, et sur le Worker :
+
+```powershell
+wrangler secret put LEAD_CALLBACK_SECRET
+```
+
+3. Appliquer une seule fois la migration, puis déployer depuis ce dossier :
+
+```powershell
+wrangler d1 execute rachel-entreprises --remote --file=migrations/0003_youtube_delivery.sql
+wrangler deploy --config wrangler.toml
+```
+
+Les migrations 0001 et 0002 doivent déjà être appliquées. Une installation neuve utilise `schema.sql` directement. Aucun nouvel accès OAuth YouTube n’est requis si les secrets YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET et YOUTUBE_REFRESH_TOKEN existants fonctionnent avec la bonne chaîne.
+
+La vidéo et le rapport restent en artifacts. Un échec de publication conserve le MP4 et propose « Publier la capsule sur YouTube » ou « Finaliser la publication YouTube ». Il n’appelle pas Claude, ElevenLabs ou HeyGen. Si un upload a un résultat incertain, il faut vérifier YouTube avant tout nouveau téléversement. Un identifiant YouTube déjà connu est réutilisé pour vérifier la disponibilité, sans réuploader.
+
+Pour publier un test **déjà généré** depuis GitHub Actions : lancer le workflow Rachel Entreprises en mode `youtube_existing`, renseigner `video_run_id` avec le numéro du run source (dernier nombre dans son URL). Les champs company_name et company_site peuvent être renseignés avec Baresto ; le titre et les sources de publication sont pris dans le rapport source. L’artifact doit encore être disponible (rétention actuelle : 7 jours). Laisser les champs de retour automatique vides pour un test manuel : le lien est dans les logs `published` et le nouveau `report.json`. Un test manuel sans référence La Fabrik n’envoie pas d’email prospect. Le bouton de publication dans l’interface, lorsqu’un run suivi existe, relie en revanche la publication à la demande et à l’email.
+
+Le retour `/api/capsule-result` est signé HMAC-SHA256 avec timestamp, référence et clé de tentative. Une tentative obsolète ou une signature incorrecte est refusée. Aucun email prospect ne transite dans les inputs du workflow : le destinataire est lu dans D1 à partir de la demande vérifiée.
+
+L’envoi Resend utilise une clé d’idempotence et un verrou temporaire ; une livraison déjà acceptée n’est pas renvoyée. Un échec d’email n’affecte pas la vidéo : le lien reste visible et la consultation du statut reprend l’envoi dans la fenêtre de dédoublonnage. Après 23 heures sans confirmation, une vérification manuelle Resend est requise. « Envoyé » signifie accepté par Resend, pas nécessairement arrivé en boîte de réception. Avec `onboarding@resend.dev`, seuls les destinataires autorisés pour les tests Resend fonctionnent ; vérifier un domaine d’envoi avant d’ouvrir le dispositif aux prospects.
+
+Si YouTube garde la vidéo privée ou ne confirme pas sa disponibilité, aucun lien prospect n’est envoyé. Vérifier le traitement et les éventuelles restrictions du projet API dans YouTube Studio. La capsule n’est pas régénérée automatiquement.

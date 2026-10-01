@@ -49,7 +49,7 @@ test("email verification redirects to the interface with a normalized site", asy
   const url = new URL("/verify", origin);
   url.searchParams.set("token", "test-token");
   url.searchParams.set("site", "entreprise.fr");
-  const response = await worker.fetch(new Request(url), { DB: db });
+  const response = await worker.fetch(new Request(url), { DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test' });
   assert.equal(response.status, 303);
   assert.equal(
     new URL(response.headers.get("location")).searchParams.get("site"),
@@ -76,7 +76,7 @@ test("an expired email link does not set a session cookie", async () => {
   };
   const response = await worker.fetch(
     new Request(origin + "/verify?token=expired"),
-    { DB: db },
+    { DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test' },
   );
   assert.equal(response.status, 400);
   assert.equal(response.headers.get("set-cookie"), null);
@@ -122,7 +122,7 @@ test("the requested company is dispatched instead of the account company", async
     const submit = companyName => worker.fetch(new Request(origin + '/api/request', {
       method: 'POST', headers: {'content-type': 'application/json', cookie: 'rachel_session=test'},
       body: JSON.stringify({site: 'https://baresto.fr/', companyName}),
-    }), {DB: db});
+    }), {DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test'});
     assert.equal((await submit('  Baresto  ')).status, 201);
     assert.equal(dispatches[0].inputs.company_name, 'Baresto');
     assert.equal(dispatches[0].inputs.company_site, 'https://baresto.fr/');
@@ -165,7 +165,7 @@ test("verified emails can repeatedly request D&Co across pasted URL variants", a
             siren: "123456789",
           }),
         }),
-        { DB: db },
+        { DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test' },
       );
       assert.equal(response.status, 201, site);
       assert.equal((await response.json()).canRepeat, true);
@@ -188,7 +188,7 @@ test("different email domains are accepted without granting unlimited requests",
       const response = await worker.fetch(new Request(origin + '/api/request', {
         method: 'POST', headers: {'content-type': 'application/json', cookie: 'rachel_session=test'},
         body: JSON.stringify({site}),
-      }), {DB: db});
+      }), {DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test'});
       assert.equal(response.status, 201);
       assert.equal((await response.json()).canRepeat, false);
       assert.equal(db.inserted.length, 1);
@@ -201,7 +201,7 @@ test("an unverified email still cannot submit a request", async () => {
   const response = await worker.fetch(new Request(origin + '/api/request', {
     method: 'POST', headers: {'content-type': 'application/json'},
     body: JSON.stringify({site: 'https://other-company.fr'}),
-  }), {DB: db});
+  }), {DB: db, PUBLIC_BASE_URL: origin, LEAD_CALLBACK_SECRET: 'test', RESEND_API_KEY: 'test'});
   assert.equal(response.status, 400);
   assert.equal(db.inserted.length, 0);
 });
