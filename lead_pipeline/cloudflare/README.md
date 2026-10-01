@@ -68,4 +68,34 @@ Deploy the interface from this directory using your existing configuration:
 wrangler deploy --config wrangler.toml
 ```
 
-No schema migration or new secret is required.
+No new secret is required. For the D&Co quota exception, apply the migration below before deploying.
+
+## Décisions & Co repeat demonstrations
+
+Requests for the exact canonical domain `decisionsandco.com` are exempt from the
+one-request-per-lead/domain/SIREN rule. Any verified email may request this company.
+`www` and scheme variants resolve to the same exemption; lookalike domains and
+subdomains are not exempt. Backslashes in pasted HTTP(S) URLs and trailing commas
+are normalized before validation.
+
+The verified session's latest D&Co request offers a **Create another capsule**
+button. Previous requests are retained. Other companies keep the existing email
+match and atomic quota constraints.
+
+**Existing D1 databases must apply the migration before deploying the Worker.**
+It rebuilds the requests table with partial unique indexes and copies every row.
+Running only `schema.sql` cannot remove the old inline uniqueness constraints.
+From `lead_pipeline/cloudflare`, run:
+
+```powershell
+wrangler d1 execute rachel-entreprises --remote --file=migrations/0001_unlimited_decisionsandco.sql
+wrangler deploy --config wrangler.toml
+```
+
+Fresh installations can use `schema.sql` directly.
+
+Additional SQLite migration/constraint checks:
+
+```bash
+python tests/test_quota_migration.py
+```

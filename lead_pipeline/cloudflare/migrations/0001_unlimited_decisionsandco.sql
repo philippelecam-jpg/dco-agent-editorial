@@ -1,21 +1,6 @@
-CREATE TABLE IF NOT EXISTS leads (
-  id TEXT PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  company TEXT NOT NULL,
-  verified_at TEXT,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS verification_tokens (
-  token_hash TEXT PRIMARY KEY,
-  lead_id TEXT NOT NULL,
-  expires_at TEXT NOT NULL,
-  used_at TEXT,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS requests (
+-- Apply once to the existing D1 database before deploying the new Worker.
+-- All requests are preserved; only uniqueness for decisionsandco.com changes.
+CREATE TABLE requests_unlimited_migration (
   id TEXT PRIMARY KEY,
   lead_id TEXT NOT NULL,
   company_site TEXT NOT NULL,
@@ -30,8 +15,14 @@ CREATE TABLE IF NOT EXISTS requests (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
-
-CREATE INDEX IF NOT EXISTS idx_tokens_lead ON verification_tokens(lead_id);
+INSERT INTO requests_unlimited_migration
+  (id,lead_id,company_site,company_domain,siren,source_text,rachel_image,
+   github_run_status,github_dispatch_at,status,error,created_at,updated_at)
+SELECT id,lead_id,company_site,company_domain,siren,source_text,rachel_image,
+       github_run_status,github_dispatch_at,status,error,created_at,updated_at
+FROM requests;
+DROP TABLE requests;
+ALTER TABLE requests_unlimited_migration RENAME TO requests;
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status, updated_at);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_requests_unique_lead ON requests(lead_id)
