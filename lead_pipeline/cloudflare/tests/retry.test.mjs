@@ -105,3 +105,19 @@ test('the emitted retry button restores fields and sends the same attempt refere
  await nodes.get('request').listeners.submit({preventDefault(){},currentTarget:nodes.get('request')});
  assert.equal(payload.retryId,'failed-id');assert.equal(payload.retryKey,'old-key');assert.equal(payload.companyName,'Baresto');assert.equal(polls,1);
 });
+
+test('a recent legacy request unlocks immediately only with a matching failed workflow',async()=>{
+ const {sqlite,req}=await fixture();const timestamp=new Date().toISOString();
+ sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at) VALUES('recent','lead','https://baresto.fr/','baresto.fr','Rachel Restauration','dispatched','queued',?,?)").run(timestamp,timestamp);
+ assert.equal((await req('/api/admin/unlock',{id:'recent',confirmFailed:true},true)).status,400);
+ let status='in_progress';let conclusion='failure';let generated=false;let wrongDate=false;
+ await mockedFetch(async url=>url.includes('/jobs')?ok({jobs:[{steps:[{name:step,conclusion:generated?'success':'failure'}]}]}):ok({id:99,event:'workflow_dispatch',path:'.github/workflows/rachel-entreprises-test.yml',status,conclusion,created_at:wrongDate?'2020-01-01':timestamp}),async()=>{
+  const data={id:'recent',confirmFailed:true,runId:'https://github.com/philippelecam-jpg/dco-agent-editorial/actions/runs/99'};
+  assert.equal((await req('/api/admin/unlock',data,true)).status,400);
+  status='completed';conclusion='success';assert.equal((await req('/api/admin/unlock',data,true)).status,400);
+  conclusion='failure';generated=true;assert.equal((await req('/api/admin/unlock',data,true)).status,400);
+  generated=false;wrongDate=true;assert.equal((await req('/api/admin/unlock',data,true)).status,400);
+  wrongDate=false;assert.equal((await req('/api/admin/unlock',data,true)).status,200);
+  assert.equal(sqlite.prepare("SELECT status FROM requests WHERE id='recent'").get().status,'failed');
+ });
+});
