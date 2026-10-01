@@ -375,14 +375,36 @@ async function handleUnlock(env, request) {
     return json({message:'La demande a échoué : le bouton Modifier et réessayer est disponible.'});
   }
   if (!['queued','failed','blocked'].includes(row.status)) throw new Error('Cette demande ne peut pas être débloquée.');
-  if (Date.now()-Date.parse(row.created_at) < 60*60*1000) throw new Error('Attendez une heure et vérifiez la fin du workflow GitHub.');
+  if (clean(data.runId)) {
+    let runId = clean(data.runId);
+    if (!/^\d+$/.test(runId)) {
+      const url = new URL(runId);
+      const owner = env.GITHUB_OWNER || 'philippelecam-jpg';
+      const repo = env.GITHUB_REPO || 'dco-agent-editorial';
+      const prefix = `/${owner}/${repo}/actions/runs/`;
+      if (url.protocol !== 'https:' || url.hostname !== 'github.com' || !url.pathname.startsWith(prefix)) throw new Error('Lien du workflow GitHub invalide.');
+      runId = url.pathname.slice(prefix.length).replace(/\/$/,'');
+      if (!/^\d+$/.test(runId)) throw new Error('Identifiant du workflow invalide.');
+    }
+    const run = await githubRead(env, `/actions/runs/${runId}`);
+    const workflow = env.GITHUB_WORKFLOW_ID || 'rachel-entreprises-test.yml';
+    if (run.event !== 'workflow_dispatch' || run.path?.split('@')[0] !== `.github/workflows/${workflow}`) throw new Error('Ce workflow ne correspond pas au moteur de capsules.');
+    const delay = Date.parse(run.created_at) - Date.parse(row.github_dispatch_at || row.created_at);
+    if (!Number.isFinite(delay) || delay < -60000 || delay > 15*60*1000) throw new Error('La date du workflow ne correspond pas à cette demande.');
+    if (run.status !== 'completed' || !['failure','timed_out','cancelled','startup_failure'].includes(run.conclusion)) throw new Error('Ce workflow est encore actif ou n’a pas échoué.');
+    const jobs = await githubRead(env, `/actions/runs/${runId}/jobs?per_page=100`);
+    if (!jobs.jobs?.length) throw new Error('Les étapes du workflow ne peuvent pas être vérifiées.');
+    if (jobs.jobs.some(job => job.steps?.some(step => step.name === 'Tester la capsule avec les accès Rachel existants' && step.conclusion === 'success'))) throw new Error('La vidéo a déjà été générée : déblocage refusé.');
+  } else if (Date.now()-Date.parse(row.created_at) < 60*60*1000) {
+    throw new Error('Ajoutez le lien du workflow GitHub échoué pour débloquer immédiatement, ou attendez une heure.');
+  }
   if (data.confirmFailed !== true) throw new Error('Confirmez que le workflow est terminé en échec, sans vidéo créée.');
   await env.DB.prepare("UPDATE requests SET status='failed',error=?,updated_at=? WHERE id=? AND generation_key IS NULL AND status IN ('queued','failed','blocked')")
     .bind('Ancien essai échoué, débloqué par l’administrateur.',now(),row.id).run();
   return json({message:'Demande débloquée. Rechargez la page prospect pour modifier et réessayer.'});
 }
 function adminPage() {
-  return html(String.raw`<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Fabrik · Déblocage</title><style>body{font:16px Arial;max-width:520px;margin:60px auto;padding:20px;color:#101a30}input,button{box-sizing:border-box;width:100%;padding:12px;margin:10px 0}button{background:#197d86;color:white;border:0;border-radius:6px}label{display:block}#confirmed{width:auto}p{line-height:1.6}</style><h1>Débloquer une demande</h1><p>Pour les anciens essais : vérifiez dans GitHub que le workflow est terminé en échec et qu’aucune vidéo n’a été créée.</p><form id="unlock"><label>Token administrateur<input id="token" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="reference" required></label><label><input id="confirmed" type="checkbox" required> Je confirme l’échec et l’absence de vidéo.</label><button>Débloquer</button></form><p id="message" role="status"></p><script>document.getElementById('unlock').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const response=await fetch('/api/admin/unlock',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({id:document.getElementById('reference').value,confirmFailed:document.getElementById('confirmed').checked})});const data=await response.json();document.getElementById('message').textContent=data.message||data.error;}catch(_){document.getElementById('message').textContent='Service indisponible.';}finally{document.getElementById('token').value='';b.disabled=false;}};</script></html>`);
+  return html(String.raw`<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Fabrik · Déblocage</title><style>body{font:16px Arial;max-width:520px;margin:60px auto;padding:20px;color:#101a30}input,button{box-sizing:border-box;width:100%;padding:12px;margin:10px 0}button{background:#197d86;color:white;border:0;border-radius:6px}label{display:block}#confirmed{width:auto}p{line-height:1.6}</style><h1>Débloquer une demande</h1><p>Pour les anciens essais : vérifiez dans GitHub que le workflow est terminé en échec et qu’aucune vidéo n’a été créée.</p><form id="unlock"><label>Token administrateur<input id="token" type="password" autocomplete="off" required></label><label>Référence de la demande<input id="reference" required></label><label>Lien du workflow GitHub échoué <small>(pour débloquer immédiatement)</small><input id="runId" placeholder="https://github.com/…/actions/runs/…"></label><label><input id="confirmed" type="checkbox" required> Je confirme que ce workflow correspond à cette demande, a échoué et n’a créé aucune vidéo.</label><button>Débloquer</button></form><p id="message" role="status"></p><script>document.getElementById('unlock').onsubmit=async e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');b.disabled=true;try{const response=await fetch('/api/admin/unlock',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({id:document.getElementById('reference').value,runId:document.getElementById('runId').value,confirmFailed:document.getElementById('confirmed').checked})});const data=await response.json();document.getElementById('message').textContent=data.message||data.error;}catch(_){document.getElementById('message').textContent='Service indisponible.';}finally{document.getElementById('token').value='';b.disabled=false;}};</script></html>`);
 }
 
 function page() {
