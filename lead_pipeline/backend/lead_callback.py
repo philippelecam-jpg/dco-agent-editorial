@@ -6,6 +6,23 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
 
+def refusal_reason(exc):
+    # Only fixed known diagnostics are shown, never arbitrary server content.
+    reason='Réponse non reconnue : consultez les événements Cloudflare.'
+    try:
+        raw=exc.read(4096)
+        data=json.loads(raw)
+        known={
+            'Signature invalide.':'Signature rejetée par La Fabrik : vérifier le secret partagé et les en-têtes de signature.',
+            'Retour non configuré.':'LEAD_CALLBACK_SECRET absent du Worker.',
+            'Tentative obsolète.':'Cette tentative a été remplacée par une autre demande.',
+        }
+        if isinstance(data,dict): reason=known.get(data.get('error'),reason)
+    except (ValueError,TypeError,OSError):
+        pass
+    return 'Retour Worker refusé (HTTP %s). %s' % (exc.code,reason)
+
+
 def main():
     url=os.getenv('LEAD_CALLBACK_URL','')
     if not url: return
@@ -28,7 +45,7 @@ def main():
                 print(json.dumps({'event':'lead_result_delivered','status':status}),flush=True);return
             if http_status in (400,401,403,404,409): raise ValueError('Retour Worker refusé (HTTP %s).' % http_status)
         except HTTPError as exc:
-            if exc.code in (400,401,403,404,409): raise ValueError('Retour Worker refusé (HTTP %s).' % exc.code) from None
+            if exc.code in (400,401,403,404,409): raise ValueError(refusal_reason(exc)) from None
         except (URLError, OSError):
             pass
         if attempt<2: time.sleep(3)

@@ -1,4 +1,4 @@
-import hashlib,hmac,json,os,tempfile,unittest
+import hashlib,hmac,io,json,os,tempfile,unittest
 from pathlib import Path
 from unittest.mock import Mock,MagicMock,patch
 from backend import publish_capsule as pub, lead_callback as cb
@@ -55,6 +55,14 @@ class PublicationTests(unittest.TestCase):
             with patch.object(pub.p,'youtube_start') as start,self.assertRaises(Rejected):pub.main()
             start.assert_not_called()
         self.scenario(run)
+    def test_callback_refusal_identifies_signature_without_echoing_server_content(self):
+        from urllib.error import HTTPError
+        error=HTTPError('https://fabrik.test',403,'Forbidden',{},io.BytesIO(b'{"error":"Signature invalide."}'))
+        self.assertIn('Signature rejetée',cb.refusal_reason(error))
+        error=HTTPError('https://fabrik.test',403,'Forbidden',{},io.BytesIO(b'{"error":"secret server detail"}'))
+        self.assertNotIn('secret server detail',cb.refusal_reason(error))
+        error=HTTPError('https://fabrik.test',403,'Forbidden',{},io.BytesIO(b'<html>secret edge detail</html>'))
+        self.assertIn('Réponse non reconnue',cb.refusal_reason(error))
     def test_signed_callback_has_no_recipient_or_provider_secret(self):
         def run(out):
             report=json.loads((out/'report.json').read_text());report.update(youtube_ready=True,youtube_id='aBcD1234_-Z');(out/'report.json').write_text(json.dumps(report))
