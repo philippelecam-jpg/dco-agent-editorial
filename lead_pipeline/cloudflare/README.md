@@ -35,3 +35,32 @@ The GitHub token needs permission to dispatch workflows on `philippelecam-jpg/dc
 - `Rachel Entreprises`
 - `Rachel Super U`
 - `Rachel originale`
+
+## La Fabrik interface
+
+The landing page follows the approved La Fabrik design and adapts to mobile screens.
+The first step asks for a professional email and company website; clicking the button
+reveals the name/company fields required by the existing API. An email link then
+verifies access and redirects to the capsule form, carrying the website even when
+opened on another device. No generation starts before that form is submitted.
+
+The source text and the existing Rachel image choices remain available in the
+verified form. Existing requests display their status instead of inviting a second
+submission. The play link opens Rachel's YouTube Shorts channel; it is not a sample
+video embedded in the page. The portrait uses `assets/Rachel_Enterprise.png`.
+
+This change does not add the YouTube publication callback or automatic result email.
+
+Run the Worker regression checks with Node.js 20 or newer:
+
+```bash
+node --test tests/interface.test.mjs
+```
+
+Deploy the interface from this directory using your existing configuration:
+
+```bash
+wrangler deploy --config wrangler.toml
+```
+
+No schema migration or new secret is required.
