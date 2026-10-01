@@ -16,7 +16,14 @@ def req(method, url, **kwargs):
     import requests
     response=requests.request(method,url,timeout=kwargs.pop('timeout',60),**kwargs)
     if response.status_code >= 400:
-        # Never store/log provider response bodies or authorization headers.
+        # Extract only Google's machine-readable reason; never log response bodies.
+        if urlsplit(url).hostname == 'www.googleapis.com':
+            try:
+                reason=response.json()['error']['errors'][0]['reason']
+            except (ValueError,KeyError,IndexError,TypeError):
+                reason=None
+            if isinstance(reason,str) and re.fullmatch(r'[A-Za-z]{1,60}',reason):
+                raise Rejected('YouTube : HTTP %s (%s).' % (response.status_code,reason))
         raise RuntimeError('Appel fournisseur refusé (HTTP %s)' % response.status_code)
     return response
 
@@ -338,12 +345,12 @@ def youtube_upload(upload_url,path):
     with path.open('rb') as handle: return req('PUT',upload_url,headers={'Content-Type':'video/mp4'},data=handle,timeout=300).json()['id']
 
 def youtube_ready(video_id):
-    r=req('GET','https://www.googleapis.com/youtube/v3/videos',headers={'Authorization':'Bearer '+youtube_token()},params={'id':video_id,'part':'status,processingDetails'}).json()
+    r=req('GET','https://www.googleapis.com/youtube/v3/videos',headers={'Authorization':'Bearer '+youtube_token()},params={'id':video_id,'part':'status'}).json()
     items=r.get('items',[])
     if not items: return False
     item=items[0]
     if item.get('status',{}).get('uploadStatus') in ('failed','rejected','deleted'): raise Rejected('YouTube a refusé la vidéo.')
-    return item.get('processingDetails',{}).get('processingStatus')=='succeeded' and item['status'].get('privacyStatus') in ('public','unlisted')
+    return item.get('status',{}).get('uploadStatus')=='processed' and item['status'].get('privacyStatus') in ('public','unlisted')
 
 def mail(key,address,subject,body):
     return req('POST','https://api.resend.com/emails',headers={'Authorization':'Bearer '+required('RESEND_API_KEY'),'Idempotency-Key':key},json={'from':required('EMAIL_FROM'),'to':[address],'subject':subject,'html':body}).json()['id']

@@ -11,7 +11,7 @@ on:
       mode:
         description: 'check = accès ; video = MP4 ; youtube_unlisted = génération + YouTube ; youtube_existing = publier un artifact existant'
         type: choice
-        options: [check, video, youtube_private, youtube_unlisted, youtube_existing]
+        options: [check, video, youtube_private, youtube_unlisted, youtube_existing, youtube_finalize]
         default: check
         required: true
       request_id:
@@ -96,7 +96,7 @@ jobs:
             exit 1
           fi
       - name: Récupérer une capsule déjà générée
-        if: inputs.mode == 'youtube_existing'
+        if: inputs.mode == 'youtube_existing' || inputs.mode == 'youtube_finalize'
         uses: actions/download-artifact@v4
         with:
           name: rachel-capsule-${{ inputs.video_run_id }}
@@ -124,7 +124,7 @@ jobs:
             *) echo "Image Rachel inconnue : $RACHEL_IMAGE"; exit 1 ;;
           esac
       - name: Tester la capsule avec les accès Rachel existants
-        if: inputs.mode != 'youtube_existing'
+        if: inputs.mode != 'youtube_existing' && inputs.mode != 'youtube_finalize'
         env:
           PYTHONUNBUFFERED: '1'
           TEST_MODE: ${{ inputs.mode == 'check' && 'check' || 'video' }}
@@ -140,7 +140,7 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: python -u -m backend.first_capsule
       - name: Publier la capsule sur YouTube
-        if: inputs.mode == 'youtube_private' || inputs.mode == 'youtube_unlisted' || inputs.mode == 'youtube_existing'
+        if: inputs.mode == 'youtube_private' || inputs.mode == 'youtube_unlisted' || inputs.mode == 'youtube_existing' || inputs.mode == 'youtube_finalize'
         env:
           TEST_MODE: ${{ inputs.mode }}
           EXISTING_YOUTUBE_ID: ${{ inputs.existing_youtube_id }}

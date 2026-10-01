@@ -154,3 +154,9 @@ Le retour `/api/capsule-result` est signé HMAC-SHA256 avec timestamp, référen
 L’envoi Resend utilise une clé d’idempotence et un verrou temporaire ; une livraison déjà acceptée n’est pas renvoyée. Un échec d’email n’affecte pas la vidéo : le lien reste visible et la consultation du statut reprend l’envoi dans la fenêtre de dédoublonnage. Après 23 heures sans confirmation, une vérification manuelle Resend est requise. « Envoyé » signifie accepté par Resend, pas nécessairement arrivé en boîte de réception. Avec `onboarding@resend.dev`, seuls les destinataires autorisés pour les tests Resend fonctionnent ; vérifier un domaine d’envoi avant d’ouvrir le dispositif aux prospects.
 
 Si YouTube garde la vidéo privée ou ne confirme pas sa disponibilité, aucun lien prospect n’est envoyé. Vérifier le traitement et les éventuelles restrictions du projet API dans YouTube Studio. La capsule n’est pas régénérée automatiquement.
+
+### Reprendre après un upload YouTube réussi
+
+Ne relancez pas la génération ou l’upload. Après avoir mis la même valeur de `LEAD_CALLBACK_SECRET` dans GitHub Actions et dans le Worker, ouvrez `/admin`, puis « Finaliser une vidéo YouTube existante ». Renseignez le token administrateur, la référence de demande et les 11 caractères de l’identifiant YouTube confirmé dans Studio. Le mode `youtube_finalize` télécharge le rapport existant, vérifie uniquement le statut YouTube et transmet un retour signé pour livrer le lien. Aucun appel de génération ni nouvel upload ; aucun changement de schéma D1. Le token n’est pas conservé par la page.
+
+Le contrôle utilise `videos.list(part=status)` ; `processingDetails`, réservé au propriétaire, n’est pas demandé. La vidéo doit être `processed` et publique ou non répertoriée avant livraison. Les erreurs Google affichent uniquement leur code de motif, sans corps de réponse ni secret.
