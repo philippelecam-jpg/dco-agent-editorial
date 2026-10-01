@@ -32,18 +32,46 @@ class Text(HTMLParser):
     def handle_data(self, data):
         if not self.hidden: self.parts.append(data.strip())
 
+def network_error(exc):
+    """Useful network diagnostics without URLs, credentials or response bodies."""
+    if isinstance(exc, ssl.SSLCertVerificationError): return 'Certificat HTTPS invalide'
+    if isinstance(exc, ssl.SSLError): return 'Échec de négociation TLS'
+    if isinstance(exc, socket.gaierror): return 'Résolution DNS impossible'
+    if isinstance(exc, TimeoutError): return 'Délai de connexion dépassé'
+    if isinstance(exc, ConnectionRefusedError): return 'Connexion refusée'
+    if isinstance(exc, ConnectionResetError): return 'Connexion interrompue'
+    if isinstance(exc, OSError): return 'Erreur réseau (errno=%s)' % exc.errno
+    return type(exc).__name__
+
 class PinnedHTTPS(http.client.HTTPSConnection):
-    def __init__(self, host, address): super().__init__(host,timeout=12,context=ssl.create_default_context()); self.address=address
+    def __init__(self, host, addresses):
+        super().__init__(host,timeout=12,context=ssl.create_default_context())
+        self.addresses=[addresses] if isinstance(addresses,str) else addresses
     def connect(self):
-        self.sock=socket.create_connection((self.address,443),self.timeout)
-        self.sock=self._context.wrap_socket(self.sock,server_hostname=self.host)
+        # All addresses were validated by public_ips. Preserve hostname for TLS/SNI.
+        deadline=time.monotonic()+20
+        errors=[]
+        for address in self.addresses:
+            remaining=deadline-time.monotonic()
+            if remaining<=0: break
+            sock=None
+            try:
+                sock=socket.create_connection((address,443),min(self.timeout,remaining))
+                sock.settimeout(min(self.timeout,max(0.001,deadline-time.monotonic())))
+                self.sock=self._context.wrap_socket(sock,server_hostname=self.host)
+                self.sock.settimeout(self.timeout)
+                return
+            except OSError as exc:
+                if sock is not None: sock.close()
+                errors.append('%s : %s' % (address,network_error(exc)))
+        raise Rejected('Connexion HTTPS impossible pour %s — %s.' % (self.host,' | '.join(errors) or 'Délai global dépassé'))
 
 def collect(url, redirects=0, attempt=0):
     """HTTPS only; DNS checked and connection pinned, bounded redirects/body."""
     p=urlsplit(url)
     if p.scheme!='https' or not p.hostname or p.username or p.password or p.port not in (None,443): raise Rejected('Source HTTPS publique requise.')
     addresses=public_ips(p.hostname)
-    connection=PinnedHTTPS(p.hostname,addresses[0])
+    connection=PinnedHTTPS(p.hostname,addresses)
     try:
         connection.request('GET',(p.path or '/')+('?' + p.query if p.query else ''),headers={'Host':p.hostname,'User-Agent':'DCo-Rachel/1.0','Accept':'text/html'})
         response=connection.getresponse()
@@ -83,7 +111,7 @@ def collect_company(site):
             first=collect(candidate)
             break
         except (Rejected,OSError,http.client.HTTPException) as exc:
-            message=str(exc) if isinstance(exc,Rejected) else type(exc).__name__
+            message=str(exc) if isinstance(exc,Rejected) else network_error(exc)
             errors.append('%s : %s' % (urlsplit(candidate).hostname,message))
     else:
         raise Rejected('Collecte du site impossible. '+' | '.join(errors))

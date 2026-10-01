@@ -3,6 +3,47 @@ from unittest.mock import Mock, patch
 from backend import providers as p
 from backend.core import Rejected
 
+class NetworkCollectionTests(unittest.TestCase):
+    def test_next_address_after_failure(self):
+        raw=Mock(); tls=Mock()
+        with patch.object(p.socket,'create_connection',side_effect=[OSError(101,'unreachable'),raw]) as connect:
+            connection=p.PinnedHTTPS('baresto.fr',['2001:4860:4860::8888','8.8.8.8'])
+            connection._context=Mock(wrap_socket=Mock(return_value=tls))
+            connection.connect()
+            self.assertEqual(connect.call_count,2)
+            self.assertEqual(connect.call_args.args[0],('8.8.8.8',443))
+            connection._context.wrap_socket.assert_called_once_with(raw,server_hostname='baresto.fr')
+            self.assertIs(connection.sock,tls)
+            connection.close()
+    def test_tls_failure_closes_socket(self):
+        first=Mock(); second=Mock()
+        with patch.object(p.socket,'create_connection',side_effect=[first,second]):
+            connection=p.PinnedHTTPS('baresto.fr',['8.8.8.8','1.1.1.1'])
+            connection._context=Mock(wrap_socket=Mock(side_effect=[p.ssl.SSLError('handshake'),Mock()]))
+            connection.connect()
+            first.close.assert_called_once()
+            self.assertEqual(connection._context.wrap_socket.call_count,2)
+            connection.close()
+    def test_all_failures_explained(self):
+        with patch.object(p.socket,'create_connection',side_effect=ConnectionRefusedError(111,'refused')):
+            with self.assertRaisesRegex(Rejected,'Connexion refusée'):
+                p.PinnedHTTPS('baresto.fr',['8.8.8.8','1.1.1.1']).connect()
+    def test_total_time_budget(self):
+        with patch.object(p.time,'monotonic',side_effect=[0,1,21]), patch.object(p.socket,'create_connection',side_effect=TimeoutError) as connect:
+            with self.assertRaisesRegex(Rejected,'Délai de connexion dépassé'):
+                p.PinnedHTTPS('baresto.fr',['8.8.8.8','1.1.1.1']).connect()
+            self.assertEqual(connect.call_count,1)
+    def test_dns_error_diagnostic(self):
+        with patch.object(p,'collect',side_effect=p.socket.gaierror(-2,'private diagnostic')):
+            with self.assertRaisesRegex(Rejected,'Résolution DNS impossible') as error:
+                p.collect_company('https://baresto.fr/')
+            self.assertNotIn('private diagnostic',str(error.exception))
+    def test_nonpublic_address_never_connects(self):
+        with patch('backend.core.socket.getaddrinfo',return_value=[(2,1,6,'',('127.0.0.1',443))]), patch.object(p.socket,'create_connection') as connect:
+            with self.assertRaisesRegex(Rejected,'non publique'):
+                p.collect('https://baresto.fr/')
+            connect.assert_not_called()
+
 class ClaudeTests(unittest.TestCase):
     def call(self, text, stop='end_turn', schema=p.VERIFY_SCHEMA):
         body={'content':[{'type':'text','text':text}],'stop_reason':stop,'usage':{'input_tokens':5}}
@@ -35,4 +76,3 @@ class ClaudeTests(unittest.TestCase):
         with patch.object(p,'claude',return_value=({'approved':True,'reason':''},{})) as claude:
             p.verify_script(script,[{'text':'Une source suffisamment longue'}])
             self.assertEqual(claude.call_args.args[2],p.VERIFY_SCHEMA)
-
