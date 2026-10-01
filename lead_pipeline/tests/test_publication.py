@@ -26,6 +26,23 @@ class PublicationTests(unittest.TestCase):
             with patch.dict(os.environ,{'TEST_MODE':'youtube_existing','EXISTING_YOUTUBE_ID':'aBcD1234_-Z'}),patch.object(pub.p,'youtube_start') as start,patch.object(pub.p,'youtube_upload') as upload,patch.object(pub.p,'youtube_ready',return_value=True):
                 pub.main();start.assert_not_called();upload.assert_not_called()
         self.scenario(run)
+    def test_finalize_requires_id_and_never_uploads(self):
+        def run(out):
+            with patch.dict(os.environ,{'TEST_MODE':'youtube_finalize','EXISTING_YOUTUBE_ID':''}),patch.object(pub.p,'youtube_start') as start,patch.object(pub.p,'youtube_upload') as upload:
+                with self.assertRaises(Rejected):pub.main()
+                start.assert_not_called();upload.assert_not_called()
+            with patch.dict(os.environ,{'TEST_MODE':'youtube_finalize','EXISTING_YOUTUBE_ID':'ycEDPSGCZDo'}),patch.object(pub.p,'youtube_start') as start,patch.object(pub.p,'youtube_upload') as upload,patch.object(pub.p,'youtube_ready',return_value=True):
+                pub.main();start.assert_not_called();upload.assert_not_called()
+        self.scenario(run)
+    def test_readiness_uses_status_only(self):
+        response=Mock();response.json.return_value={'items':[{'status':{'uploadStatus':'processed','privacyStatus':'unlisted'}}]}
+        with patch.object(pub.p,'youtube_token',return_value='token'),patch.object(pub.p,'req',return_value=response) as request:
+            self.assertTrue(pub.p.youtube_ready('ycEDPSGCZDo'))
+            self.assertEqual(request.call_args.kwargs['params']['part'],'status')
+            response.json.return_value={'items':[{'status':{'uploadStatus':'uploaded','privacyStatus':'unlisted'}}]}
+            self.assertFalse(pub.p.youtube_ready('ycEDPSGCZDo'))
+            response.json.return_value={'items':[{'status':{'uploadStatus':'processed','privacyStatus':'private'}}]}
+            self.assertFalse(pub.p.youtube_ready('ycEDPSGCZDo'))
     def test_upload_error_preserves_video_and_marks_pending(self):
         def run(out):
             with patch.dict(os.environ,{'TEST_MODE':'youtube_unlisted','EXISTING_YOUTUBE_ID':''}),patch.object(pub.p,'youtube_start',return_value='https://secret-session'),patch.object(pub.p,'youtube_upload',side_effect=RuntimeError('secret detail')):
