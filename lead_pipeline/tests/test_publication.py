@@ -63,6 +63,8 @@ class PublicationTests(unittest.TestCase):
         self.assertNotIn('secret server detail',cb.refusal_reason(error))
         error=HTTPError('https://fabrik.test',403,'Forbidden',{},io.BytesIO(b'<html>secret edge detail</html>'))
         self.assertIn('Réponse non reconnue',cb.refusal_reason(error))
+        error=HTTPError('https://fabrik.test',403,'Forbidden',{},io.BytesIO(b'error code: 1010\n'))
+        self.assertIn('Cloudflare 1010',cb.refusal_reason(error))
     def test_signed_callback_has_no_recipient_or_provider_secret(self):
         def run(out):
             report=json.loads((out/'report.json').read_text());report.update(youtube_ready=True,youtube_id='aBcD1234_-Z');(out/'report.json').write_text(json.dumps(report))
@@ -70,7 +72,7 @@ class PublicationTests(unittest.TestCase):
             response=MagicMock();response.__enter__.return_value.status=200
             with patch.dict(os.environ,env),patch.object(cb,'urlopen',return_value=response) as post:
                 cb.main()
-                request=post.call_args.args[0];timestamp=request.get_header('X-lead-timestamp');expected=hmac.new(b'shared-secret',timestamp.encode()+b'.'+request.data,hashlib.sha256).hexdigest()
+                request=post.call_args.args[0];self.assertEqual(request.get_header('User-agent'),'LaFabrik/1.0');timestamp=request.get_header('X-lead-timestamp');expected=hmac.new(b'shared-secret',timestamp.encode()+b'.'+request.data,hashlib.sha256).hexdigest()
                 self.assertEqual(request.get_header('X-lead-signature'),expected);self.assertNotIn('shared-secret',request.data.decode());self.assertNotIn('email',json.loads(request.data))
         self.scenario(run)
 

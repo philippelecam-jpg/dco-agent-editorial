@@ -11,6 +11,8 @@ def refusal_reason(exc):
     reason='Réponse non reconnue : consultez les événements Cloudflare.'
     try:
         raw=exc.read(4096)
+        if raw.strip()==b'error code: 1010':
+            return 'Retour Worker refusé (HTTP %s). Cloudflare 1010 : client HTTP bloqué avant La Fabrik.' % exc.code
         data=json.loads(raw)
         known={
             'Signature invalide.':'Signature rejetée par La Fabrik : vérifier le secret partagé et les en-têtes de signature.',
@@ -39,7 +41,7 @@ def main():
         timestamp=str(int(time.time()))
         signature=hmac.new(secret.encode(),timestamp.encode()+b'.'+body,hashlib.sha256).hexdigest()
         try:
-            request=Request(url,data=body,headers={'Content-Type':'application/json','X-Lead-Timestamp':timestamp,'X-Lead-Signature':signature},method='POST')
+            request=Request(url,data=body,headers={'User-Agent':'LaFabrik/1.0','Content-Type':'application/json','X-Lead-Timestamp':timestamp,'X-Lead-Signature':signature},method='POST')
             with urlopen(request,timeout=20) as response: http_status=response.status
             if http_status==200:
                 print(json.dumps({'event':'lead_result_delivered','status':status}),flush=True);return
