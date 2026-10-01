@@ -25,8 +25,9 @@ class CoreTests(unittest.TestCase):
         with self.assertRaises(Rejected): self.store.verify(token)
     def test_unverified_session(self):
         with self.assertRaises(Rejected): self.store.reserve('fake','entreprise.fr',True)
-    def test_company_domain_match(self):
-        with self.assertRaises(Rejected): self.store.reserve(self.session(),'autre.fr',True)
+    def test_different_email_domain_is_allowed(self):
+        request_id = self.store.reserve(self.session('dirigeant@gmail.com'),'autre.fr',True)
+        self.assertEqual(self.store.get(request_id)['domain'], 'autre.fr')
     def test_acknowledgement(self):
         with self.assertRaises(Rejected): self.store.reserve(self.session(),'entreprise.fr',False)
     def test_atomic_company_reservation(self):

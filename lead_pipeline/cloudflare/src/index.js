@@ -91,11 +91,6 @@ function domainFromUrl(value) {
   return host;
 }
 
-function professionalEmailMatches(address, siteDomain) {
-  const mailDomain = address.split("@")[1];
-  return mailDomain === siteDomain || mailDomain.endsWith(`.${siteDomain}`);
-}
-
 async function sha256(value) {
   const data = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest("SHA-256", data);
@@ -283,11 +278,6 @@ async function handleRequest(env, request) {
   const companySite = siteUrl(data.site);
   const companyDomain = domainFromUrl(companySite);
   const canRepeat = companyDomain === UNLIMITED_COMPANY_DOMAIN;
-  if (!canRepeat && !professionalEmailMatches(lead.email, companyDomain)) {
-    throw new Error(
-      "Utilisez une adresse professionnelle correspondant au domaine du site.",
-    );
-  }
   const sourceText = clean(data.sourceText).replace(/\s+/g, " ");
   if (sourceText && (sourceText.length < 120 || sourceText.length > 12000)) {
     throw new Error(
@@ -363,7 +353,7 @@ function page() {
 </style></head><body>
 <div class="wrap"><header class="top"><a class="brand" href="/" aria-label="La Fabrik, accueil"><span class="wordmark">La Fabrik</span><span class="byline">PAR DÉCISIONS & CO</span></a><a class="channel" href="https://www.youtube.com/@Rachel-DecisionsAndCo" target="_blank" rel="noopener noreferrer">Avec Rachel ↗</a></header>
 <main><div class="hero"><section><h1>Votre entreprise.<span>En 30 secondes.</span></h1><p class="subtitle">Une capsule personnalisée, présentée par Rachel et publiée sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span>.</p><div class="card">
-<div id="signup-stage"><form id="signup"><div class="field"><label for="email">Email professionnel</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div><div class="field"><label for="signup-site">Site web de votre entreprise</label><input id="signup-site" name="site" type="text" inputmode="url" autocomplete="url" placeholder="https://votre-entreprise.fr" required></div>
+<div id="signup-stage"><form id="signup"><div class="field"><label for="email">Votre email</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div><div class="field"><label for="signup-site">Site web de votre entreprise</label><input id="signup-site" name="site" type="text" inputmode="url" autocomplete="url" placeholder="https://votre-entreprise.fr" required></div>
 <div id="identity-fields" hidden><div class="row"><div class="field"><label for="name">Prénom et nom</label><input id="name" name="name" autocomplete="name" minlength="2" maxlength="100" required disabled></div><div class="field"><label for="company">Votre entreprise</label><input id="company" name="company" autocomplete="organization" minlength="2" maxlength="150" required disabled></div></div></div>
 <label class="consent"><input id="consent" type="checkbox" required><span>Je demande une capsule de démonstration et sa publication sur <span class="youtube-logo" role="img" aria-label="YouTube"><svg viewBox="0 0 28 20" aria-hidden="true" focusable="false"><path fill="#ff0000" d="M27.4 3.1a3.5 3.5 0 0 0-2.5-2.5C22.7 0 14 0 14 0S5.3 0 3.1.6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9a3.5 3.5 0 0 0 2.5 2.5c2.2.6 10.9.6 10.9.6s8.7 0 10.9-.6a3.5 3.5 0 0 0 2.5-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9Z"/><path fill="#fff" d="m11.2 14.3 7.3-4.3-7.3-4.3z"/></svg></span>.</span></label><button class="primary" type="submit">Créer ma capsule</button><p class="note" id="signup-note">Une capsule offerte par entreprise. Email vérifié avant génération.</p></form><div id="signup-status" class="status" role="status" aria-live="polite" hidden></div></div>
 <div id="request-stage" hidden><h2>Votre sujet, votre capsule.</h2><p id="welcome" class="hint">Votre email est vérifié. Complétez votre demande.</p><form id="request"><div class="field"><label for="site">Site web de votre entreprise</label><input id="site" name="site" inputmode="url" placeholder="https://votre-entreprise.fr" required></div><div class="field"><label for="sourceText">Votre actualité <span class="hint">(facultatif)</span></label><textarea id="sourceText" name="sourceText" maxlength="12000" placeholder="Collez une actualité ou un texte factuel. Utile si le site est inaccessible."></textarea></div><details><summary>Personnaliser la présentation</summary><div class="field"><label for="rachelImage">Secteur d’activité</label><select id="rachelImage" name="rachelImage"><option value="Rachel Tertiaire">Tertiaire</option><option value="Rachel BTP">BTP</option><option value="Rachel Agriculture">Agriculture</option><option value="Rachel Industrie">Industrie</option><option value="Rachel Restauration">Restauration</option><option value="Rachel Logistique et Transport">Logistique et Transport</option></select></div><div class="field"><label for="siren">SIREN (facultatif)</label><input id="siren" name="siren" pattern="[0-9]{9}" maxlength="9" inputmode="numeric"></div></details><button class="primary" type="submit">Lancer ma capsule</button><p id="quota-note" class="note">Une seule demande par entreprise.</p></form><div id="request-status" class="status" role="status" aria-live="polite" hidden></div></div>

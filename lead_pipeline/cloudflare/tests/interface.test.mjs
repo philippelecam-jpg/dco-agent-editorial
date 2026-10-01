@@ -153,26 +153,29 @@ test("verified emails can repeatedly request D&Co across pasted URL variants", a
   }
 });
 
-test("lookalike and other domains still require a matching professional email", async () => {
-  for (const site of [
-    "https://decisionsandco.com.example.fr",
-    "https://other-company.fr",
-    "https://test.decisionsandco.com",
-  ]) {
-    const db = leadDatabase("test@another-company.fr");
-    const response = await worker.fetch(
-      new Request(origin + "/api/request", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          cookie: "rachel_session=test",
-        },
-        body: JSON.stringify({ site }),
-      }),
-      { DB: db },
-    );
-    assert.equal(response.status, 400);
-    assert.match((await response.json()).error, /adresse professionnelle/);
-    assert.equal(db.inserted.length, 0);
-  }
+test("different email domains are accepted without granting unlimited requests", async () => {
+  const savedFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(null, {status: 204});
+  try {
+    for (const site of ['https://decisionsandco.com.example.fr', 'https://other-company.fr', 'https://test.decisionsandco.com']) {
+      const db = leadDatabase('dirigeant@gmail.com');
+      const response = await worker.fetch(new Request(origin + '/api/request', {
+        method: 'POST', headers: {'content-type': 'application/json', cookie: 'rachel_session=test'},
+        body: JSON.stringify({site}),
+      }), {DB: db});
+      assert.equal(response.status, 201);
+      assert.equal((await response.json()).canRepeat, false);
+      assert.equal(db.inserted.length, 1);
+    }
+  } finally { globalThis.fetch = savedFetch; }
+});
+
+test("an unverified email still cannot submit a request", async () => {
+  const db = leadDatabase('dirigeant@gmail.com');
+  const response = await worker.fetch(new Request(origin + '/api/request', {
+    method: 'POST', headers: {'content-type': 'application/json'},
+    body: JSON.stringify({site: 'https://other-company.fr'}),
+  }), {DB: db});
+  assert.equal(response.status, 400);
+  assert.equal(db.inserted.length, 0);
 });
