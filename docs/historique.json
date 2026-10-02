@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 5 septembre 2026",
-    "timestamp": "2026-09-05T09:25:00.333301",
-    "theme": "Actualité décryptée",
-    "sujet": "MAI-Transcribe-2 : quand l'IA transcrit vos réunions, elle documente aussi leur désordre",
-    "post_x": "Microsoft lance une IA qui transcrit vos réunions à 0,10$/h, locuteur par locuteur. Résultat parfait. Mais si vos réunions sont floues, vous obtenez du flou parfaitement retranscrit.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2096167679954489761",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-05-092409-weekend.png?v=092409"
-  },
-  {
-    "date": "Samedi 5 septembre 2026",
     "timestamp": "2026-09-05T12:28:42.564612",
     "theme": "Actualité décryptée",
     "sujet": "GPT-6 Astra : quand un modèle peut agir dans vos logiciels, la vraie question n'est plus l'outil",
@@ -268,5 +259,14 @@
     "post_x": "L'AI Act n'est pas fait pour effrayer les PME. Il est fait pour clarifier. Ce que vous devez faire : savoir quels outils vous utilisez, à quoi ils servent, et qui en est responsable. Pas plus compliqué que ça.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2105540319647281587",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-01-060823.png?v=060824"
+  },
+  {
+    "date": "Vendredi 2 octobre 2026",
+    "timestamp": "2026-10-02T06:08:53.764740",
+    "theme": "Formation et culture IA",
+    "sujet": "Former des individus ne transforme pas une organisation",
+    "post_x": "80 M€ pour former les PME à l'IA. Bien. Mais former des individus ne change pas les processus. La compétence sans structure s'évapore. Ce n'est pas un problème de budget, c'est un problème de méthode.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2105902607814287581",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-02-060759.png?v=060759"
   }
 ]
