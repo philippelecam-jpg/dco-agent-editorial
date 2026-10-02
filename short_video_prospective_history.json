@@ -1,8 +1,9 @@
 {
-  "last_theme_index": 5,
+  "last_theme_index": 0,
   "angles_par_theme": {
     "Travail": [
-      "L'organisation du travail face aux reconfigurations technologiques et managériales"
+      "L'organisation du travail face aux reconfigurations technologiques et managériales",
+      "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses"
     ],
     "Technologie": [
       "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques"
@@ -62,6 +63,13 @@
       "angle": "L'évolution des institutions scolaires face aux nouvelles formes d'apprentissage décentralisé et continu",
       "titre": "Et si l'école n'était plus un lieu ?",
       "video_id": "OZnEfysHekc"
+    },
+    {
+      "date": "2026-10-02T09:21:08.112884",
+      "theme": "Travail",
+      "angle": "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses",
+      "titre": "Et si le travail n'était plus ce qui vous définit ?",
+      "video_id": "k_YT-PaYhCE"
     }
   ]
 }
