@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 import worker from "../src/index.js";
 
 const origin = "https://fabrik.test";
@@ -82,7 +83,50 @@ test("an expired email link does not set a session cookie", async () => {
   );
   assert.equal(response.status, 400);
   assert.equal(response.headers.get("set-cookie"), null);
-  assert.match((await response.json()).error, /expiré/);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  const page = await response.text();
+  assert.match(page, /expiré/);
+  assert.match(page, /Recevoir un nouveau lien/);
+  assert.match(page, /href="\/\?new-link=1"/);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+});
+
+test('invalid verification links show recovery without querying or writing data', async () => {
+  const response = await worker.fetch(new Request(origin + '/verify?site=entreprise.fr'), {});
+  assert.equal(response.status, 400);
+  const body = await response.text();
+  assert.match(body, /Ce lien est invalide/);
+  assert.match(body, /new-link=1&amp;site=https%3A%2F%2Fentreprise.fr%2F/);
+  assert.equal(response.headers.get('set-cookie'), null);
+});
+
+test('used links offer recovery without reflecting the token or unsafe site', async () => {
+  const response = await worker.fetch(new Request(origin + '/verify?token=private-token&site=javascript%3A%2F%2Fevil'), {
+    DB: {prepare() {return {bind() {return this;}, async first() {return null;}};}}
+  });
+  const body = await response.text();
+  assert.match(body, /Recevoir un nouveau lien/);
+  assert(!body.includes('private-token'));
+  assert(!body.includes('javascript:'));
+  assert.match(body, /href="\/\?new-link=1"/);
+});
+
+test('recovery opens signup even with an existing session and keeps the supplied site', async () => {
+  const page = await (await worker.fetch(new Request(origin), {})).text();
+  const script = page.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const nodes = new Map();
+  const storage = new Map();
+  let calls = 0;
+  const location = {href: origin + '/?new-link=1&site=https%3A%2F%2Fentreprise.fr%2F'};
+  const document = {getElementById(id) {
+    if (!nodes.has(id)) nodes.set(id, {value:'', hidden:id==='request-stage'||id==='done-stage', textContent:'', classList:{toggle(){}}, addEventListener(){}});
+    return nodes.get(id);
+  }};
+  vm.runInNewContext(script, {document,location,URL,history:{replaceState(_a,_b,url){location.href=origin+url;}},localStorage:{setItem(k,v){storage.set(k,v);},getItem(k){return storage.get(k);}},setInterval(){},fetch(){calls++;throw new Error('Unexpected session fetch');}});
+  assert.equal(calls, 0);
+  assert.equal(nodes.get('signup-site').value, 'https://entreprise.fr/');
+  assert.equal(nodes.get('session-status').hidden, true);
+  assert.match(nodes.get('signup-status').textContent, /nouveau lien/);
 });
 
 function leadDatabase(address) {
