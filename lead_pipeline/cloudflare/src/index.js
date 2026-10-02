@@ -235,17 +235,29 @@ async function handleSignup(env, request) {
   });
 }
 
+function verificationRecoveryPage(url, invalid = false) {
+  const destination = new URL('/', url);
+  destination.searchParams.set('new-link', '1');
+  const site = url.searchParams.get('site');
+  if (site) {
+    try { destination.searchParams.set('site', siteUrl(site)); } catch (_) {}
+  }
+  return html(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Votre lien d’accès · La Fabrik</title>
+<style>body{margin:0;background:#fafbfc;color:#172237;font-family:Arial,sans-serif}main{max-width:460px;margin:12vh auto;padding:32px}a{color:#147d86}.brand{font-family:Georgia,serif;font-size:34px;text-decoration:none;font-weight:bold}.byline{font-size:10px;letter-spacing:2px;margin:8px 0 40px}h1{font-family:Georgia,serif;font-size:30px;font-weight:normal}p{line-height:1.6;color:#566276}.button{display:block;text-align:center;background:#147d86;color:white;padding:15px 20px;border-radius:7px;text-decoration:none;font-weight:bold;margin-top:26px}.note{font-size:13px}</style></head>
+<body><main><a class="brand" href="/">La Fabrik</a><div class="byline">PAR DÉCISIONS &amp; CO</div><h1>${invalid ? 'Ce lien est invalide.' : 'Ce lien n’est plus disponible.'}</h1><p>${invalid ? 'Demandez un nouveau lien pour accéder à votre espace.' : 'Votre lien a expiré ou a déjà été utilisé. Il est valable 15 minutes et utilisable une seule fois.'}</p><a class="button" href="${escapeHtml(destination.pathname + destination.search)}">Recevoir un nouveau lien</a><p class="note">Saisissez votre email sur la page suivante. Vos demandes et vos capsules sont conservées.</p></main></body></html>`, 400);
+}
+
 async function handleVerify(env, request) {
   const url = new URL(request.url);
   const rawToken = clean(url.searchParams.get("token"));
-  if (!rawToken) throw new Error("Lien invalide.");
+  if (!rawToken) return verificationRecoveryPage(url, true);
   const tokenHash = await sha256(rawToken);
   const row = await env.DB.prepare(
     "SELECT * FROM verification_tokens WHERE token_hash=? AND used_at IS NULL AND expires_at>?",
   )
     .bind(tokenHash, now())
     .first();
-  if (!row) throw new Error("Lien expiré ou déjà utilisé.");
+  if (!row) return verificationRecoveryPage(url);
   await env.DB.prepare(
     "UPDATE verification_tokens SET used_at=? WHERE token_hash=?",
   )
@@ -546,6 +558,7 @@ const api=async(url,payload)=>{const response=await fetch(url,payload?{method:'P
 const busy=(form,value,label)=>{const button=form.querySelector('button[type=submit]');if(value){button.dataset.label=button.textContent;button.textContent=label;}else{button.textContent=button.dataset.label||button.textContent;}button.disabled=value;};
 const saveSite=value=>{try{localStorage.setItem('fabrik_site',value);}catch(_){};};
 const rememberedSite=()=>{const fromLink=new URL(location.href).searchParams.get('site');if(fromLink){try{const site=normalizeSite(fromLink);saveSite(site);history.replaceState(null,'','/');return site;}catch(_){}}try{return localStorage.getItem('fabrik_site')||'';}catch(_){return '';}};
+const requestingNewLink=new URL(location.href).searchParams.get('new-link')==='1';
 const saved=rememberedSite();$('signup-site').value=saved;$('site').value=saved;
 $('rachelImage').addEventListener('change',()=>{
   const name=$('rachelImage').value;
@@ -567,7 +580,7 @@ $('retry').addEventListener('click',()=>{if(!currentRequest||currentRequest.stat
 $('repeat').addEventListener('click',()=>{retryId=null;$('companyName').value='Décisions & Co';$('site').value='https://www.decisionsandco.com/';$('request-status').hidden=true;stage('request');updateQuotaNote();$('sourceText').focus();});
 updateQuotaNote();
 $('refresh').addEventListener('click',async()=>{$('refresh').disabled=true;try{await loadSession();}finally{$('refresh').disabled=false;}});
-loadSession();
+if(requestingNewLink){$('session-status').hidden=true;show('signup-status','Saisissez votre email pour recevoir un nouveau lien d’accès.');}else{loadSession();}
 setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&(['queued','processing'].includes(currentRequest?.status)||(currentRequest?.status==='published'&&!currentRequest.notified_at&&currentRequest.delivery_status!=='review_required')))loadSession();},30000);
 </script></body></html>`);
 }
