@@ -44,7 +44,8 @@
     "https://www.blogdumoderateur.com/linkedin-pages-entreprise-supprimer-faux-employes/",
     "https://www.blogdumoderateur.com/microsoft-devoile-copilot-trois-espaces-home-code-autopilot/",
     "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/",
-    "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/"
+    "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/",
+    "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html"
   ],
   "scripts": [
     {
@@ -310,6 +311,12 @@
       "source": "actualite",
       "titre": "IA gratuite = IA sans valeur pour votre boîte",
       "video_id": "yyRTH25QIAc"
+    },
+    {
+      "date": "2026-10-03T16:38:08.682622",
+      "source": "actualite",
+      "titre": "Un ado a hacké 1000 entreprises. La vôtre est prête ?",
+      "video_id": "jnS-xMm2mHc"
     }
   ]
 }
