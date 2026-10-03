@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 5 septembre 2026",
-    "timestamp": "2026-09-05T12:28:42.564612",
-    "theme": "Actualité décryptée",
-    "sujet": "GPT-6 Astra : quand un modèle peut agir dans vos logiciels, la vraie question n'est plus l'outil",
-    "post_x": "GPT-6 Astra agit dans vos logiciels à votre place. CRM, reporting, propositions commerciales. La puissance est réelle. Ce qu'elle révèle aussi : l'état exact de ce qu'elle trouve en arrivant.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2096213908314866092",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-05-122751-weekend.png?v=122751"
-  },
-  {
     "date": "Dimanche 6 septembre 2026",
     "timestamp": "2026-09-06T19:38:56.124913",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "80 M€ pour former les PME à l'IA. Bien. Mais former des individus ne change pas les processus. La compétence sans structure s'évapore. Ce n'est pas un problème de budget, c'est un problème de méthode.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2105902607814287581",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-02-060759.png?v=060759"
+  },
+  {
+    "date": "Samedi 3 octobre 2026",
+    "timestamp": "2026-10-03T09:24:58.092010",
+    "theme": "Actualité décryptée",
+    "sujet": "Baromètre France Num 2026 : 40 % des PME utilisent l'IA, la vitesse de la bascule interroge",
+    "post_x": "13 % en 2024. 26 % en 2025. 40 % en 2026. Les PME adoptent l'IA à une vitesse qui n'a pas d'équivalent. La question n'est plus \"est-ce que j'y vais ?\" Elle est : \"suis-je prête à accueillir ce que je déploie ?\"",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106314529848053911",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-03-092357-weekend.png?v=092358"
   }
 ]
