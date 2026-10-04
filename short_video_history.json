@@ -45,7 +45,8 @@
     "https://www.blogdumoderateur.com/microsoft-devoile-copilot-trois-espaces-home-code-autopilot/",
     "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/",
     "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/",
-    "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html"
+    "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html",
+    "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html"
   ],
   "scripts": [
     {
@@ -317,6 +318,12 @@
       "source": "actualite",
       "titre": "Un ado a hacké 1000 entreprises. La vôtre est prête ?",
       "video_id": "jnS-xMm2mHc"
+    },
+    {
+      "date": "2026-10-04T16:38:03.146783",
+      "source": "actualite",
+      "titre": "Vos sous-traitants sont votre maillon faible",
+      "video_id": "XSCuKhLsklA"
     }
   ]
 }
