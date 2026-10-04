@@ -47,7 +47,8 @@
     "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/",
     "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html",
     "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html",
-    "https://www.blogdumoderateur.com/resume-annonces-openai-devday-2026/"
+    "https://www.blogdumoderateur.com/resume-annonces-openai-devday-2026/",
+    "https://www.blogdumoderateur.com/openai-dots-agents-ia-autonomes/"
   ],
   "scripts": [
     {
@@ -331,6 +332,12 @@
       "source": "actualite",
       "titre": "Vos concurrents vont avoir des agents IA permanents",
       "video_id": "x5EYt2OjWMk"
+    },
+    {
+      "date": "2026-10-04T19:29:31.716834",
+      "source": "actualite",
+      "titre": "L'IA travaille même quand vous dormez",
+      "video_id": "0bSzm0HkH0E"
     }
   ]
 }
