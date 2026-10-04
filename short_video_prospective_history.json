@@ -1,12 +1,13 @@
 {
-  "last_theme_index": 0,
+  "last_theme_index": 1,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
       "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses"
     ],
     "Technologie": [
-      "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques"
+      "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques",
+      "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques"
     ],
     "Économie": [
       "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives"
@@ -70,6 +71,13 @@
       "angle": "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses",
       "titre": "Et si le travail n'était plus ce qui vous définit ?",
       "video_id": "k_YT-PaYhCE"
+    },
+    {
+      "date": "2026-10-04T19:24:30.286524",
+      "theme": "Technologie",
+      "angle": "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques",
+      "titre": "Et si votre cerveau n'était plus tout à fait le vôtre ?",
+      "video_id": "0p-cVm833eg"
     }
   ]
 }
