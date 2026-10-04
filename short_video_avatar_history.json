@@ -14,7 +14,8 @@
     "https://www.01net.com/actualites/openai-revele-chatgpt-resolu-equation-vieille-200-ans-mathematicien-accuse-plagiat.html",
     "https://www.01net.com/actualites/fuite-donnees-pres-moitie-francais-pirates-cette-annee.html",
     "https://www.actuia.com/actualite/sept-modeles-de-pointe-ont-dirige-de-vraies-entreprises-pendant-72-heures-12-431-dollars-de-factures-indues-zero-revenu/",
-    "https://www.01net.com/actualites/votre-voiture-envoie-probablement-toutes-vos-donnees-a-google-meta-et-amazon.html"
+    "https://www.01net.com/actualites/votre-voiture-envoie-probablement-toutes-vos-donnees-a-google-meta-et-amazon.html",
+    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html"
   ],
   "scripts": [
     {
@@ -100,6 +101,12 @@
       "source": "actualite",
       "titre": "Votre voiture espionne-t-elle pour les GAFA ?",
       "video_id": "0fdAyNlIyMs"
+    },
+    {
+      "date": "2026-10-04T19:27:43.085499",
+      "source": "actualite",
+      "titre": "Vos données confiées à une IA : que deviennent-elles ?",
+      "video_id": "HrnBai-B9Ng"
     }
   ]
 }
