@@ -46,7 +46,8 @@
     "https://www.actuia.com/actualite/autorisation-prealable-et-amendes-a-7-la-proposition-de-loi-n-3149-sur-lia/",
     "https://www.actuia.com/actualite/40-des-tpe-pme-utilisent-lia-mais-19-seulement-la-paient/",
     "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html",
-    "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html"
+    "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html",
+    "https://www.blogdumoderateur.com/resume-annonces-openai-devday-2026/"
   ],
   "scripts": [
     {
@@ -324,6 +325,12 @@
       "source": "actualite",
       "titre": "Vos sous-traitants sont votre maillon faible",
       "video_id": "XSCuKhLsklA"
+    },
+    {
+      "date": "2026-10-04T19:21:31.354611",
+      "source": "actualite",
+      "titre": "Vos concurrents vont avoir des agents IA permanents",
+      "video_id": "x5EYt2OjWMk"
     }
   ]
 }
