@@ -48,7 +48,8 @@
     "https://www.01net.com/actualites/apres-1000-cyberattaques-pirate-16-ans-arrete-tete-gang-killsec.html",
     "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html",
     "https://www.blogdumoderateur.com/resume-annonces-openai-devday-2026/",
-    "https://www.blogdumoderateur.com/openai-dots-agents-ia-autonomes/"
+    "https://www.blogdumoderateur.com/openai-dots-agents-ia-autonomes/",
+    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html"
   ],
   "scripts": [
     {
@@ -338,6 +339,12 @@
       "source": "actualite",
       "titre": "L'IA travaille même quand vous dormez",
       "video_id": "0bSzm0HkH0E"
+    },
+    {
+      "date": "2026-10-04T20:21:05.945713",
+      "source": "actualite",
+      "titre": "Ce que vos données font après l'IA",
+      "video_id": "DXPiUezOvVY"
     }
   ]
 }
