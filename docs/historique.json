@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 9 septembre 2026",
-    "timestamp": "2026-09-09T06:09:31.267949",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Ce qu'on trouve vraiment quand on cartographie une organisation",
-    "post_x": "Quand on cartographie une organisation, on ne trouve pas des processus. On trouve des habitudes. Des routines non écrites. Des savoirs que personne n'a jamais pensé à mettre en mots.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2097567719231259005",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-09-060807.png?v=060807"
-  },
-  {
     "date": "Jeudi 10 septembre 2026",
     "timestamp": "2026-09-10T06:08:51.827114",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "OpenAI lance \"Dots\" : des agents IA avec mémoire persistante, intégrés dans vos outils. Un agent qui \"connaît\" votre organisation et agit en continu. La vraie question : qu'est-ce qu'il va mémoriser ? Si votre connaissance n'est pas structurée, l'agent ancre du désordre. De façon permanente.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-04-144001-weekend.png?v=144001"
+  },
+  {
+    "date": "Lundi 5 octobre 2026",
+    "timestamp": "2026-10-05T06:08:42.463220",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation",
+    "post_x": "40 % des PME utilisent l'IA. Mais l'IA tourne sur quoi ? Sur le désordre existant. L'Entreprise OS, c'est l'infrastructure qui manque. Stocker, Traiter, Diffuser. Dans cet ordre.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106989767212822908",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-05-060758.png?v=060759"
   }
 ]
