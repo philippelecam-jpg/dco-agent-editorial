@@ -49,7 +49,8 @@
     "https://www.01net.com/actualites/cyberattaque-region-hauts-de-france-donnees-personnelles-rib.html",
     "https://www.blogdumoderateur.com/resume-annonces-openai-devday-2026/",
     "https://www.blogdumoderateur.com/openai-dots-agents-ia-autonomes/",
-    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html"
+    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
+    "https://www.actuia.com/actualite/cac-40-chatgpt-et-gemini-restituent-mal-quatre-chiffres-sur-dix/"
   ],
   "scripts": [
     {
@@ -345,6 +346,12 @@
       "source": "actualite",
       "titre": "Ce que vos données font après l'IA",
       "video_id": "DXPiUezOvVY"
+    },
+    {
+      "date": "2026-10-05T16:38:16.656129",
+      "source": "actualite",
+      "titre": "Ne confiez pas vos chiffres à l'IA sans cette vérification",
+      "video_id": "8aIAoXFiUoo"
     }
   ]
 }
