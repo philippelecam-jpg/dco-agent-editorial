@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 10 septembre 2026",
-    "timestamp": "2026-09-10T06:08:51.827114",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "Facturation électronique et IA : ce que la conformité révèle de votre organisation",
-    "post_x": "La facturation électronique est obligatoire pour les ETI dès maintenant. Beaucoup découvrent que leur donnée est mal structurée. L'IA n'y changera rien. C'est un problème de gouvernance, pas d'outil.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2097930069838557188",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-10-060758.png?v=060758"
-  },
-  {
     "date": "Vendredi 11 septembre 2026",
     "timestamp": "2026-09-11T06:09:33.042702",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "40 % des PME utilisent l'IA. Mais l'IA tourne sur quoi ? Sur le désordre existant. L'Entreprise OS, c'est l'infrastructure qui manque. Stocker, Traiter, Diffuser. Dans cet ordre.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2106989767212822908",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-05-060758.png?v=060759"
+  },
+  {
+    "date": "Mardi 6 octobre 2026",
+    "timestamp": "2026-10-06T06:08:44.465793",
+    "theme": "Terrain et missions clients",
+    "sujet": "Terrain : ce que l'IA révèle quand on ouvre le capot",
+    "post_x": "Un client ETI, 400 personnes. Ils voulaient un agent IA pour leurs commerciaux. On a d'abord regardé ce qu'il y avait à automatiser. Il n'y avait rien de structuré. L'IA attendait.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2107352163970412828",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-06-060800.png?v=060801"
   }
 ]
