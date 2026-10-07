@@ -19,3 +19,5 @@ EMAIL_FROM = "Rachel Entreprises <rachel@decisionsandco.fr>"
 # RESEND_API_KEY
 # GITHUB_TOKEN
 # ADMIN_TOKEN
+# WHATSAPP_VERIFY_TOKEN (Meta webhook challenge; random long value)
+# WHATSAPP_APP_SECRET (Meta app secret; never put in [vars])

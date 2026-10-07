@@ -164,3 +164,21 @@ Le contrôle utilise `videos.list(part=status)` ; `processingDetails`, réservé
 ### Essais internes
 
 Appliquer une seule fois `wrangler d1 execute rachel-entreprises --remote --file=migrations/0004_internal_tests.sql`, puis déployer le Worker. Depuis `/admin`, « Nouvel essai interne » exige ADMIN_TOKEN et une session email déjà vérifiée dans le même navigateur. Choisir l’entreprise, le site, l’actualité facultative et l’image Rachel. Les essais internes sont marqués `is_internal=1`, conservés dans l’historique, exclus des quotas prospects et livrés au compte connecté. Ils peuvent appeler les fournisseurs payants. Seul un autre essai interne actif bloque le prochain essai ; les anciennes demandes prospects ne bloquent pas cette file séparée. Avant de refuser un nouvel essai, le Worker synchronise le statut GitHub de l’essai interne actif. Un résultat inconnu ou un suivi indisponible conserve le blocage et affiche l’entreprise ainsi que la référence à vérifier ; un index empêche deux essais internes actifs simultanés pour le même compte. La route publique ne peut pas accorder ce statut. Les essais internes échoués se relancent depuis l’administration.
+
+
+## WhatsApp Cloud API — réception entrante (préparation)
+
+Le Worker expose `GET` et `POST /api/whatsapp/webhook`. Le contrôle Meta du callback utilise `WHATSAPP_VERIFY_TOKEN`. Les notifications `POST` sont acceptées uniquement après vérification de `X-Hub-Signature-256` avec le secret d’application `WHATSAPP_APP_SECRET`.
+
+Les messages texte entrants sont dédupliqués par leur identifiant WhatsApp et enregistrés dans D1 avec le numéro expéditeur et l’heure. Pour les pièces jointes, seul le type est conservé ; le média n’est ni téléchargé ni enregistré. Les événements de statut ne déclenchent aucune action. Cet endpoint **n’envoie aucune réponse WhatsApp**, ne démarre aucune génération vidéo et n’écrit aucun email.
+
+Avant activation Meta :
+1. définir les secrets `WHATSAPP_VERIFY_TOKEN` et `WHATSAPP_APP_SECRET` sur le Worker ;
+2. appliquer `migrations/0005_whatsapp_inbound.sql` à la base D1 existante (une installation neuve inclut déjà la table dans `schema.sql`) ;
+3. déployer le Worker ;
+4. vérifier le callback Meta avec `https://<domaine-du-worker>/api/whatsapp/webhook` et le même token ;
+5. s’abonner au champ `messages`.
+
+Dans Meta, la route ne doit être configurée qu’après ce déploiement. Un message entrant sera enregistré, mais aucune conversation automatisée ne répondra tant que l’orchestration et l’envoi sortant ne seront pas ajoutés et autorisés. Ajouter aussi une information de confidentialité adaptée avant de proposer le lien WhatsApp aux prospects.
+
+Tests locaux : `node --test tests/whatsapp.test.mjs`. Les tests utilisent un faux D1 et une signature HMAC locale ; ils n’appellent pas Meta.

@@ -585,6 +585,88 @@ setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&(['queued','proce
 </script></body></html>`);
 }
 
+function constantTimeEqual(left, right) {
+  const a = new TextEncoder().encode(String(left));
+  const b = new TextEncoder().encode(String(right));
+  let diff = a.length ^ b.length;
+  const length = Math.max(a.length, b.length);
+  for (let i = 0; i < length; i++) diff |= (a[i] || 0) ^ (b[i] || 0);
+  return diff === 0;
+}
+
+async function verifyWhatsAppSignature(rawBody, signature, appSecret) {
+  if (!/^sha256=[a-f0-9]{64}$/i.test(signature || "")) return false;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(appSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const digest = new Uint8Array(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(rawBody),
+  ));
+  const expected = "sha256=" + [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return constantTimeEqual(signature.toLowerCase(), expected);
+}
+
+async function handleWhatsAppWebhook(env, request, url) {
+  if (request.method === "GET") {
+    const mode = url.searchParams.get("hub.mode") || "";
+    const verifyToken = url.searchParams.get("hub.verify_token") || "";
+    const challenge = url.searchParams.get("hub.challenge") || "";
+    if (!env.WHATSAPP_VERIFY_TOKEN || mode !== "subscribe" ||
+        !challenge || !constantTimeEqual(verifyToken, env.WHATSAPP_VERIFY_TOKEN)) {
+      return new Response("Forbidden", { status: 403, headers: { "cache-control": "no-store" } });
+    }
+    return new Response(challenge, { status: 200, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
+  }
+
+  if (request.method !== "POST") return json({ error: "Méthode non autorisée." }, 405, { allow: "GET, POST" });
+  if (!env.WHATSAPP_APP_SECRET || !env.DB) return json({ error: "Webhook non configuré." }, 503);
+  const length = Number(request.headers.get("content-length") || 0);
+  if (length > 1_000_000) return json({ error: "Événement trop volumineux." }, 413);
+  const rawBody = await request.text();
+  if (rawBody.length > 1_000_000) return json({ error: "Événement trop volumineux." }, 413);
+  const valid = await verifyWhatsAppSignature(
+    rawBody,
+    request.headers.get("x-hub-signature-256") || "",
+    env.WHATSAPP_APP_SECRET,
+  );
+  if (!valid) return json({ error: "Signature invalide." }, 401);
+
+  let payload;
+  try { payload = JSON.parse(rawBody); } catch { return json({ error: "Événement JSON invalide." }, 400); }
+  if (payload.object !== "whatsapp_business_account" || !Array.isArray(payload.entry))
+    return json({ error: "Événement WhatsApp invalide." }, 400);
+
+  const statements = [];
+  for (const entry of payload.entry) {
+    for (const change of entry.changes || []) {
+      const value = change.value || {};
+      for (const message of value.messages || []) {
+        if (!message.id || !message.from || !message.timestamp || !message.type) continue;
+        const text = message.type === "text" ? String(message.text?.body || "").slice(0, 4000) : null;
+        statements.push(env.DB.prepare(
+          "INSERT OR IGNORE INTO whatsapp_inbound (message_id, phone_number_id, from_phone, message_type, message_text, received_at) VALUES (?, ?, ?, ?, ?, ?)",
+        ).bind(
+          String(message.id).slice(0, 200),
+          String(value.metadata?.phone_number_id || "").slice(0, 100),
+          String(message.from).slice(0, 40),
+          String(message.type).slice(0, 40),
+          text,
+          new Date(Number(message.timestamp) * 1000).toISOString(),
+        ));
+      }
+    }
+  }
+  if (statements.length) await env.DB.batch(statements);
+  // Inbound-only: never sends WhatsApp replies or triggers video generation.
+  return json({ ok: true });
+}
+
 export default {
   async fetch(request, env) {
     try {
@@ -596,6 +678,8 @@ export default {
       if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
       if (request.method === "POST" && url.pathname === "/api/admin/test") return await handleRequest(env, request, true);
       if (request.method === "POST" && url.pathname === "/api/admin/finalize") return await handleFinalize(env, request);
+
+      if (url.pathname === "/api/whatsapp/webhook") return await handleWhatsAppWebhook(env, request, url);
       if (request.method === "GET" && url.pathname === "/api/health")
         return json({ ok: true });
       if (request.method === "POST" && url.pathname === "/api/signup")

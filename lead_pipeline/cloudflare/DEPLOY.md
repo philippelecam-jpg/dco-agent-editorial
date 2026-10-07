@@ -96,3 +96,19 @@ https://rachel.decisionsandco.fr/
 - Une seule demande est autorisée par email, domaine et SIREN.
 - Si `source_text` est renseigné, le workflow l'utilise comme source factuelle et ne dépend pas du scraping du site.
 - Le suivi fin du statut vidéo reste à compléter dans une prochaine version : pour l'instant, le Worker déclenche GitHub Actions et conserve la demande en D1.
+
+
+## Préparer le callback WhatsApp (après revue du code)
+
+Ajouter les secrets sans les inscrire dans `wrangler.toml` :
+
+```powershell
+wrangler secret put WHATSAPP_VERIFY_TOKEN
+wrangler secret put WHATSAPP_APP_SECRET
+wrangler d1 execute rachel-entreprises --remote --file=migrations/0005_whatsapp_inbound.sql
+wrangler deploy --config wrangler.toml
+```
+
+Puis configurer dans Meta l’URL `https://rachel-entreprises.decisionsandco.workers.dev/api/whatsapp/webhook` (ou le domaine HTTPS réellement associé au Worker) et le même token de vérification. S’abonner au champ `messages`. Ne pas tester avec « Envoyer un message » avant d’avoir explicitement choisi un numéro destinataire.
+
+Le callback vérifie la signature Meta et consigne les messages entrants dans D1. Il ne répond pas au prospect et ne déclenche pas le moteur vidéo. Les tests unitaires se lancent depuis ce dossier avec `node --test tests/whatsapp.test.mjs`.
