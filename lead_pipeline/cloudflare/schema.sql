@@ -43,6 +43,20 @@ CREATE TABLE IF NOT EXISTS requests (
   is_internal INTEGER NOT NULL DEFAULT 0 CHECK(is_internal IN (0,1))
 );
 
+CREATE TABLE IF NOT EXISTS whatsapp_inbound (
+  message_id TEXT PRIMARY KEY,
+  phone_number_id TEXT NOT NULL,
+  from_phone TEXT NOT NULL,
+  message_type TEXT NOT NULL,
+  message_text TEXT,
+  received_at TEXT NOT NULL,
+  processing_status TEXT NOT NULL DEFAULT 'received'
+    CHECK(processing_status IN ('received','processed','ignored','error'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_whatsapp_inbound_sender
+  ON whatsapp_inbound(from_phone, received_at);
+
 CREATE INDEX IF NOT EXISTS idx_tokens_lead ON verification_tokens(lead_id);
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status, updated_at);
 
