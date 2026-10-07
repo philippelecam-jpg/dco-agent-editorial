@@ -585,18 +585,6 @@ setInterval(()=>{if(!document.hidden&&!$('done-stage').hidden&&(['queued','proce
 </script></body></html>`);
 }
 
-export default {
-  async fetch(request, env) {
-    try {
-      const url = new URL(request.url);
-      if (request.method === "GET" && url.pathname === "/") return page();
-      if (request.method === "POST" && url.pathname === "/api/capsule-result") return await handleCapsuleResult(env, request);
-      if (request.method === "POST" && url.pathname === "/api/publish") return await handlePublishExisting(env, request);
-      if (request.method === "GET" && url.pathname === "/admin") return adminPage();
-      if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
-      if (request.method === "POST" && url.pathname === "/api/admin/test") return await handleRequest(env, request, true);
-      if (request.method === "POST" && url.pathname === "/api/admin/finalize") return await handleFinalize(env, request);
-
 function constantTimeEqual(left, right) {
   const a = new TextEncoder().encode(String(left));
   const b = new TextEncoder().encode(String(right));
@@ -678,6 +666,18 @@ async function handleWhatsAppWebhook(env, request, url) {
   // Inbound-only: never sends WhatsApp replies or triggers video generation.
   return json({ ok: true });
 }
+
+export default {
+  async fetch(request, env) {
+    try {
+      const url = new URL(request.url);
+      if (request.method === "GET" && url.pathname === "/") return page();
+      if (request.method === "POST" && url.pathname === "/api/capsule-result") return await handleCapsuleResult(env, request);
+      if (request.method === "POST" && url.pathname === "/api/publish") return await handlePublishExisting(env, request);
+      if (request.method === "GET" && url.pathname === "/admin") return adminPage();
+      if (request.method === "POST" && url.pathname === "/api/admin/unlock") return await handleUnlock(env, request);
+      if (request.method === "POST" && url.pathname === "/api/admin/test") return await handleRequest(env, request, true);
+      if (request.method === "POST" && url.pathname === "/api/admin/finalize") return await handleFinalize(env, request);
 
       if (url.pathname === "/api/whatsapp/webhook") return await handleWhatsAppWebhook(env, request, url);
       if (request.method === "GET" && url.pathname === "/api/health")
