@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 11 septembre 2026",
-    "timestamp": "2026-09-11T06:09:33.042702",
-    "theme": "Formation et culture IA",
-    "sujet": "La formation IA ne change pas une organisation. Elle change des individus. Ce n'est pas la même chose.",
-    "post_x": "Beaucoup de salariés formés à l'IA. Très peu d'organisations transformées. La formation touche les individus. La transformation touche les structures. Confondre les deux, c'est la garantie de dépenser sans changer.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2098292501891207212",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-11-060808.png?v=060809"
-  },
-  {
     "date": "Samedi 12 septembre 2026",
     "timestamp": "2026-09-12T09:25:09.588985",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "Un client ETI, 400 personnes. Ils voulaient un agent IA pour leurs commerciaux. On a d'abord regardé ce qu'il y avait à automatiser. Il n'y avait rien de structuré. L'IA attendait.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2107352163970412828",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-06-060800.png?v=060801"
+  },
+  {
+    "date": "Mercredi 7 octobre 2026",
+    "timestamp": "2026-10-07T06:08:48.147762",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Cartographier : l'étape que personne ne veut faire, et qui change tout",
+    "post_x": "53 % des PME utilisent l'IA. Combien ont d'abord cartographié leur connaissance ? On déploie avant de comprendre. Puis on s'étonne du désordre.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2107714525994631660",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-07-060754.png?v=060755"
   }
 ]
