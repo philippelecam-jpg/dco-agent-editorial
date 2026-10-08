@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 12 septembre 2026",
-    "timestamp": "2026-09-12T09:25:09.588985",
-    "theme": "Actualité décryptée",
-    "sujet": "Mistral AI lève 3 milliards d'euros : ce que ça change pour les PME/ETI françaises",
-    "post_x": "Mistral lève 3 milliards. Valorisation : 21 milliards. Le chiffre impressionne. Ce qui compte pour une PME française : un modèle souverain, CNIL-compatible, déployable sans exposer ses données à l'étranger. L'outil arrive. La question reste la même : êtes-vous prêts à l'accueillir ?",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-12-092413-weekend.png?v=092414"
-  },
-  {
-    "date": "Samedi 12 septembre 2026",
     "timestamp": "2026-09-12T12:41:45.967669",
     "theme": "Actualité décryptée",
     "sujet": "Microsoft 365 : hausse des tarifs Copilot et ce que ça révèle pour les PME/ETI",
@@ -268,5 +259,14 @@
     "post_x": "53 % des PME utilisent l'IA. Combien ont d'abord cartographié leur connaissance ? On déploie avant de comprendre. Puis on s'étonne du désordre.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2107714525994631660",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-07-060754.png?v=060755"
+  },
+  {
+    "date": "Jeudi 8 octobre 2026",
+    "timestamp": "2026-10-08T06:10:19.350042",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "Une charte IA n'est pas un document RH. C'est une décision de gouvernance.",
+    "post_x": "Une charte IA sans processus derrière, c'est une promesse sans adresse. La gouvernance IA commence quand quelqu'un dans l'entreprise est responsable de quelque chose de précis.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108076957925613937",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-08-060805.png?v=060805"
   }
 ]
