@@ -15,7 +15,8 @@
     "https://www.01net.com/actualites/fuite-donnees-pres-moitie-francais-pirates-cette-annee.html",
     "https://www.actuia.com/actualite/sept-modeles-de-pointe-ont-dirige-de-vraies-entreprises-pendant-72-heures-12-431-dollars-de-factures-indues-zero-revenu/",
     "https://www.01net.com/actualites/votre-voiture-envoie-probablement-toutes-vos-donnees-a-google-meta-et-amazon.html",
-    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html"
+    "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
+    "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html"
   ],
   "scripts": [
     {
@@ -107,6 +108,12 @@
       "source": "actualite",
       "titre": "Vos données confiées à une IA : que deviennent-elles ?",
       "video_id": "HrnBai-B9Ng"
+    },
+    {
+      "date": "2026-10-08T14:23:55.950361",
+      "source": "actualite",
+      "titre": "L'AP-HP piratée via… son logiciel de repas",
+      "video_id": "hzJ1Lc2GQ-k"
     }
   ]
 }
