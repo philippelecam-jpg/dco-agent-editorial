@@ -51,7 +51,8 @@
     "https://www.blogdumoderateur.com/openai-dots-agents-ia-autonomes/",
     "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
     "https://www.actuia.com/actualite/cac-40-chatgpt-et-gemini-restituent-mal-quatre-chiffres-sur-dix/",
-    "https://www.blogdumoderateur.com/pourquoi-agents-ia-echouent-entreprise/"
+    "https://www.blogdumoderateur.com/pourquoi-agents-ia-echouent-entreprise/",
+    "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/"
   ],
   "scripts": [
     {
@@ -359,6 +360,12 @@
       "source": "actualite",
       "titre": "Agents IA : ce qui tue vos projets avant qu'ils démarrent",
       "video_id": "iOv_qjl8zZE"
+    },
+    {
+      "date": "2026-10-08T16:38:11.878980",
+      "source": "actualite",
+      "titre": "AI Act : ce que vous devez déjà respecter",
+      "video_id": "19h3LciM_ws"
     }
   ]
 }
