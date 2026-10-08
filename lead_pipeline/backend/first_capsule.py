@@ -73,7 +73,11 @@ def main():
         return result
     try:
         if state.get('domain',host)!=host or state.get('company',company)!=company: raise Rejected('Le checkpoint appartient à une autre société.')
-        if state.get('pending'): raise Rejected('Appel fournisseur interrompu. Vérifier son résultat avant de relancer.')
+        if state.get('pending'): raise Rejected('Reprise suspendue : appel fournisseur %s dont le résultat est incertain. Vérifier le fournisseur avant toute nouvelle tentative.' % state['pending'])
+        if state.get('voice_ready') and not (out/'voice.mp3').is_file():
+            raise Rejected('Reprise impossible : voix marquée terminée mais voice.mp3 absent de l’artefact.')
+        if state.get('video_ready') and not (out/'rachel.mp4').is_file():
+            raise Rejected('Reprise impossible : vidéo marquée terminée mais rachel.mp4 absent de l’artefact.')
         supplied_source=manual_source(source_url)
         state.update({'domain':host,'company':company,'site_url':source_url,'source_mode':'text' if supplied_source else 'site'});save()
         if 'script' not in state:
@@ -136,6 +140,12 @@ def main():
         write_report(out,state,company,host,source_url,'completed','complete')
         log('completed',video_seconds=state['video_seconds'],youtube_id=state.get('youtube_id'),video_artifact='rachel.mp4',report_artifact='report.json')
     except Exception as exc:
+        # A documented HTTP 401 is an explicit rejection: no synthesis was authorized.
+        # Other network/provider failures remain pending, since they may have been charged.
+        if stage=='voice' and state.get('pending')=='voice' and isinstance(exc, RuntimeError) and 'Appel fournisseur refusé (HTTP 401)' in str(exc):
+            state.pop('pending',None)
+            save()
+            log('provider_call_rejected',operation='voice',http_status=401,retry_safe=True)
         reason=failure_reason(exc)
         status='blocked' if isinstance(exc,Rejected) else 'failed'
         write_report(out,state,company,host,source_url,status,stage,reason,include_excerpts=stage in ('script','collection'))
