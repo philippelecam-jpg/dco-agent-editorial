@@ -22,6 +22,10 @@ on:
         description: 'URL de retour La Fabrik (automatique)'
         type: string
         required: false
+      resume_run_id:
+        description: 'Reprise contrôlée : ID du run précédent contenant le checkpoint et les fichiers'
+        type: string
+        required: false
       video_run_id:
         description: 'Pour youtube_existing : numéro du run contenant la vidéo'
         type: string
@@ -86,6 +90,14 @@ jobs:
             echo 'Reprise refusée : vérifier les résultats fournisseurs avant un nouveau lancement.'
             exit 1
           fi
+      - name: Récupérer le checkpoint d'une exécution précédente
+        if: inputs.resume_run_id != '' && inputs.mode != 'check' && inputs.mode != 'youtube_existing' && inputs.mode != 'youtube_finalize'
+        uses: actions/download-artifact@v4
+        with:
+          name: rachel-capsule-${{ inputs.resume_run_id }}
+          path: lead_pipeline/test-output
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Vérifier les accès de livraison
         if: inputs.callback_url != ''
         env:
@@ -162,6 +174,8 @@ jobs:
         with:
           name: rachel-capsule-${{ github.run_id }}
           path: |
+            lead_pipeline/test-output/checkpoint.json
+            lead_pipeline/test-output/voice.mp3
             lead_pipeline/test-output/rachel.mp4
             lead_pipeline/test-output/report.json
           if-no-files-found: ignore
