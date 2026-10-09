@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 1,
+  "last_theme_index": 2,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
@@ -10,7 +10,8 @@
       "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques"
     ],
     "Économie": [
-      "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives"
+      "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives",
+      "Reconfiguration des équilibres géopolitiques autour des flux monétaires, commerciaux et des ressources stratégiques"
     ],
     "Social": [
       "Les nouvelles formes de solidarité et de lien communautaire face à l'effritement des structures collectives traditionnelles"
@@ -78,6 +79,13 @@
       "angle": "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques",
       "titre": "Et si votre cerveau n'était plus tout à fait le vôtre ?",
       "video_id": "0p-cVm833eg"
+    },
+    {
+      "date": "2026-10-09T09:21:17.608836",
+      "theme": "Économie",
+      "angle": "Reconfiguration des équilibres géopolitiques autour des flux monétaires, commerciaux et des ressources stratégiques",
+      "titre": "Et si l'argent changeait de langue sans prévenir ?",
+      "video_id": "x2_kH32k9HM"
     }
   ]
 }
