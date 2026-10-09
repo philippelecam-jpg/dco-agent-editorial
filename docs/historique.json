@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 12 septembre 2026",
-    "timestamp": "2026-09-12T12:41:45.967669",
-    "theme": "Actualité décryptée",
-    "sujet": "Microsoft 365 : hausse des tarifs Copilot et ce que ça révèle pour les PME/ETI",
-    "post_x": "Microsoft augmente ses tarifs M365. Copilot est désormais dans le prix. La vraie question pour une PME : est-ce que l'organisation est prête à s'en servir ? Payer plus ne remplace pas se préparer.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2098753910898938324",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-12-124054-weekend.png?v=124055"
-  },
-  {
     "date": "Dimanche 13 septembre 2026",
     "timestamp": "2026-09-13T13:43:19.097606",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "Une charte IA sans processus derrière, c'est une promesse sans adresse. La gouvernance IA commence quand quelqu'un dans l'entreprise est responsable de quelque chose de précis.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2108076957925613937",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-08-060805.png?v=060805"
+  },
+  {
+    "date": "Vendredi 9 octobre 2026",
+    "timestamp": "2026-10-09T06:08:45.026380",
+    "theme": "Formation et culture IA",
+    "sujet": "Formation IA : ce qu'on apprend aux individus ne change pas l'organisation",
+    "post_x": "Former des collaborateurs à l'IA, c'est utile. Mais une organisation ne se transforme pas parce que ses individus ont suivi un atelier de deux heures. La connaissance doit être ancrée dans les processus, pas dans les têtes.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108439288190734408",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-09-060751.png?v=060751"
   }
 ]
