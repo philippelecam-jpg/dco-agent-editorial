@@ -52,7 +52,8 @@
     "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
     "https://www.actuia.com/actualite/cac-40-chatgpt-et-gemini-restituent-mal-quatre-chiffres-sur-dix/",
     "https://www.blogdumoderateur.com/pourquoi-agents-ia-echouent-entreprise/",
-    "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/"
+    "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/",
+    "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/"
   ],
   "scripts": [
     {
@@ -366,6 +367,12 @@
       "source": "actualite",
       "titre": "AI Act : ce que vous devez déjà respecter",
       "video_id": "19h3LciM_ws"
+    },
+    {
+      "date": "2026-10-09T16:38:21.380138",
+      "source": "actualite",
+      "titre": "Mistral Large 4 : ce que ça change pour vous",
+      "video_id": "dkKmpsC_8vE"
     }
   ]
 }
