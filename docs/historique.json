@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 13 septembre 2026",
-    "timestamp": "2026-09-13T13:43:19.097606",
-    "theme": "Actualité décryptée",
-    "sujet": "L'effondrement des coûts des LLM : la barrière financière tombe, la barrière organisationnelle reste",
-    "post_x": "Les coûts d'accès aux grands modèles ont chuté de 90 % en deux ans. Pour une PME, l'IA n'est plus une question de budget. Elle reste une question de préparation. Le prix baisse. Le travail sur l'organisation, lui, ne se solde pas.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-13-134226-weekend.png?v=134227"
-  },
-  {
     "date": "Lundi 14 septembre 2026",
     "timestamp": "2026-09-14T06:08:47.438427",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Former des collaborateurs à l'IA, c'est utile. Mais une organisation ne se transforme pas parce que ses individus ont suivi un atelier de deux heures. La connaissance doit être ancrée dans les processus, pas dans les têtes.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2108439288190734408",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-09-060751.png?v=060751"
+  },
+  {
+    "date": "Samedi 10 octobre 2026",
+    "timestamp": "2026-10-10T09:24:56.421589",
+    "theme": "Actualité décryptée",
+    "sujet": "Google Gemini et Microsoft Copilot : des agents capables de déléguer vos workflows, à condition qu'ils existent",
+    "post_x": "Google et Microsoft lancent des agents autonomes pour piloter vos workflows pendant des heures, voire des jours. Bonne nouvelle ? Oui, si vos workflows sont structurés. Déléguer du flou à un agent, ça accélère le flou.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-092405-weekend.png?v=092405"
   }
 ]
