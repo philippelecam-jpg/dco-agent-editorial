@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 14 septembre 2026",
-    "timestamp": "2026-09-14T06:08:47.438427",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : la fonction Stocker, socle de tout le reste",
-    "post_x": "Un Entreprise OS sans mémoire structurée, c'est une machine qui tourne dans le vide. La fonction Stocker n'est pas de l'archivage. C'est le fondement de toute décision augmentée.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2099379644680065260",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-14-060803.png?v=060804"
-  },
-  {
     "date": "Mardi 15 septembre 2026",
     "timestamp": "2026-09-15T06:08:47.483009",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "Google et Microsoft lancent des agents autonomes pour piloter vos workflows pendant des heures, voire des jours. Bonne nouvelle ? Oui, si vos workflows sont structurés. Déléguer du flou à un agent, ça accélère le flou.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-092405-weekend.png?v=092405"
+  },
+  {
+    "date": "Samedi 10 octobre 2026",
+    "timestamp": "2026-10-10T15:06:44.870275",
+    "theme": "Actualité décryptée",
+    "sujet": "Mistral Large 4 : souveraineté IA, une option réelle, mais pas pour tout le monde",
+    "post_x": "Mistral Large 4 : 1 000 milliards de paramètres, entraîné en Europe, hébergeable en interne. La souveraineté IA devient concrète. Mais héberger ce modèle demande une infrastructure que peu de PME ont. La question n'est pas \"est-ce possible ?\" Elle est : \"êtes-vous prêts ?\"",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108937256337649766",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-150524-weekend.png?v=150524"
   }
 ]
