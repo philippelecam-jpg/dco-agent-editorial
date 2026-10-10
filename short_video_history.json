@@ -53,7 +53,8 @@
     "https://www.actuia.com/actualite/cac-40-chatgpt-et-gemini-restituent-mal-quatre-chiffres-sur-dix/",
     "https://www.blogdumoderateur.com/pourquoi-agents-ia-echouent-entreprise/",
     "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/",
-    "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/"
+    "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/",
+    "https://www.blogdumoderateur.com/google-agent-gemini-unique-travail-entreprise/"
   ],
   "scripts": [
     {
@@ -373,6 +374,12 @@
       "source": "actualite",
       "titre": "Mistral Large 4 : ce que ça change pour vous",
       "video_id": "dkKmpsC_8vE"
+    },
+    {
+      "date": "2026-10-10T16:38:10.135363",
+      "source": "actualite",
+      "titre": "Un seul agent IA pour tout faire, bonne idée ?",
+      "video_id": "e0DapUJhyIs"
     }
   ]
 }
