@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 16 septembre 2026",
-    "timestamp": "2026-09-16T06:08:55.233647",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Éliciter avant de déployer : ce que l'IA ne trouvera jamais seule",
-    "post_x": "Codifier, ce n'est pas développer un logiciel. C'est ancrer ce que vos experts savent sans le dire. Aucun outil ne fait ça à votre place.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2100104410378428619",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-16-060801.png?v=060802"
-  },
-  {
     "date": "Jeudi 17 septembre 2026",
     "timestamp": "2026-09-17T06:08:53.515599",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Claude Sonnet 5.5 : 30 % plus rapide, 30 % moins cher. GPT-4.1 Sol dans Word la semaine prochaine. Et dans six mois, un autre. La vraie question n'est pas \"quel modèle choisir\". C'est \"qu'avez-vous construit avec le précédent ?\"",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2109213646010151035",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-092401-weekend.png?v=092401"
+  },
+  {
+    "date": "Dimanche 11 octobre 2026",
+    "timestamp": "2026-10-11T15:23:31.696749",
+    "theme": "Actualité décryptée",
+    "sujet": "GPT-6 et les \"Intelligent UI\" : quand l'interface devient métier, à condition que le métier soit prêt",
+    "post_x": "GPT-6 arrive avec des interfaces interactives intégrées à ChatGPT. Boutons, calculatrices, workflows. Plus beau, plus fluide. Mais une interface plus riche ne remplace pas un processus inexistant. Le fond doit précéder la forme.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-152237-weekend.png?v=152238"
   }
 ]
