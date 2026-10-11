@@ -54,7 +54,8 @@
     "https://www.blogdumoderateur.com/pourquoi-agents-ia-echouent-entreprise/",
     "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/",
     "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/",
-    "https://www.blogdumoderateur.com/google-agent-gemini-unique-travail-entreprise/"
+    "https://www.blogdumoderateur.com/google-agent-gemini-unique-travail-entreprise/",
+    "https://www.blogdumoderateur.com/meta-etend-ia-toute-chaine-publicitaire/"
   ],
   "scripts": [
     {
@@ -380,6 +381,12 @@
       "source": "actualite",
       "titre": "Un seul agent IA pour tout faire, bonne idée ?",
       "video_id": "e0DapUJhyIs"
+    },
+    {
+      "date": "2026-10-11T16:38:05.257475",
+      "source": "actualite",
+      "titre": "Pub Meta en IA : ce que ça change vraiment pour vous",
+      "video_id": "WaYGxIumhZU"
     }
   ]
 }
