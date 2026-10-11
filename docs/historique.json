@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mardi 15 septembre 2026",
-    "timestamp": "2026-09-15T06:08:47.483009",
-    "theme": "Terrain et missions clients",
-    "sujet": "Terrain et missions clients : quand l'IA agentique révèle les angles morts d'une organisation",
-    "post_x": "Un client ETI voulait un agent IA pour traiter ses devis automatiquement. On a découvert que personne ne savait exactement qui validait quoi. L'IA n'a rien automatisé. Elle a rendu le désordre visible.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2099742030725537841",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-15-060803.png?v=060804"
-  },
-  {
     "date": "Mercredi 16 septembre 2026",
     "timestamp": "2026-09-16T06:08:55.233647",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
@@ -268,5 +259,14 @@
     "post_x": "Mistral Large 4 : 1 000 milliards de paramètres, entraîné en Europe, hébergeable en interne. La souveraineté IA devient concrète. Mais héberger ce modèle demande une infrastructure que peu de PME ont. La question n'est pas \"est-ce possible ?\" Elle est : \"êtes-vous prêts ?\"",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2108937256337649766",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-150524-weekend.png?v=150524"
+  },
+  {
+    "date": "Dimanche 11 octobre 2026",
+    "timestamp": "2026-10-11T09:25:02.033205",
+    "theme": "Regard de fond",
+    "sujet": "La course aux modèles : plus vite, moins cher, et toujours aussi peu préparé",
+    "post_x": "Claude Sonnet 5.5 : 30 % plus rapide, 30 % moins cher. GPT-4.1 Sol dans Word la semaine prochaine. Et dans six mois, un autre. La vraie question n'est pas \"quel modèle choisir\". C'est \"qu'avez-vous construit avec le précédent ?\"",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2109213646010151035",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-092401-weekend.png?v=092401"
   }
 ]
