@@ -1,10 +1,10 @@
 {
-  "date": "Samedi 10 octobre 2026",
-  "theme": "Actualité décryptée",
-  "generated_at": "2026-10-10T15:05:24.474372",
-  "sujet": "Mistral Large 4 : souveraineté IA, une option réelle, mais pas pour tout le monde",
-  "post_x": "Mistral Large 4 : 1 000 milliards de paramètres, entraîné en Europe, hébergeable en interne. La souveraineté IA devient concrète. Mais héberger ce modèle demande une infrastructure que peu de PME ont. La question n'est pas \"est-ce possible ?\" Elle est : \"êtes-vous prêts ?\"",
-  "post_linkedin": "Mistral vient de changer la donne.\n\nMistral Large 4 : 1 000 milliards de paramètres. Entraîné dans des datacenters européens. Poids publiés fin octobre. Hébergeable en interne, sans dépendre d'une API américaine.\n\nPour les PME et ETI contraintes par la localisation des données, santé, juridique, secteur public, c'est une option concrète qui n'existait pas il y a six mois.\n\nMais voilà ce qu'on ne dit pas assez : héberger un modèle de cette taille demande une infrastructure GPU, une équipe capable de le faire tourner, et une connaissance métier suffisamment structurée pour qu'il serve à quelque chose.\n\nLa souveraineté IA n'est pas un bouton. C'est un choix d'architecture, qui commence bien avant le modèle.\n\nAvant de décider quoi héberger, il faut savoir quoi lui donner à traiter. Et pour ça, la connaissance doit être codifiée, gouvernée, prête.\n\nUn modèle souverain sur une base de connaissance désordonnée ne produit pas de souveraineté. Il produit du désordre en français.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #Souveraineté #Mistral #PME #Gouvernance #TransformationIA",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-150524-weekend.png?v=150524"
+  "date": "Dimanche 11 octobre 2026",
+  "theme": "Regard de fond",
+  "generated_at": "2026-10-11T09:24:01.730762",
+  "sujet": "La course aux modèles : plus vite, moins cher, et toujours aussi peu préparé",
+  "post_x": "Claude Sonnet 5.5 : 30 % plus rapide, 30 % moins cher. GPT-4.1 Sol dans Word la semaine prochaine. Et dans six mois, un autre. La vraie question n'est pas \"quel modèle choisir\". C'est \"qu'avez-vous construit avec le précédent ?\"",
+  "post_linkedin": "Claude Sonnet 5.5 est sorti. 30 % plus rapide, 30 % moins cher. GPT-4.1 Sol arrive dans Word et Excel dans les prochains jours.\n\nFormidable. Dans six mois, il y en aura un autre.\n\nCe cycle, on le connaît. Un nouveau modèle sort. Les entreprises testent. Elles trouvent ça \"bluffant\". Puis elles passent au suivant. Sans avoir rien construit avec le précédent.\n\nLa baisse du coût est réelle. Elle rend l'accès plus facile. Mais l'accès n'est pas la transformation.\n\nUn modèle moins cher dans une organisation non préparée ne coûte pas moins cher. Il coûte moins cher à l'heure. Et dépense davantage en promesses non tenues.\n\nCe qu'il faut construire avant de changer de modèle : la connaissance métier que l'outil va traiter. Les processus sur lesquels il va s'appuyer. Les personnes qui vont arbitrer ses résultats.\n\nL'outil s'améliore chaque trimestre. L'organisation, elle, s'améliore à son propre rythme. Et ce rythme ne se délègue pas à un modèle.\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#IA #Transformation #PME #GouvernanceIA #Copilot",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-092401-weekend.png?v=092401"
 }
