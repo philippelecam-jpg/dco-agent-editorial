@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 17 septembre 2026",
-    "timestamp": "2026-09-17T06:08:53.515599",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "L'AI Act ne s'applique pas qu'aux géants de la tech. Les PME aussi sont concernées, dès maintenant.",
-    "post_x": "L'AI Act est entré en vigueur. Beaucoup de PME pensent que c'est pour les autres. Ce n'est pas le cas. Si vous utilisez un outil IA dans un processus RH, commercial ou opérationnel, vous avez des obligations. Pas demain.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2100466831970443413",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-17-060809.png?v=060809"
-  },
-  {
     "date": "Vendredi 18 septembre 2026",
     "timestamp": "2026-09-18T06:08:54.410058",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "GPT-6 arrive avec des interfaces interactives intégrées à ChatGPT. Boutons, calculatrices, workflows. Plus beau, plus fluide. Mais une interface plus riche ne remplace pas un processus inexistant. Le fond doit précéder la forme.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-152237-weekend.png?v=152238"
+  },
+  {
+    "date": "Lundi 12 octobre 2026",
+    "timestamp": "2026-10-12T06:08:48.106422",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Traiter, quand l'IA décide avec vous, pas à votre place",
+    "post_x": "L'IA de Microsoft branché sur votre ERP en temps réel. Bien. Mais si vos processus de décision ne sont pas codifiés, l'agent va juste automatiser vos approximations.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2109526463053692953",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-12-060753.png?v=060754"
   }
 ]
