@@ -55,7 +55,8 @@
     "https://www.actuia.com/actualite/calendrier-ai-act-ce-qui-sapplique-ce-que-lomnibus-reporte/",
     "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/",
     "https://www.blogdumoderateur.com/google-agent-gemini-unique-travail-entreprise/",
-    "https://www.blogdumoderateur.com/meta-etend-ia-toute-chaine-publicitaire/"
+    "https://www.blogdumoderateur.com/meta-etend-ia-toute-chaine-publicitaire/",
+    "https://www.clubic.com/actualite-633823-amazon-partage-avec-les-entreprises-les-outils-inspires-de-son-million-de-robots-la-france-en-bonne-place.html"
   ],
   "scripts": [
     {
@@ -387,6 +388,12 @@
       "source": "actualite",
       "titre": "Pub Meta en IA : ce que ça change vraiment pour vous",
       "video_id": "WaYGxIumhZU"
+    },
+    {
+      "date": "2026-10-12T16:38:15.943077",
+      "source": "actualite",
+      "titre": "Robots IA : ce que ça change vraiment pour vous",
+      "video_id": "KGW_h4BNwik"
     }
   ]
 }
