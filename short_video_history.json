@@ -56,7 +56,8 @@
     "https://www.actuia.com/actualite/mistral-large-4-ce-que-vaut-le-meilleur-modele-ouvert-hors-chine/",
     "https://www.blogdumoderateur.com/google-agent-gemini-unique-travail-entreprise/",
     "https://www.blogdumoderateur.com/meta-etend-ia-toute-chaine-publicitaire/",
-    "https://www.clubic.com/actualite-633823-amazon-partage-avec-les-entreprises-les-outils-inspires-de-son-million-de-robots-la-france-en-bonne-place.html"
+    "https://www.clubic.com/actualite-633823-amazon-partage-avec-les-entreprises-les-outils-inspires-de-son-million-de-robots-la-france-en-bonne-place.html",
+    "https://www.actuia.com/actualite/ethique-et-regulation-de-lia-le-point-au-6-octobre-2026/"
   ],
   "scripts": [
     {
@@ -394,6 +395,12 @@
       "source": "actualite",
       "titre": "Robots IA : ce que ça change vraiment pour vous",
       "video_id": "KGW_h4BNwik"
+    },
+    {
+      "date": "2026-10-13T16:38:12.086514",
+      "source": "actualite",
+      "titre": "IA et régulation : ce que ça change pour vous maintenant",
+      "video_id": "lSt3Rqk1ONE"
     }
   ]
 }
