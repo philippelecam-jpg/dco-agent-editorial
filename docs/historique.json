@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 19 septembre 2026",
-    "timestamp": "2026-09-19T09:25:01.997153",
-    "theme": "Regard de fond",
-    "sujet": "La fracture entre PME pionnières et les autres face aux agents IA autonomes",
-    "post_x": "Les PME qui avancent avec des agents IA autonomes n'ont pas de meilleurs outils. Elles ont une connaissance mieux structurée. La fracture n'est pas technologique. Elle était là avant l'IA.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2101241103387074881",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-19-092408-weekend.png?v=092408"
-  },
-  {
-    "date": "Samedi 19 septembre 2026",
     "timestamp": "2026-09-19T12:57:25.351697",
     "theme": "Actualité décryptée",
     "sujet": "Catalogue \"Osez l'IA\" : 88 solutions souveraines pour les PME/ETI, ce que ça révèle vraiment",
@@ -268,5 +259,14 @@
     "post_x": "Mission chez une PME industrielle, 180 personnes. Avant de toucher à l'IA, on a cartographié leurs processus. Ce qu'on a trouvé : trois façons différentes de qualifier un devis. Personne ne le savait.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2109888878073004401",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-13-060800.png?v=060800"
+  },
+  {
+    "date": "Mercredi 14 octobre 2026",
+    "timestamp": "2026-10-14T06:08:42.767335",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Éliciter avant de déployer : ce que l'IA ne peut pas inventer à votre place",
+    "post_x": "L'IA connectée à votre CRM via MCP, c'est puissant. Mais si personne n'a jamais formalisé comment vos commerciaux qualifient un lead, elle amplifie du vide. Éliciter d'abord. Déployer ensuite.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2110251259357708731",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-14-060758.png?v=060759"
   }
 ]
