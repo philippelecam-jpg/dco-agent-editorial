@@ -16,7 +16,8 @@
     "https://www.actuia.com/actualite/sept-modeles-de-pointe-ont-dirige-de-vraies-entreprises-pendant-72-heures-12-431-dollars-de-factures-indues-zero-revenu/",
     "https://www.01net.com/actualites/votre-voiture-envoie-probablement-toutes-vos-donnees-a-google-meta-et-amazon.html",
     "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
-    "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html"
+    "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html",
+    "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html"
   ],
   "scripts": [
     {
@@ -114,6 +115,12 @@
       "source": "actualite",
       "titre": "L'AP-HP piratée via… son logiciel de repas",
       "video_id": "hzJ1Lc2GQ-k"
+    },
+    {
+      "date": "2026-10-14T17:05:22.884145",
+      "source": "actualite",
+      "titre": "Google change les règles du jeu pour les applis IA",
+      "video_id": "JXl7rvvB4Ao"
     }
   ]
 }
