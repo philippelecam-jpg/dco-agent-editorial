@@ -58,7 +58,8 @@
     "https://www.blogdumoderateur.com/meta-etend-ia-toute-chaine-publicitaire/",
     "https://www.clubic.com/actualite-633823-amazon-partage-avec-les-entreprises-les-outils-inspires-de-son-million-de-robots-la-france-en-bonne-place.html",
     "https://www.actuia.com/actualite/ethique-et-regulation-de-lia-le-point-au-6-octobre-2026/",
-    "https://www.actuia.com/actualite/quand-consulter-le-cse-avant-de-deployer-lia-octobre-2026/"
+    "https://www.actuia.com/actualite/quand-consulter-le-cse-avant-de-deployer-lia-octobre-2026/",
+    "https://www.blogdumoderateur.com/ia-freine-embauche-jeunes/"
   ],
   "scripts": [
     {
@@ -408,6 +409,12 @@
       "source": "actualite",
       "titre": "IA en entreprise : le CSE peut bloquer votre projet",
       "video_id": "mK0-aarJA6U"
+    },
+    {
+      "date": "2026-10-15T16:38:19.624412",
+      "source": "actualite",
+      "titre": "IA et recrutement : ce que vous ratez vraiment",
+      "video_id": "aV3z6N3-mIc"
     }
   ]
 }
