@@ -112,3 +112,57 @@ wrangler deploy --config wrangler.toml
 Puis configurer dans Meta l’URL `https://rachel-entreprises.decisionsandco.workers.dev/api/whatsapp/webhook` (ou le domaine HTTPS réellement associé au Worker) et le même token de vérification. S’abonner au champ `messages`. Ne pas tester avec « Envoyer un message » avant d’avoir explicitement choisi un numéro destinataire.
 
 Le callback vérifie la signature Meta et consigne les messages entrants dans D1. Il ne répond pas au prospect et ne déclenche pas le moteur vidéo. Les tests unitaires se lancent depuis ce dossier avec `node --test tests/whatsapp.test.mjs`.
+
+## Correction de délivrabilité des emails La Fabrik (16 octobre 2026)
+
+Le Worker conserve l'adresse vérifiée de EMAIL_FROM et utilise le nom visible
+« La Fabrik — Décisions & Co ». Les emails d'accès et de livraison contiennent
+une version HTML et une version texte. Les liens et leur durée de validité
+restent identiques. SPF/DKIM/DMARC étaient PASS sur le message Gmail examiné ;
+cela ne garantit pas le placement en boîte de réception.
+
+### Mettre le correctif en production depuis le clone existant
+
+Dans PowerShell, avec le wrangler.toml local et la session Cloudflare existants :
+
+```powershell
+cd C:\Users\phili\Documents\dco-agent-editorial
+git pull --ff-only
+cd lead_pipeline\cloudflare
+node --test tests/*.test.mjs
+wrangler deploy --config wrangler.toml
+```
+
+Ne pas remplacer wrangler.toml par l'exemple : conserver le database_id,
+PUBLIC_BASE_URL et les secrets de production. Aucune migration D1 nécessaire.
+
+### Resend
+
+Dans Domains → decisionsandco.com → Configuration, vérifier Click Tracking
+et Open Tracking. Pour ces emails transactionnels, désactiver le tracking
+si activé (ce réglage concerne tous les emails envoyés avec ce domaine).
+Examiner Emails → message concerné → Insights.
+Ces réglages de compte ne sont pas modifiés par le déploiement du code.
+
+### Domaine web personnalisé
+
+Si PUBLIC_BASE_URL utilise encore workers.dev, associer d'abord
+lafabrik.decisionsandco.com au Worker dans Cloudflare → Settings → Domains
+& Routes → Custom Domain, après vérification de la gestion DNS de la zone.
+Attendre le certificat HTTPS, puis vérifier /api/health sur le nouveau domaine.
+Seulement ensuite, remplacer PUBLIC_BASE_URL dans le wrangler.toml local par
+https://lafabrik.decisionsandco.com et redéployer. Ne pas modifier le domaine
+d'envoi email et ne pas supprimer l'accès workers.dev pendant la transition.
+Une connexion peut être nécessaire sur le nouveau domaine (cookies distincts).
+Ce domaine est une proposition, pas une adresse déjà provisionnée.
+
+### Validation de réception
+
+Tester un lien d'accès sur une boîte Gmail et une boîte Outlook contrôlées :
+réception/indésirables, identité de l'expéditeur, SPF/DKIM/DMARC PASS,
+lien le plus récent fonctionnel et ancien lien refusé après nouvelle demande.
+Pour la livraison, utiliser la prochaine capsule ou un test contrôlé, sans
+relancer une génération payante uniquement pour tester la messagerie.
+Le statut Resend « delivered » ne prouve pas le placement en boîte principale.
+Si le spam persiste, relever les IDs Resend et les résultats Insights pour
+diagnostic avec le support. Ne pas partager les jetons d'accès personnels.

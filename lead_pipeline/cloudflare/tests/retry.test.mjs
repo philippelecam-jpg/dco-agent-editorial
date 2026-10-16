@@ -10,7 +10,7 @@ async function fixture(){
  const tokenHash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('session'))).toString('hex');
  sqlite.prepare('INSERT INTO leads(id,email,name,company,created_at) VALUES(?,?,?,?,?)').run('lead','test@example.com','Philippe','Décisions & Co','2026-01-01');
  sqlite.prepare('INSERT INTO verification_tokens(token_hash,lead_id,expires_at,used_at,created_at) VALUES(?,?,?,?,?)').run(tokenHash,'lead','2027-01-01','2026-01-01','2026-01-01');
- const env={PUBLIC_BASE_URL:origin,LEAD_CALLBACK_SECRET:'test',RESEND_API_KEY:'test',ADMIN_TOKEN:'admin-secret',GITHUB_TOKEN:'test',DB:{prepare(sql){let values=[];return {bind(...v){values=v;return this},async first(){return sqlite.prepare(sql).get(...values)||null},async run(){return {meta:{changes:Number(sqlite.prepare(sql).run(...values).changes)}}}}}}};
+ const env={EMAIL_FROM:'Rachel Entreprises <rachel@decisionsandco.com>',PUBLIC_BASE_URL:origin,LEAD_CALLBACK_SECRET:'test',RESEND_API_KEY:'test',ADMIN_TOKEN:'admin-secret',GITHUB_TOKEN:'test',DB:{prepare(sql){let values=[];return {bind(...v){values=v;return this},async first(){return sqlite.prepare(sql).get(...values)||null},async run(){return {meta:{changes:Number(sqlite.prepare(sql).run(...values).changes)}}}}}}};
  const req=(path,body,admin=false)=>worker.fetch(new Request(origin+path,{method:body?'POST':'GET',headers:{cookie:'rachel_session=session','content-type':'application/json',...(admin?{authorization:'Bearer admin-secret'}:{})},...(body?{body:JSON.stringify(body)}:{})}),env);
  return {sqlite,env,req};
 }
@@ -134,7 +134,7 @@ async function signedResult(env,payload,valid=true){
 test('signed publication displays the link and emails the stored recipient exactly once',async()=>{
  const {env,req,sqlite}=await fixture();let sends=0;
  await mockedFetch(async(url,options)=>{
-  if(url.includes('api.resend.com')){sends++;const mail=JSON.parse(options.body);assert.equal(mail.to,'test@example.com');assert.match(mail.html,/aBcD1234_-Z/);assert.match(options.headers['Idempotency-Key'],/^capsule-/);return ok({id:'email-1'});}
+  if(url.includes('api.resend.com')){sends++;const mail=JSON.parse(options.body);assert.equal(mail.to,'test@example.com');assert.equal(mail.from,'La Fabrik — Décisions & Co <rachel@decisionsandco.com>');assert.match(mail.text,/aBcD1234_-Z/);assert.match(mail.text,/Décisions & Co/);assert.match(mail.html,/aBcD1234_-Z/);assert.match(options.headers['Idempotency-Key'],/^capsule-/);return ok({id:'email-1'});}
   return new Response(null,{status:204});
  },async()=>{
   const id=(await (await req('/api/request',body)).json()).id;const row=sqlite.prepare('SELECT * FROM requests WHERE id=?').get(id);
@@ -272,3 +272,4 @@ test('internal migration preserves history and the normal email/domain quotas',(
  const insert=sqlite.prepare("INSERT INTO requests(id,lead_id,company_site,company_domain,rachel_image,github_run_status,status,created_at,updated_at,is_internal) VALUES(?,'lead','https://baresto.fr/','baresto.fr','Rachel Restauration','completed',?,'2026-01-01','2026-01-01',?)");
  assert.throws(()=>insert.run('prospect','published',0));insert.run('test','queued',1);assert.throws(()=>insert.run('double','queued',1));
 });
+

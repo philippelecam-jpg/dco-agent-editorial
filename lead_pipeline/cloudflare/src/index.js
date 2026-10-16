@@ -123,8 +123,12 @@ async function readJson(request) {
   return JSON.parse(text);
 }
 
-async function sendMail(env, to, subject, messageHtml, idempotencyKey = null) {
+async function sendMail(env, to, subject, messageHtml, idempotencyKey = null, messageText = null) {
   if (!env.RESEND_API_KEY) return { skipped: true };
+  // Keep the verified sending address; only harmonize the visible product name.
+  const configuredFrom = clean(env.EMAIL_FROM);
+  const fromAddress = configuredFrom.match(/<([^<>]+)>\s*$/)?.[1] || configuredFrom;
+  if (!fromAddress || /[\r\n<>]/.test(fromAddress)) throw new Error("Expéditeur email non configuré.");
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -133,10 +137,11 @@ async function sendMail(env, to, subject, messageHtml, idempotencyKey = null) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      from: env.EMAIL_FROM,
+      from: `La Fabrik — Décisions & Co <${fromAddress}>`,
       to,
       subject,
       html: messageHtml,
+      ...(messageText ? { text: messageText } : {}),
     }),
   });
   if (!response.ok) throw new Error("Envoi email indisponible.");
@@ -227,8 +232,10 @@ async function handleSignup(env, request) {
   await sendMail(
     env,
     address,
-    "Votre accès à Rachel Entreprises",
-    `<p>Votre lien personnel est valable 15 minutes.</p><p><a href="${link}">Accéder à mon espace</a></p>`,
+    "Votre lien d’accès à La Fabrik",
+    `<p>Bonjour ${escapeHtml(name)},</p><p>Vous avez demandé un accès à La Fabrik, le service de capsules vidéo de Décisions &amp; Co.</p><p>Pour vérifier votre adresse email et poursuivre votre demande, utilisez le lien ci-dessous :</p><p><a href="${escapeHtml(link)}">Accéder à mon espace La Fabrik</a></p><p>Ce lien personnel est valable 15 minutes et utilisable une seule fois. Si vous avez demandé plusieurs liens, utilisez le plus récent.</p><p>Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet email.</p><p>La Fabrik<br>Décisions &amp; Co</p>`,
+    null,
+    `Bonjour ${name},\n\nVous avez demandé un accès à La Fabrik, le service de capsules vidéo de Décisions & Co.\n\nPour vérifier votre adresse email et poursuivre votre demande :\n${link}\n\nCe lien personnel est valable 15 minutes et utilisable une seule fois. Si vous avez demandé plusieurs liens, utilisez le plus récent.\n\nSi vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet email.\n\nLa Fabrik\nDécisions & Co`,
   );
   return json({
     message: "Si cette adresse est valide, vous recevrez un lien d’accès.",
@@ -411,7 +418,8 @@ async function deliverVideo(env, id) {
   if (claim.meta?.changes !== 1) return;
   try {
     if (!env.RESEND_API_KEY) throw new Error('Resend non configuré.');
-    await sendMail(env,row.email,'Votre capsule La Fabrik est prête',`<p>Votre capsule pour <strong>${escapeHtml(row.company_name || 'votre entreprise')}</strong> est prête.</p><p><a href="${row.youtube_url}">Voir ma capsule sur YouTube</a></p><p>Vidéo non répertoriée, accessible avec ce lien.</p><p>Créée avec La Fabrik, par Décisions &amp; Co.</p>`,`capsule-${id}-${row.youtube_id}`);
+    const company = row.company_name || 'votre entreprise';
+    await sendMail(env,row.email,'Votre capsule La Fabrik est prête',`<p>Bonjour,</p><p>Vous avez demandé une capsule vidéo pour <strong>${escapeHtml(company)}</strong> sur La Fabrik, le service de Décisions &amp; Co.</p><p>Votre capsule est maintenant disponible :</p><p><a href="${escapeHtml(row.youtube_url)}">Voir ma capsule sur YouTube</a></p><p>La vidéo est non répertoriée : toute personne disposant de ce lien peut la consulter.</p><p>La Fabrik<br>Décisions &amp; Co</p>`,`capsule-${id}-${row.youtube_id}`,`Bonjour,\n\nVous avez demandé une capsule vidéo pour ${company} sur La Fabrik, le service de Décisions & Co.\n\nVotre capsule est maintenant disponible :\n${row.youtube_url}\n\nLa vidéo est non répertoriée : toute personne disposant de ce lien peut la consulter.\n\nLa Fabrik\nDécisions & Co`);
     await env.DB.prepare("UPDATE requests SET notified_at=?,delivery_status='sent',delivery_error=NULL,delivery_lease_until=NULL WHERE id=? AND youtube_id=?").bind(now(),id,row.youtube_id).run();
   } catch (_) {
     await env.DB.prepare("UPDATE requests SET delivery_status='failed',delivery_error=?,delivery_lease_until=NULL WHERE id=? AND notified_at IS NULL").bind('Le lien est disponible ici, mais l’envoi email a échoué. Vérifiez la configuration Resend.',id).run();
@@ -696,3 +704,4 @@ export default {
     }
   },
 };
+
