@@ -60,7 +60,8 @@
     "https://www.actuia.com/actualite/ethique-et-regulation-de-lia-le-point-au-6-octobre-2026/",
     "https://www.actuia.com/actualite/quand-consulter-le-cse-avant-de-deployer-lia-octobre-2026/",
     "https://www.blogdumoderateur.com/ia-freine-embauche-jeunes/",
-    "https://www.clubic.com/actualite-634540-rachat-geant-dans-la-cyber-proofpoint-met-6-3-milliards-de-dollars-sur-la-table-pour-racheter-varonis-dans-quel-but.html"
+    "https://www.clubic.com/actualite-634540-rachat-geant-dans-la-cyber-proofpoint-met-6-3-milliards-de-dollars-sur-la-table-pour-racheter-varonis-dans-quel-but.html",
+    "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/"
   ],
   "scripts": [
     {
@@ -422,6 +423,12 @@
       "source": "actualite",
       "titre": "Vos agents IA lisent vos données. Qui surveille ?",
       "video_id": "GiXCEgxC36g"
+    },
+    {
+      "date": "2026-10-17T16:38:12.226309",
+      "source": "actualite",
+      "titre": "Agents IA : ce que le classement ne vous dit pas",
+      "video_id": "yx3kBbocMHo"
     }
   ]
 }
