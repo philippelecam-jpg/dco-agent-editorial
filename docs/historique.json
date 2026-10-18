@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 25 septembre 2026",
-    "timestamp": "2026-09-25T06:09:01.469520",
-    "theme": "Formation et culture IA",
-    "sujet": "La formation IA ne transforme pas une organisation. Elle révèle ce qui manque.",
-    "post_x": "La formation IA donne des compétences à des individus. Elle ne change pas la façon dont l'organisation décide, stocke, partage. Ce n'est pas la même chose.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2103365925286338919",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-25-060807.png?v=060807"
-  },
-  {
     "date": "Samedi 26 septembre 2026",
     "timestamp": "2026-09-26T09:25:23.855147",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "68 % des PME qui utilisent l'IA en sont satisfaites. C'est bien. Mais satisfaites de quoi ? D'un outil. Pas d'une transformation. La satisfaction à court terme est souvent l'ennemi de l'ancrage durable.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2111750369969594485",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-18-092402-weekend.png?v=092403"
+  },
+  {
+    "date": "Dimanche 18 octobre 2026",
+    "timestamp": "2026-10-18T13:03:22.940953",
+    "theme": "Conviction D&Co",
+    "sujet": "La confusion entre usage et transformation : ce que les dirigeants de PME ne voient pas encore",
+    "post_x": "Utiliser l'IA, c'est facile. Transformer son organisation avec l'IA, c'est autre chose. La plupart des dirigeants font le premier en pensant faire le second. Ce n'est pas un reproche. C'est un angle mort.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2111805297505234948",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-18-130158-weekend.png?v=130158"
   }
 ]
