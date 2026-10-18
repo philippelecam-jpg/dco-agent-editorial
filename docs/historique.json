@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 24 septembre 2026",
-    "timestamp": "2026-09-24T06:08:51.577155",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "Gouvernance IA : ce que la réglementation change concrètement pour une PME",
-    "post_x": "Une charte IA, ce n'est pas un document RH. C'est le contrat entre votre organisation et les outils qui vont décider à sa place. Sans elle, l'IA n'est pas gouvernée. Elle est subie.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2103003539211469069",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-24-060807.png?v=060808"
-  },
-  {
     "date": "Vendredi 25 septembre 2026",
     "timestamp": "2026-09-25T06:09:01.469520",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "Les recruteurs d'Anthropic ne cherchent plus l'expert qui exécute. Ils cherchent celui qui juge, arbitre, décide. Quand un agent fait le travail, ce qui reste précieux chez l'humain, c'est ce qu'on ne lui a jamais vraiment appris à l'école.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-17-124449-weekend.png?v=124449"
+  },
+  {
+    "date": "Dimanche 18 octobre 2026",
+    "timestamp": "2026-10-18T09:25:03.524785",
+    "theme": "Regard de fond",
+    "sujet": "Adoption IA dans les PME : 68 % satisfaits, mais satisfaits de quoi ?",
+    "post_x": "68 % des PME qui utilisent l'IA en sont satisfaites. C'est bien. Mais satisfaites de quoi ? D'un outil. Pas d'une transformation. La satisfaction à court terme est souvent l'ennemi de l'ancrage durable.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2111750369969594485",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-18-092402-weekend.png?v=092403"
   }
 ]
