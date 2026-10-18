@@ -61,7 +61,8 @@
     "https://www.actuia.com/actualite/quand-consulter-le-cse-avant-de-deployer-lia-octobre-2026/",
     "https://www.blogdumoderateur.com/ia-freine-embauche-jeunes/",
     "https://www.clubic.com/actualite-634540-rachat-geant-dans-la-cyber-proofpoint-met-6-3-milliards-de-dollars-sur-la-table-pour-racheter-varonis-dans-quel-but.html",
-    "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/"
+    "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/",
+    "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html"
   ],
   "scripts": [
     {
@@ -429,6 +430,12 @@
       "source": "actualite",
       "titre": "Agents IA : ce que le classement ne vous dit pas",
       "video_id": "yx3kBbocMHo"
+    },
+    {
+      "date": "2026-10-18T16:38:09.543599",
+      "source": "actualite",
+      "titre": "Votre box internet est peut-être une porte ouverte",
+      "video_id": "PtiYbOBoa9k"
     }
   ]
 }
