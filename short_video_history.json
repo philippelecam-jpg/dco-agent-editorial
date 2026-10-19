@@ -62,7 +62,8 @@
     "https://www.blogdumoderateur.com/ia-freine-embauche-jeunes/",
     "https://www.clubic.com/actualite-634540-rachat-geant-dans-la-cyber-proofpoint-met-6-3-milliards-de-dollars-sur-la-table-pour-racheter-varonis-dans-quel-but.html",
     "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/",
-    "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html"
+    "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html",
+    "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/"
   ],
   "scripts": [
     {
@@ -436,6 +437,12 @@
       "source": "actualite",
       "titre": "Votre box internet est peut-être une porte ouverte",
       "video_id": "PtiYbOBoa9k"
+    },
+    {
+      "date": "2026-10-19T16:38:02.697652",
+      "source": "actualite",
+      "titre": "IA : l'Europe rate le train, vous aussi ?",
+      "video_id": "kNaX5Q6Fmak"
     }
   ]
 }
