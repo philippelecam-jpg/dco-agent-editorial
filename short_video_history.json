@@ -63,7 +63,8 @@
     "https://www.clubic.com/actualite-634540-rachat-geant-dans-la-cyber-proofpoint-met-6-3-milliards-de-dollars-sur-la-table-pour-racheter-varonis-dans-quel-but.html",
     "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/",
     "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html",
-    "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/"
+    "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/",
+    "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/"
   ],
   "scripts": [
     {
@@ -443,6 +444,12 @@
       "source": "actualite",
       "titre": "IA : l'Europe rate le train, vous aussi ?",
       "video_id": "kNaX5Q6Fmak"
+    },
+    {
+      "date": "2026-10-20T16:38:06.639165",
+      "source": "actualite",
+      "titre": "Des agents IA hackent vos concurrents pour 5000$",
+      "video_id": "xTbyovJPPBM"
     }
   ]
 }
