@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 27 septembre 2026",
-    "timestamp": "2026-09-27T09:25:14.657940",
-    "theme": "Regard de fond",
-    "sujet": "Les benchmarks des LLM ne sont pas votre réalité opérationnelle",
-    "post_x": "Claude Opus 5.5, GPT-6 Sol : plus puissants, 40 % moins chers. Les éditeurs publient des scores impressionnants. Mais 40 % de réussite sur les tâches complexes, c'est le leur. Pas le vôtre. Vos processus ne ressemblent à aucun benchmark.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-27-092413-weekend.png?v=092413"
-  },
-  {
     "date": "Lundi 28 septembre 2026",
     "timestamp": "2026-09-28T06:08:48.325145",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Mission en cours. ETI de 400 personnes. Elles voulaient un copilot IA. On a d'abord passé deux jours à chercher où était leur connaissance métier. Réponse : dans les têtes. Nulle part ailleurs.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2112425598895395013",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-20-060802.png?v=060802"
+  },
+  {
+    "date": "Mercredi 21 octobre 2026",
+    "timestamp": "2026-10-21T06:08:54.298218",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Méthode Cartographier → Éliciter → Codifier : ce qu'on trouve avant de toucher quoi que ce soit",
+    "post_x": "La plupart des projets IA échouent avant même de commencer. Pas par manque d'outils. Par manque de cartographie. On déploie sans savoir ce qu'on a.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2112787981320732871",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-21-060800.png?v=060800"
   }
 ]
