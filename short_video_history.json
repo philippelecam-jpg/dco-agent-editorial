@@ -64,7 +64,8 @@
     "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-octobre-2026/",
     "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html",
     "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/",
-    "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/"
+    "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/",
+    "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/"
   ],
   "scripts": [
     {
@@ -450,6 +451,12 @@
       "source": "actualite",
       "titre": "Des agents IA hackent vos concurrents pour 5000$",
       "video_id": "xTbyovJPPBM"
+    },
+    {
+      "date": "2026-10-21T16:38:20.833626",
+      "source": "actualite",
+      "titre": "Votre agent IA vous rend fabricant. Vous le saviez ?",
+      "video_id": "mpS9qqZEpAA"
     }
   ]
 }
