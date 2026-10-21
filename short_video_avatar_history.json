@@ -17,7 +17,8 @@
     "https://www.01net.com/actualites/votre-voiture-envoie-probablement-toutes-vos-donnees-a-google-meta-et-amazon.html",
     "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
     "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html",
-    "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html"
+    "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html",
+    "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/"
   ],
   "scripts": [
     {
@@ -121,6 +122,12 @@
       "source": "actualite",
       "titre": "Google change les règles du jeu pour les applis IA",
       "video_id": "JXl7rvvB4Ao"
+    },
+    {
+      "date": "2026-10-21T17:05:27.499306",
+      "source": "actualite",
+      "titre": "WhatsApp cachait des instructions secrètes à ses IA",
+      "video_id": "PGsMnAEXGOE"
     }
   ]
 }
