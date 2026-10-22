@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 28 septembre 2026",
-    "timestamp": "2026-09-28T06:08:48.325145",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS, La fonction Diffuser : quand la connaissance sort enfin des silos",
-    "post_x": "Copilot Autopilot peut travailler seul. Mais sur quelle matière ? Si votre connaissance n'est pas codifiée, l'agent autonome diffuse du vide plus vite que jamais.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2104453076585492674",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-28-060804.png?v=060804"
-  },
-  {
     "date": "Mardi 29 septembre 2026",
     "timestamp": "2026-09-29T06:08:43.129116",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "La plupart des projets IA échouent avant même de commencer. Pas par manque d'outils. Par manque de cartographie. On déploie sans savoir ce qu'on a.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2112787981320732871",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-21-060800.png?v=060800"
+  },
+  {
+    "date": "Jeudi 22 octobre 2026",
+    "timestamp": "2026-10-22T06:08:53.141267",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "L'AI Act n'est pas un problème de conformité. C'est un révélateur d'organisation.",
+    "post_x": "40 % des PME utilisent l'IA. 11 % seulement automatisent vraiment. L'écart, ce n'est pas un manque d'outils. C'est un manque de gouvernance.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2113150363318853633",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-22-060758.png?v=060759"
   }
 ]
