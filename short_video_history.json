@@ -65,7 +65,8 @@
     "https://www.clubic.com/actualite-634699-faille-wi-fi-critique-des-livebox-d-orange-et-box-sfr-piratables-sans-mot-de-passe.html",
     "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/",
     "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/",
-    "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/"
+    "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/",
+    "https://www.blogdumoderateur.com/facturation-electronique-independants-doivent-preparer-avant-septembre-2027/"
   ],
   "scripts": [
     {
@@ -457,6 +458,12 @@
       "source": "actualite",
       "titre": "Votre agent IA vous rend fabricant. Vous le saviez ?",
       "video_id": "mpS9qqZEpAA"
+    },
+    {
+      "date": "2026-10-22T16:38:09.097844",
+      "source": "actualite",
+      "titre": "Facturation électronique : votre vrai délai est maintenant",
+      "video_id": "AR5YID6IVrU"
     }
   ]
 }
