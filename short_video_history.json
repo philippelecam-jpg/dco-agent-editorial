@@ -66,7 +66,8 @@
     "https://www.actuia.com/actualite/commerce-de-biens-lia-porte-47-de-la-croissance-en-valeur/",
     "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/",
     "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/",
-    "https://www.blogdumoderateur.com/facturation-electronique-independants-doivent-preparer-avant-septembre-2027/"
+    "https://www.blogdumoderateur.com/facturation-electronique-independants-doivent-preparer-avant-septembre-2027/",
+    "https://www.clubic.com/actualite-635734-alerte-un-nouvel-infostealer-s-interesse-grandement-a-vos-comptes-et-sessions-claude-chatgpt-et-copilot.html"
   ],
   "scripts": [
     {
@@ -464,6 +465,12 @@
       "source": "actualite",
       "titre": "Facturation électronique : votre vrai délai est maintenant",
       "video_id": "AR5YID6IVrU"
+    },
+    {
+      "date": "2026-10-23T16:38:04.203456",
+      "source": "actualite",
+      "titre": "Vos outils IA sont devenus une cible",
+      "video_id": "HEIKLJR5BU4"
     }
   ]
 }
