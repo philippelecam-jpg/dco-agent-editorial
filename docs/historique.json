@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 30 septembre 2026",
-    "timestamp": "2026-09-30T06:08:47.771084",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Éliciter : faire sortir la connaissance avant de la coder",
-    "post_x": "L'étape qu'on saute toujours : éliciter. Faire sortir la connaissance des têtes avant de toucher à un outil. Sans ça, on automatise du flou.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2105177843390968015",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-09-30-060802.png?v=060802"
-  },
-  {
     "date": "Jeudi 1 octobre 2026",
     "timestamp": "2026-10-01T06:09:16.929954",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "53 % des PME utilisent l'IA. 11 % automatisent vraiment des tâches. Ce n'est pas un problème d'outil. C'est un problème de préparation.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2113512742019551620",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-23-060756.png?v=060757"
+  },
+  {
+    "date": "Samedi 24 octobre 2026",
+    "timestamp": "2026-10-24T09:25:09.601890",
+    "theme": "Actualité décryptée",
+    "sujet": "Microsoft Copilot passe à la facturation à l'usage pour ses fonctions IA avancées",
+    "post_x": "Microsoft facture désormais l'IA avancée à la consommation. Bonne nouvelle pour qui sait ce qu'il consomme. Mauvaise pour qui ne sait pas encore ce qu'il utilise vraiment. La note va rendre visible ce que le forfait cachait.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-24-092408-weekend.png?v=092408"
   }
 ]
