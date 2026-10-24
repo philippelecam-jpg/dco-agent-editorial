@@ -67,7 +67,8 @@
     "https://www.actuia.com/actualite/un-pirate-a-perce-les-sites-de-plus-de-100-entreprises-dont-deere-avec-des-agents-dia/",
     "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/",
     "https://www.blogdumoderateur.com/facturation-electronique-independants-doivent-preparer-avant-septembre-2027/",
-    "https://www.clubic.com/actualite-635734-alerte-un-nouvel-infostealer-s-interesse-grandement-a-vos-comptes-et-sessions-claude-chatgpt-et-copilot.html"
+    "https://www.clubic.com/actualite-635734-alerte-un-nouvel-infostealer-s-interesse-grandement-a-vos-comptes-et-sessions-claude-chatgpt-et-copilot.html",
+    "https://www.actuia.com/actualite/ai-act-la-premiere-norme-harmonisee-ne-couvre-que-le-systeme-qualite/"
   ],
   "scripts": [
     {
@@ -471,6 +472,12 @@
       "source": "actualite",
       "titre": "Vos outils IA sont devenus une cible",
       "video_id": "HEIKLJR5BU4"
+    },
+    {
+      "date": "2026-10-24T16:37:59.582938",
+      "source": "actualite",
+      "titre": "AI Act : la conformité, c'est pas pour demain",
+      "video_id": "no7YcCACnGI"
     }
   ]
 }
