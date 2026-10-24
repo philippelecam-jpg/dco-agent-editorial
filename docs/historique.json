@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 1 octobre 2026",
-    "timestamp": "2026-10-01T06:09:16.929954",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "AI Act : ce que ça change concrètement pour une PME française",
-    "post_x": "L'AI Act n'est pas fait pour effrayer les PME. Il est fait pour clarifier. Ce que vous devez faire : savoir quels outils vous utilisez, à quoi ils servent, et qui en est responsable. Pas plus compliqué que ça.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2105540319647281587",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-01-060823.png?v=060824"
-  },
-  {
     "date": "Vendredi 2 octobre 2026",
     "timestamp": "2026-10-02T06:08:53.764740",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "Microsoft facture désormais l'IA avancée à la consommation. Bonne nouvelle pour qui sait ce qu'il consomme. Mauvaise pour qui ne sait pas encore ce qu'il utilise vraiment. La note va rendre visible ce que le forfait cachait.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-24-092408-weekend.png?v=092408"
+  },
+  {
+    "date": "Samedi 24 octobre 2026",
+    "timestamp": "2026-10-24T13:10:03.099170",
+    "theme": "Actualité décryptée",
+    "sujet": "Mistral AI lance Voxtral 3 : l'assistant téléphonique IA enfin accessible aux PME",
+    "post_x": "Mistral rend l'IA vocale accessible à la minute. Voxtral 3 peut décrocher à votre place, prendre des rendez-vous, répondre aux clients. Puissant. Mais si personne n'a jamais codifié vos règles de traitement, il va automatiser vos approximations. L'outil est prêt. L'organisation, elle ?",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-24-130912-weekend.png?v=130913"
   }
 ]
