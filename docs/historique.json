@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 3 octobre 2026",
-    "timestamp": "2026-10-03T09:24:58.092010",
-    "theme": "Actualité décryptée",
-    "sujet": "Baromètre France Num 2026 : 40 % des PME utilisent l'IA, la vitesse de la bascule interroge",
-    "post_x": "13 % en 2024. 26 % en 2025. 40 % en 2026. Les PME adoptent l'IA à une vitesse qui n'a pas d'équivalent. La question n'est plus \"est-ce que j'y vais ?\" Elle est : \"suis-je prête à accueillir ce que je déploie ?\"",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106314529848053911",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-03-092357-weekend.png?v=092358"
-  },
-  {
-    "date": "Samedi 3 octobre 2026",
     "timestamp": "2026-10-03T14:11:35.331275",
     "theme": "Regard de fond",
     "sujet": "Satisfaction déclarée vs transformation réelle : ce que les 68% de satisfaits du Baromètre France Num ne disent pas",
@@ -268,5 +259,14 @@
     "post_x": "19 % des PME paient pour un outil IA. 11 % automatisent vraiment des tâches. Un abonnement n'est pas une transformation. La question n'est pas \"combien ça coûte ?\" mais \"à quoi on lui demande de servir, exactement ?\"",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2114287118826848740",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-25-092410-weekend.png?v=092411"
+  },
+  {
+    "date": "Dimanche 25 octobre 2026",
+    "timestamp": "2026-10-25T13:37:06.278180",
+    "theme": "Actualité décryptée",
+    "sujet": "GPT-6 \"Luna\" dans ChatGPT gratuit : ce que ça change vraiment pour une PME",
+    "post_x": "OpenAI vient de déployer GPT-6 dans la version gratuite de ChatGPT. Graphiques, comparatifs, boutons interactifs directement dans la conversation. L'outil devient plus puissant. La vraie question reste la même : à quoi on lui demande de servir, exactement ?",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-25-133614-weekend.png?v=133615"
   }
 ]
