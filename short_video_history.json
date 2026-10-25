@@ -68,7 +68,8 @@
     "https://www.actuia.com/actualite/agents-ia-ce-que-la-directive-europeenne-fera-payer-aux-entreprises-qui-les-vendent/",
     "https://www.blogdumoderateur.com/facturation-electronique-independants-doivent-preparer-avant-septembre-2027/",
     "https://www.clubic.com/actualite-635734-alerte-un-nouvel-infostealer-s-interesse-grandement-a-vos-comptes-et-sessions-claude-chatgpt-et-copilot.html",
-    "https://www.actuia.com/actualite/ai-act-la-premiere-norme-harmonisee-ne-couvre-que-le-systeme-qualite/"
+    "https://www.actuia.com/actualite/ai-act-la-premiere-norme-harmonisee-ne-couvre-que-le-systeme-qualite/",
+    "https://www.actuia.com/actualite/demandes-redigees-par-ia-le-rapport-de-force-commence-a-basculer-vers-les-usagers/"
   ],
   "scripts": [
     {
@@ -478,6 +479,12 @@
       "source": "actualite",
       "titre": "AI Act : la conformité, c'est pas pour demain",
       "video_id": "no7YcCACnGI"
+    },
+    {
+      "date": "2026-10-25T16:38:15.116706",
+      "source": "actualite",
+      "titre": "L'IA va saturer vos interlocuteurs publics",
+      "video_id": "IJsjzRNfUFo"
     }
   ]
 }
