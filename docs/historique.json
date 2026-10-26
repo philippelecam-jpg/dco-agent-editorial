@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 3 octobre 2026",
-    "timestamp": "2026-10-03T14:11:35.331275",
-    "theme": "Regard de fond",
-    "sujet": "Satisfaction déclarée vs transformation réelle : ce que les 68% de satisfaits du Baromètre France Num ne disent pas",
-    "post_x": "68 % des PME utilisatrices de l'IA se déclarent satisfaites. C'est rassurant. Mais la satisfaction mesure un ressenti. Pas une transformation. On peut aimer un outil sans avoir changé une seule décision.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106386664428015947",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-03-141035-weekend.png?v=141035"
-  },
-  {
     "date": "Dimanche 4 octobre 2026",
     "timestamp": "2026-10-04T09:24:48.154638",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "OpenAI vient de déployer GPT-6 dans la version gratuite de ChatGPT. Graphiques, comparatifs, boutons interactifs directement dans la conversation. L'outil devient plus puissant. La vraie question reste la même : à quoi on lui demande de servir, exactement ?",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-25-133614-weekend.png?v=133615"
+  },
+  {
+    "date": "Lundi 26 octobre 2026",
+    "timestamp": "2026-10-26T06:08:56.194938",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Traiter, le cerveau de l'organisation",
+    "post_x": "Une organisation ne manque pas d'informations. Elle manque de décisions structurées. C'est ce que fait la fonction Traiter de l'Entreprise OS : transformer la connaissance stockée en décisions et processus augmentés.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2114599929842692214",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-26-060802.png?v=060803"
   }
 ]
