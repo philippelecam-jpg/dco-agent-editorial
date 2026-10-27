@@ -70,7 +70,8 @@
     "https://www.clubic.com/actualite-635734-alerte-un-nouvel-infostealer-s-interesse-grandement-a-vos-comptes-et-sessions-claude-chatgpt-et-copilot.html",
     "https://www.actuia.com/actualite/ai-act-la-premiere-norme-harmonisee-ne-couvre-que-le-systeme-qualite/",
     "https://www.actuia.com/actualite/demandes-redigees-par-ia-le-rapport-de-force-commence-a-basculer-vers-les-usagers/",
-    "https://www.actuia.com/actualite/microsoft-un-groupe-aligne-sur-pekin-a-detourne-des-applications-connectwise-avec-des-agents-dia/"
+    "https://www.actuia.com/actualite/microsoft-un-groupe-aligne-sur-pekin-a-detourne-des-applications-connectwise-avec-des-agents-dia/",
+    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/"
   ],
   "scripts": [
     {
@@ -492,6 +493,12 @@
       "source": "actualite",
       "titre": "Vos outils cloud sont devenus une porte d'entrée",
       "video_id": "dbhxtnu8wZY"
+    },
+    {
+      "date": "2026-10-27T16:45:14.920351",
+      "source": "actualite",
+      "titre": "Vos agents IA peuvent vous mentir, c'est officiel",
+      "video_id": "MKPYiD6XkP4"
     }
   ]
 }
