@@ -1,15 +1,6 @@
 [
   {
     "date": "Dimanche 4 octobre 2026",
-    "timestamp": "2026-10-04T09:24:48.154638",
-    "theme": "Regard de fond",
-    "sujet": "Automatisation des tâches en PME : l'angle mort du Baromètre France Num 2026",
-    "post_x": "34 % des PME génèrent du texte avec l'IA. 11 % automatisent des tâches. L'écart n'est pas un problème d'outils. C'est un problème de processus. On ne peut pas automatiser ce qu'on n'a pas d'abord structuré.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106676872708759667",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-04-092356-weekend.png?v=092356"
-  },
-  {
-    "date": "Dimanche 4 octobre 2026",
     "timestamp": "2026-10-04T14:42:44.305640",
     "theme": "Actualité décryptée",
     "sujet": "OpenAI \"Dots\" : quand l'agent mémorise tout, êtes-vous prêts à lui confier votre désordre ?",
@@ -268,5 +259,14 @@
     "post_x": "Une organisation ne manque pas d'informations. Elle manque de décisions structurées. C'est ce que fait la fonction Traiter de l'Entreprise OS : transformer la connaissance stockée en décisions et processus augmentés.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2114599929842692214",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-26-060802.png?v=060803"
+  },
+  {
+    "date": "Mardi 27 octobre 2026",
+    "timestamp": "2026-10-27T06:08:47.325205",
+    "theme": "Terrain et missions clients",
+    "sujet": "Terrain : quand le client veut automatiser, mais ne sait pas ce qu'il automatise",
+    "post_x": "Une ETI nous a contactés pour automatiser son reporting. Deux jours sur place. Résultat : trois définitions différentes du mot \"marge\" selon les services. L'IA attendait. La clarté, elle, était urgente.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2114962320837501068",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-27-060803.png?v=060803"
   }
 ]
