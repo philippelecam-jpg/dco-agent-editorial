@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 4 octobre 2026",
-    "timestamp": "2026-10-04T14:42:44.305640",
-    "theme": "Actualité décryptée",
-    "sujet": "OpenAI \"Dots\" : quand l'agent mémorise tout, êtes-vous prêts à lui confier votre désordre ?",
-    "post_x": "OpenAI lance \"Dots\" : des agents IA avec mémoire persistante, intégrés dans vos outils. Un agent qui \"connaît\" votre organisation et agit en continu. La vraie question : qu'est-ce qu'il va mémoriser ? Si votre connaissance n'est pas structurée, l'agent ancre du désordre. De façon permanente.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-04-144001-weekend.png?v=144001"
-  },
-  {
     "date": "Lundi 5 octobre 2026",
     "timestamp": "2026-10-05T06:08:42.463220",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Une ETI nous a contactés pour automatiser son reporting. Deux jours sur place. Résultat : trois définitions différentes du mot \"marge\" selon les services. L'IA attendait. La clarté, elle, était urgente.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2114962320837501068",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-27-060803.png?v=060803"
+  },
+  {
+    "date": "Mercredi 28 octobre 2026",
+    "timestamp": "2026-10-28T06:08:56.990015",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte",
+    "post_x": "Éliciter avant de cartographier, c'est interroger des gens sans savoir ce qu'on cherche. Codifier avant d'éliciter, c'est graver dans le marbre ce que personne n'a encore dit. L'ordre n'est pas une préférence. C'est la méthode.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2115324703284035834",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-28-060801.png?v=060802"
   }
 ]
