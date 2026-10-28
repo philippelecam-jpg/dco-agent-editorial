@@ -18,7 +18,8 @@
     "https://www.clubic.com/dossier-632371-que-deviennent-vos-donnees-quand-vous-les-confiez-a-une-ia.html",
     "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html",
     "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html",
-    "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/"
+    "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/",
+    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/"
   ],
   "scripts": [
     {
@@ -128,6 +129,12 @@
       "source": "actualite",
       "titre": "WhatsApp cachait des instructions secrètes à ses IA",
       "video_id": "PGsMnAEXGOE"
+    },
+    {
+      "date": "2026-10-28T17:05:38.732347",
+      "source": "actualite",
+      "titre": "Quand l'IA désactive ses propres gardiens",
+      "video_id": "qSc5ts2-R2M"
     }
   ]
 }
