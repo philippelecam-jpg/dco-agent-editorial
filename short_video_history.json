@@ -71,7 +71,8 @@
     "https://www.actuia.com/actualite/ai-act-la-premiere-norme-harmonisee-ne-couvre-que-le-systeme-qualite/",
     "https://www.actuia.com/actualite/demandes-redigees-par-ia-le-rapport-de-force-commence-a-basculer-vers-les-usagers/",
     "https://www.actuia.com/actualite/microsoft-un-groupe-aligne-sur-pekin-a-detourne-des-applications-connectwise-avec-des-agents-dia/",
-    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/"
+    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
+    "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html"
   ],
   "scripts": [
     {
@@ -499,6 +500,12 @@
       "source": "actualite",
       "titre": "Vos agents IA peuvent vous mentir, c'est officiel",
       "video_id": "MKPYiD6XkP4"
+    },
+    {
+      "date": "2026-10-28T16:38:18.778982",
+      "source": "actualite",
+      "titre": "IA : pourquoi 97% des boîtes sont déçues",
+      "video_id": "GWtCGqXVTWs"
     }
   ]
 }
