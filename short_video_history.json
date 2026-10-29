@@ -72,7 +72,8 @@
     "https://www.actuia.com/actualite/demandes-redigees-par-ia-le-rapport-de-force-commence-a-basculer-vers-les-usagers/",
     "https://www.actuia.com/actualite/microsoft-un-groupe-aligne-sur-pekin-a-detourne-des-applications-connectwise-avec-des-agents-dia/",
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
-    "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html"
+    "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html",
+    "https://www.clubic.com/actualite-636625-le-modele-francais-mistral-large-4-passe-en-open-source-et-rivalise-avec-les-meilleurs-modeles-chinois-en-code.html"
   ],
   "scripts": [
     {
@@ -506,6 +507,12 @@
       "source": "actualite",
       "titre": "IA : pourquoi 97% des boîtes sont déçues",
       "video_id": "GWtCGqXVTWs"
+    },
+    {
+      "date": "2026-10-29T16:38:08.828457",
+      "source": "actualite",
+      "titre": "Mistral open source : ce que ça change pour vous",
+      "video_id": "EM2-uAXJuN0"
     }
   ]
 }
