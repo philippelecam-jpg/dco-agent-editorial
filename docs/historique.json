@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 5 octobre 2026",
-    "timestamp": "2026-10-05T06:08:42.463220",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de l'organisation",
-    "post_x": "40 % des PME utilisent l'IA. Mais l'IA tourne sur quoi ? Sur le désordre existant. L'Entreprise OS, c'est l'infrastructure qui manque. Stocker, Traiter, Diffuser. Dans cet ordre.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2106989767212822908",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-05-060758.png?v=060759"
-  },
-  {
     "date": "Mardi 6 octobre 2026",
     "timestamp": "2026-10-06T06:08:44.465793",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "Éliciter avant de cartographier, c'est interroger des gens sans savoir ce qu'on cherche. Codifier avant d'éliciter, c'est graver dans le marbre ce que personne n'a encore dit. L'ordre n'est pas une préférence. C'est la méthode.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2115324703284035834",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-28-060801.png?v=060802"
+  },
+  {
+    "date": "Jeudi 29 octobre 2026",
+    "timestamp": "2026-10-29T06:09:03.041975",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "AI Act : ce que ça change concrètement pour une PME",
+    "post_x": "L'AI Act est entré en vigueur. La plupart des PME pensent que ça ne les concerne pas. C'est exactement ce qu'ont pensé les entreprises avec le RGPD en 2018.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2115687120845353014",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-29-060809.png?v=060809"
   }
 ]
