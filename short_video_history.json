@@ -73,7 +73,8 @@
     "https://www.actuia.com/actualite/microsoft-un-groupe-aligne-sur-pekin-a-detourne-des-applications-connectwise-avec-des-agents-dia/",
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
     "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html",
-    "https://www.clubic.com/actualite-636625-le-modele-francais-mistral-large-4-passe-en-open-source-et-rivalise-avec-les-meilleurs-modeles-chinois-en-code.html"
+    "https://www.clubic.com/actualite-636625-le-modele-francais-mistral-large-4-passe-en-open-source-et-rivalise-avec-les-meilleurs-modeles-chinois-en-code.html",
+    "https://www.blogdumoderateur.com/github-plus-40-pourcent-pull-requests-demarrent-avec-agent-ia/"
   ],
   "scripts": [
     {
@@ -513,6 +514,12 @@
       "source": "actualite",
       "titre": "Mistral open source : ce que ça change pour vous",
       "video_id": "EM2-uAXJuN0"
+    },
+    {
+      "date": "2026-10-30T16:38:16.567640",
+      "source": "actualite",
+      "titre": "Votre DSI recrute encore comme avant ?",
+      "video_id": "fkKxcuJReuY"
     }
   ]
 }
