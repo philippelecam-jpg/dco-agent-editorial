@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 4,
+  "last_theme_index": 5,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
@@ -22,7 +22,8 @@
       "Comment les individus et les communautés redéfinissent leur rapport à l'obéissance, au consentement et à l'autorité dans leur vie quotidienne"
     ],
     "Éducation et transmission": [
-      "L'évolution des institutions scolaires face aux nouvelles formes d'apprentissage décentralisé et continu"
+      "L'évolution des institutions scolaires face aux nouvelles formes d'apprentissage décentralisé et continu",
+      "Quel rôle l'éducation jouera-t-elle dans la reproduction ou la rupture des inégalités sociales à l'horizon 2050 ?"
     ]
   },
   "scripts": [
@@ -102,6 +103,13 @@
       "angle": "Comment les individus et les communautés redéfinissent leur rapport à l'obéissance, au consentement et à l'autorité dans leur vie quotidienne",
       "titre": "Et si vous n'obéissiez plus à la même autorité ?",
       "video_id": "fMQEyiF4A0Q"
+    },
+    {
+      "date": "2026-10-30T09:21:50.531553",
+      "theme": "Éducation et transmission",
+      "angle": "Quel rôle l'éducation jouera-t-elle dans la reproduction ou la rupture des inégalités sociales à l'horizon 2050 ?",
+      "titre": "2050 : et si apprendre ne voulait plus rien dire ?",
+      "video_id": "jb5Skiee68k"
     }
   ]
 }
