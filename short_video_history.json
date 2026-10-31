@@ -74,7 +74,8 @@
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
     "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html",
     "https://www.clubic.com/actualite-636625-le-modele-francais-mistral-large-4-passe-en-open-source-et-rivalise-avec-les-meilleurs-modeles-chinois-en-code.html",
-    "https://www.blogdumoderateur.com/github-plus-40-pourcent-pull-requests-demarrent-avec-agent-ia/"
+    "https://www.blogdumoderateur.com/github-plus-40-pourcent-pull-requests-demarrent-avec-agent-ia/",
+    "https://www.blogdumoderateur.com/responses-api-mistral-simplifier-creation-agents-ia/"
   ],
   "scripts": [
     {
@@ -520,6 +521,12 @@
       "source": "actualite",
       "titre": "Votre DSI recrute encore comme avant ?",
       "video_id": "fkKxcuJReuY"
+    },
+    {
+      "date": "2026-10-31T16:38:08.633070",
+      "source": "actualite",
+      "titre": "L'IA agentique n'est plus réservée aux grands groupes",
+      "video_id": "7d7W7x3lqfQ"
     }
   ]
 }
