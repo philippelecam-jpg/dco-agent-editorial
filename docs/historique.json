@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 8 octobre 2026",
-    "timestamp": "2026-10-08T06:10:19.350042",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "Une charte IA n'est pas un document RH. C'est une décision de gouvernance.",
-    "post_x": "Une charte IA sans processus derrière, c'est une promesse sans adresse. La gouvernance IA commence quand quelqu'un dans l'entreprise est responsable de quelque chose de précis.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108076957925613937",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-08-060805.png?v=060805"
-  },
-  {
     "date": "Vendredi 9 octobre 2026",
     "timestamp": "2026-10-09T06:08:45.026380",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "UBS : 12 700 agents IA en production. Gartner : 40 % des apps d'entreprise avec agents IA d'ici fin 2026. Ce n'est plus réservé aux grandes banques. La vraie question pour une PME : un agent amplifie ce qui existe. Vous avez quoi à lui donner ?",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-31-092415-weekend.png?v=092416"
+  },
+  {
+    "date": "Samedi 31 octobre 2026",
+    "timestamp": "2026-10-31T15:08:51.005651",
+    "theme": "Actualité décryptée",
+    "sujet": "Oracle + OpenAI lancent un bundle IA tout-en-un pour les PME : ce que ça ne résout pas",
+    "post_x": "Oracle + OpenAI proposent un bundle IA clé en main pour les PME. L'outil s'installe. La connaissance métier gouvernée, elle, ne vient pas avec. C'est là que tout commence, et que beaucoup s'arrêtent.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2116547928290738485",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-31-150759-weekend.png?v=150759"
   }
 ]
