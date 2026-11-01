@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 10 octobre 2026",
-    "timestamp": "2026-10-10T09:24:56.421589",
-    "theme": "Actualité décryptée",
-    "sujet": "Google Gemini et Microsoft Copilot : des agents capables de déléguer vos workflows, à condition qu'ils existent",
-    "post_x": "Google et Microsoft lancent des agents autonomes pour piloter vos workflows pendant des heures, voire des jours. Bonne nouvelle ? Oui, si vos workflows sont structurés. Déléguer du flou à un agent, ça accélère le flou.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-092405-weekend.png?v=092405"
-  },
-  {
-    "date": "Samedi 10 octobre 2026",
     "timestamp": "2026-10-10T15:06:44.870275",
     "theme": "Actualité décryptée",
     "sujet": "Mistral Large 4 : souveraineté IA, une option réelle, mais pas pour tout le monde",
@@ -268,5 +259,14 @@
     "post_x": "Mistral publie les poids de Large 4. Déployable sur vos serveurs. Gratuit. Européen. C'est une avancée réelle. Mais un modèle souverain ne remplace pas une connaissance métier structurée. L'IA sera sur vos machines. Sur quoi va-t-elle s'appuyer ?",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-092406-weekend.png?v=092407"
+  },
+  {
+    "date": "Dimanche 1 novembre 2026",
+    "timestamp": "2026-11-01T15:52:11.880718",
+    "theme": "Actualité décryptée",
+    "sujet": "Cegid + Silae fusionnent leurs offres IA : ce que ça ne règle pas pour une PME",
+    "post_x": "Cegid + Silae créent un géant français de la gestion cloud IA. Compta, paie, RH réunis. L'outil progresse. Mais si votre donnée est mal structurée en amont, l'IA embarquée ne va pas l'arranger. Elle va l'accélérer.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-155119-weekend.png?v=155119"
   }
 ]
