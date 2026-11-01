@@ -1,10 +1,10 @@
 {
   "date": "Dimanche 1 novembre 2026",
   "theme": "Actualité décryptée",
-  "generated_at": "2026-11-01T09:24:07.356914",
-  "sujet": "Mistral Large 4 open-source : ce que ça change vraiment pour une PME ou une ETI",
-  "post_x": "Mistral publie les poids de Large 4. Déployable sur vos serveurs. Gratuit. Européen. C'est une avancée réelle. Mais un modèle souverain ne remplace pas une connaissance métier structurée. L'IA sera sur vos machines. Sur quoi va-t-elle s'appuyer ?",
-  "post_linkedin": "Mistral vient de publier les poids de Large 4. Déployable directement sur vos serveurs. Gratuit. Européen. Aucune donnée ne quitte l'organisation.\n\nPour une ETI avec une équipe IT, c'est une avancée concrète. Souveraineté technique, indépendance vis-à-vis des offres américaines ou chinoises, zéro abonnement cloud.\n\nMais voilà ce qu'on observe sur le terrain : la souveraineté technique ne suffit pas.\n\nUn modèle installé sur vos serveurs va s'appuyer sur ce que vous lui donnez. Si votre connaissance métier est dans les têtes, dispersée dans des fichiers sans structure, jamais codifiée, le modèle va travailler sur du flou. Rapidement. À grande échelle.\n\nMistral Large 4 est un outil puissant. Ce n'est pas un substitut à l'organisation.\n\nLa vraie question n'est pas \"peut-on le déployer chez nous ?\" mais \"sur quelle matière allons-nous le faire travailler ?\"\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #Mistral #Souveraineté #PME #ETI #GouvernanceIA #TransformationIA",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-092406-weekend.png?v=092407"
+  "generated_at": "2026-11-01T15:51:19.335662",
+  "sujet": "Cegid + Silae fusionnent leurs offres IA : ce que ça ne règle pas pour une PME",
+  "post_x": "Cegid + Silae créent un géant français de la gestion cloud IA. Compta, paie, RH réunis. L'outil progresse. Mais si votre donnée est mal structurée en amont, l'IA embarquée ne va pas l'arranger. Elle va l'accélérer.",
+  "post_linkedin": "Cegid et Silae annoncent leur rapprochement. Compta, fiscalité, paie, RH : une plateforme unique, portée par l'IA. Pour les PME clientes, c'est une bonne nouvelle côté outil.\n\nMais un outil plus puissant ne résout pas un problème de fond.\n\nCe que beaucoup de PME ne voient pas encore : l'IA embarquée dans ces plateformes va s'appuyer sur vos données existantes. Si vos processus RH sont approximatifs, si vos règles de paie vivent dans la tête de deux personnes, si votre plan comptable a été bricolé en 2019 et jamais revu, l'automatisation va figer ces approximations. Pas les corriger.\n\nLa consolidation logicielle avance vite. La maturité de la donnée, elle, avance à votre rythme.\n\nAvant de migrer vers une plateforme intégrée, posez une question simple : est-ce que je sais ce que je vais lui donner à traiter ?\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#IA #PME #GestionCloud #TransformationIA #Cegid #Silae #Gouvernance",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-155119-weekend.png?v=155119"
 }
