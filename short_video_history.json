@@ -75,7 +75,8 @@
     "https://www.clubic.com/actualite-636463-l-ia-devait-faire-economiser-des-milliards-seules-3-des-entreprises-depassent-leurs-attentes.html",
     "https://www.clubic.com/actualite-636625-le-modele-francais-mistral-large-4-passe-en-open-source-et-rivalise-avec-les-meilleurs-modeles-chinois-en-code.html",
     "https://www.blogdumoderateur.com/github-plus-40-pourcent-pull-requests-demarrent-avec-agent-ia/",
-    "https://www.blogdumoderateur.com/responses-api-mistral-simplifier-creation-agents-ia/"
+    "https://www.blogdumoderateur.com/responses-api-mistral-simplifier-creation-agents-ia/",
+    "https://www.01net.com/actualites/a-la-vitesse-de-la-machine-4-gangs-de-pirates-ont-confie-leurs-cyberattaques-a-lia.html"
   ],
   "scripts": [
     {
@@ -527,6 +528,12 @@
       "source": "actualite",
       "titre": "L'IA agentique n'est plus réservée aux grands groupes",
       "video_id": "7d7W7x3lqfQ"
+    },
+    {
+      "date": "2026-11-01T16:38:31.759632",
+      "source": "actualite",
+      "titre": "Les cyberattaques tournent maintenant sans pilote humain",
+      "video_id": "DVXCApUTEzY"
     }
   ]
 }
