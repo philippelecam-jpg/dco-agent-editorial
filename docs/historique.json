@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 9 octobre 2026",
-    "timestamp": "2026-10-09T06:08:45.026380",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : ce qu'on apprend aux individus ne change pas l'organisation",
-    "post_x": "Former des collaborateurs à l'IA, c'est utile. Mais une organisation ne se transforme pas parce que ses individus ont suivi un atelier de deux heures. La connaissance doit être ancrée dans les processus, pas dans les têtes.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108439288190734408",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-09-060751.png?v=060751"
-  },
-  {
     "date": "Samedi 10 octobre 2026",
     "timestamp": "2026-10-10T09:24:56.421589",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "Oracle + OpenAI proposent un bundle IA clé en main pour les PME. L'outil s'installe. La connaissance métier gouvernée, elle, ne vient pas avec. C'est là que tout commence, et que beaucoup s'arrêtent.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2116547928290738485",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-31-150759-weekend.png?v=150759"
+  },
+  {
+    "date": "Dimanche 1 novembre 2026",
+    "timestamp": "2026-11-01T09:25:11.304912",
+    "theme": "Actualité décryptée",
+    "sujet": "Mistral Large 4 open-source : ce que ça change vraiment pour une PME ou une ETI",
+    "post_x": "Mistral publie les poids de Large 4. Déployable sur vos serveurs. Gratuit. Européen. C'est une avancée réelle. Mais un modèle souverain ne remplace pas une connaissance métier structurée. L'IA sera sur vos machines. Sur quoi va-t-elle s'appuyer ?",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-092406-weekend.png?v=092407"
   }
 ]
