@@ -1,10 +1,10 @@
 {
-  "date": "Samedi 31 octobre 2026",
+  "date": "Dimanche 1 novembre 2026",
   "theme": "Actualité décryptée",
-  "generated_at": "2026-10-31T15:07:59.480208",
-  "sujet": "Oracle + OpenAI lancent un bundle IA tout-en-un pour les PME : ce que ça ne résout pas",
-  "post_x": "Oracle + OpenAI proposent un bundle IA clé en main pour les PME. L'outil s'installe. La connaissance métier gouvernée, elle, ne vient pas avec. C'est là que tout commence, et que beaucoup s'arrêtent.",
-  "post_linkedin": "Oracle et OpenAI viennent d'annoncer l'Oracle AI SMB Bundle : ChatGPT Business, Codex, Oracle AI Workspace, NetSuite QuickStart. 12 000 $ de crédits cloud. Un package pour démarrer l'IA en back-office sans effort d'intégration.\n\nC'est concret. C'est accessible. Et c'est exactement le type d'offre qui va convaincre beaucoup de dirigeants de PME de franchir le pas.\n\nLe problème n'est pas l'offre. Le problème, c'est ce qu'on croit acheter avec elle.\n\nUn bundle installe des outils. Il ne structure pas la connaissance métier. Il ne définit pas qui décide quoi, selon quelles règles. Il ne codifie pas ce que vos experts savent et que personne d'autre ne sait.\n\nL'IA va traiter ce qu'on lui donne. Si ce qu'on lui donne est approximatif, non gouverné, éparpillé dans des fichiers et des têtes, elle va traiter de l'approximatif à grande vitesse.\n\nLa préparation précède le déploiement. Toujours.\n\nAvant d'activer le bundle, la vraie question est simple : qu'est-ce qu'on a à lui donner ?\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
-  "hashtags": "#IA #PME #Gouvernance #TransformationIA #OracleAI #OpenAI",
-  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-31-150759-weekend.png?v=150759"
+  "generated_at": "2026-11-01T09:24:07.356914",
+  "sujet": "Mistral Large 4 open-source : ce que ça change vraiment pour une PME ou une ETI",
+  "post_x": "Mistral publie les poids de Large 4. Déployable sur vos serveurs. Gratuit. Européen. C'est une avancée réelle. Mais un modèle souverain ne remplace pas une connaissance métier structurée. L'IA sera sur vos machines. Sur quoi va-t-elle s'appuyer ?",
+  "post_linkedin": "Mistral vient de publier les poids de Large 4. Déployable directement sur vos serveurs. Gratuit. Européen. Aucune donnée ne quitte l'organisation.\n\nPour une ETI avec une équipe IT, c'est une avancée concrète. Souveraineté technique, indépendance vis-à-vis des offres américaines ou chinoises, zéro abonnement cloud.\n\nMais voilà ce qu'on observe sur le terrain : la souveraineté technique ne suffit pas.\n\nUn modèle installé sur vos serveurs va s'appuyer sur ce que vous lui donnez. Si votre connaissance métier est dans les têtes, dispersée dans des fichiers sans structure, jamais codifiée, le modèle va travailler sur du flou. Rapidement. À grande échelle.\n\nMistral Large 4 est un outil puissant. Ce n'est pas un substitut à l'organisation.\n\nLa vraie question n'est pas \"peut-on le déployer chez nous ?\" mais \"sur quelle matière allons-nous le faire travailler ?\"\n\nDécisions & Co\n\nCe post est rédigé, illustré et publié de façon autonome par notre agent IA éditorial, avec supervision humaine déclenchée en cas de sujet sensible.",
+  "hashtags": "#IA #Mistral #Souveraineté #PME #ETI #GouvernanceIA #TransformationIA",
+  "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-092406-weekend.png?v=092407"
 }
