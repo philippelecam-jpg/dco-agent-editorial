@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 10 octobre 2026",
-    "timestamp": "2026-10-10T15:06:44.870275",
-    "theme": "Actualité décryptée",
-    "sujet": "Mistral Large 4 : souveraineté IA, une option réelle, mais pas pour tout le monde",
-    "post_x": "Mistral Large 4 : 1 000 milliards de paramètres, entraîné en Europe, hébergeable en interne. La souveraineté IA devient concrète. Mais héberger ce modèle demande une infrastructure que peu de PME ont. La question n'est pas \"est-ce possible ?\" Elle est : \"êtes-vous prêts ?\"",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2108937256337649766",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-10-150524-weekend.png?v=150524"
-  },
-  {
     "date": "Dimanche 11 octobre 2026",
     "timestamp": "2026-10-11T09:25:02.033205",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "Cegid + Silae créent un géant français de la gestion cloud IA. Compta, paie, RH réunis. L'outil progresse. Mais si votre donnée est mal structurée en amont, l'IA embarquée ne va pas l'arranger. Elle va l'accélérer.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-01-155119-weekend.png?v=155119"
+  },
+  {
+    "date": "Lundi 2 novembre 2026",
+    "timestamp": "2026-11-02T06:08:41.308448",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : le nouveau système d'exploitation de votre organisation",
+    "post_x": "L'Entreprise OS, ce n'est pas un outil de plus. C'est l'infrastructure qui permet à l'IA de faire quelque chose d'utile. Sans elle, vous n'accélérez pas. Vous amplifiez le désordre.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2117136620529004620",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-02-060757.png?v=060757"
   }
 ]
