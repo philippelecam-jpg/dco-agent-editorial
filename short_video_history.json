@@ -77,7 +77,8 @@
     "https://www.blogdumoderateur.com/github-plus-40-pourcent-pull-requests-demarrent-avec-agent-ia/",
     "https://www.blogdumoderateur.com/responses-api-mistral-simplifier-creation-agents-ia/",
     "https://www.01net.com/actualites/a-la-vitesse-de-la-machine-4-gangs-de-pirates-ont-confie-leurs-cyberattaques-a-lia.html",
-    "https://www.01net.com/actualites/cyberattaque-frigos-supermarches-apres-france-pirates-attaquent-belgique.html"
+    "https://www.01net.com/actualites/cyberattaque-frigos-supermarches-apres-france-pirates-attaquent-belgique.html",
+    "https://www.blogdumoderateur.com/adobe-offre-firefly-acrobat-semrush-startups/"
   ],
   "scripts": [
     {
@@ -541,6 +542,12 @@
       "source": "actualite",
       "titre": "Vos frigos connectés sont une porte d'entrée pour les hackers",
       "video_id": "5fGzeGfcFvo"
+    },
+    {
+      "date": "2026-11-03T16:38:16.820886",
+      "source": "actualite",
+      "titre": "Ce que l'offre Adobe cache vraiment",
+      "video_id": "0HLCI2KTFYo"
     }
   ]
 }
