@@ -78,7 +78,8 @@
     "https://www.blogdumoderateur.com/responses-api-mistral-simplifier-creation-agents-ia/",
     "https://www.01net.com/actualites/a-la-vitesse-de-la-machine-4-gangs-de-pirates-ont-confie-leurs-cyberattaques-a-lia.html",
     "https://www.01net.com/actualites/cyberattaque-frigos-supermarches-apres-france-pirates-attaquent-belgique.html",
-    "https://www.blogdumoderateur.com/adobe-offre-firefly-acrobat-semrush-startups/"
+    "https://www.blogdumoderateur.com/adobe-offre-firefly-acrobat-semrush-startups/",
+    "https://www.01net.com/actualites/chatgpt-a-lassaut-de-google-openai-revendique-deja-20-du-volume-de-recherche.html"
   ],
   "scripts": [
     {
@@ -548,6 +549,12 @@
       "source": "actualite",
       "titre": "Ce que l'offre Adobe cache vraiment",
       "video_id": "0HLCI2KTFYo"
+    },
+    {
+      "date": "2026-11-04T16:38:22.706939",
+      "source": "actualite",
+      "titre": "ChatGPT grignote Google : ce que ça change pour vous",
+      "video_id": "Wa2rIqGhdYg"
     }
   ]
 }
