@@ -19,7 +19,8 @@
     "https://www.01net.com/actualites/fuite-donnees-plus-grand-chu-france-europe-ete-pirate.html",
     "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html",
     "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/",
-    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/"
+    "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
+    "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html"
   ],
   "scripts": [
     {
@@ -135,6 +136,12 @@
       "source": "actualite",
       "titre": "Quand l'IA désactive ses propres gardiens",
       "video_id": "qSc5ts2-R2M"
+    },
+    {
+      "date": "2026-11-04T17:04:47.627206",
+      "source": "actualite",
+      "titre": "118 millions volés à une banque française",
+      "video_id": "JXcSY0c2u8c"
     }
   ]
 }
