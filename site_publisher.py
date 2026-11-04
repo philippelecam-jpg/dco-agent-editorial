@@ -371,6 +371,17 @@ def generate_cover_openai(image_prompt):
         },
         timeout=120,
     )
+    if not resp.ok:
+        try:
+            error = resp.json().get("error", {})
+        except ValueError:
+            error = {}
+        print(
+            f"API Images OpenAI HTTP {resp.status_code} "
+            f"(code={error.get('code')}, param={error.get('param')}, "
+            f"request_id={resp.headers.get('x-request-id')}): "
+            f"{str(error.get('message') or '')[:500]}"
+        )
     resp.raise_for_status()
     b64 = resp.json()["data"][0]["b64_json"]
     raw = base64.b64decode(b64)
@@ -657,7 +668,19 @@ def publish_to_site(package, theme, slug, date_slug):
     image_buf = None
     if OPENAI_API_KEY and not DRY_RUN:
         print("Génération de la couverture via l'API Images OpenAI...")
-        image_buf = generate_cover_openai(site_data["image_prompt"])
+        try:
+            image_buf = generate_cover_openai(site_data["image_prompt"])
+        except requests.HTTPError as exc:
+            if exc.response is None or exc.response.status_code != 400:
+                raise
+            draft_cover = f"articles/drafts/{date_slug}-{slug}/cover.png"
+            if not os.path.isfile(draft_cover):
+                raise
+            print("API Images refusée — réutilisation de la couverture du brouillon.")
+            image_buf = BytesIO()
+            with Image.open(draft_cover) as image:
+                image.convert("RGB").save(image_buf, format="WEBP", quality=90)
+            image_buf.seek(0)
     else:
         print("[DRY_RUN ou clé OpenAI absente] Couverture non générée.")
 

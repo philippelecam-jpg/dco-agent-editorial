@@ -29,6 +29,7 @@ import base64
 import re
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import requests
@@ -199,7 +200,7 @@ Génère UNIQUEMENT un JSON valide, sans markdown autour :
 - Échapper les guillemets avec \\" et les sauts de ligne avec \\n"""
 
 
-def generate_article(historique, theme):
+def generate_article(historique, theme, article_date=None):
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -213,7 +214,7 @@ def generate_article(historique, theme):
             "system": build_system_prompt(historique, theme),
             "messages": [{
                 "role": "user",
-                "content": f"Génère l'article. Date : {today_label()}. Thème : {theme['theme']}.",
+                "content": f"Génère l'article. Date : {article_date or today_label()}. Thème : {theme['theme']}.",
             }],
         },
         timeout=90,
@@ -428,7 +429,70 @@ def notify_make_email(package, theme, image_buf, dossier):
     print(f"Email notifié via Make : {resp.status_code}")
 
 
+def regenerate_october_21(date_slug):
+    historique = load_historique()
+    theme = next(item for item in ARTICLE_THEMES if item["theme"].startswith("Méthode Cartographier"))
+    try:
+        package = generate_article(historique, theme, date_slug)
+    except json.JSONDecodeError:
+        print("Réponse JSON invalide, nouvelle tentative de génération.")
+        package = generate_article(historique, theme, date_slug)
+
+    slug = slugify(package["titre"])
+    image_buf = generate_cover(package["titre"], theme["theme"], package.get("chapo", ""))
+    dossier, _, _ = write_draft_files(package, image_buf, date_slug, slug)
+    pr_url = publish_to_site(package, theme, slug, date_slug)
+    if not DRY_RUN and not pr_url:
+        raise RuntimeError("Le rattrapage n’a créé aucune pull request.")
+    if not DRY_RUN:
+        save_historique(historique, {
+            "date": date_slug,
+            "timestamp": datetime.now().isoformat(),
+            "theme": theme["theme"],
+            "titre": package["titre"],
+            "dossier": dossier,
+            "pr_site": pr_url,
+        })
+
+
+def publish_saved_draft(selection):
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:-[a-z0-9-]+)?", selection):
+        raise ValueError("Indiquer une date AAAA-MM-JJ ou le nom complet du dossier.")
+    date_slug = selection[:10]
+    folder = f"{date_slug}-*" if selection == date_slug else selection
+    drafts = list(Path(HISTORIQUE_DIR, "drafts").glob(f"{folder}/article.md"))
+    if not drafts and selection == "2026-10-21":
+        regenerate_october_21(date_slug)
+        return
+    if len(drafts) != 1:
+        raise ValueError(f"Un seul brouillon attendu pour {date_slug}, trouvé : {len(drafts)}.")
+    draft = drafts[0]
+    entry = next(
+        (item for item in reversed(load_historique()) if item.get("dossier") == draft.parent.as_posix()),
+        None,
+    )
+    if not entry or entry.get("pr_site"):
+        raise ValueError("Historique absent ou pull request déjà enregistrée pour ce brouillon.")
+
+    heading, chapo, body = draft.read_text(encoding="utf-8").strip().split("\n\n", 2)
+    if not heading.startswith("# ") or not (chapo.startswith("*") and chapo.endswith("*")):
+        raise ValueError("Format de brouillon inattendu.")
+    body, separator, tail = body.rpartition("\n\n")
+    if not separator or not tail.startswith("#"):
+        body = body + separator + tail
+    package = {"titre": heading[2:], "chapo": chapo[1:-1], "corps": body}
+    slug = draft.parent.name[len(date_slug) + 1:]
+    pr_url = publish_to_site(package, {"theme": entry["theme"]}, slug, date_slug)
+    if not DRY_RUN and not pr_url:
+        raise RuntimeError("La reprise n’a créé aucune pull request.")
+
+
 def main():
+    draft_date = os.environ.get("DRAFT_DATE", "").strip()
+    if draft_date:
+        publish_saved_draft(draft_date)
+        return
+
     print(f"Agent éditorial D&Co — brouillon article hebdomadaire — {today_label()}")
 
     historique = load_historique()
