@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 11 octobre 2026",
-    "timestamp": "2026-10-11T15:23:31.696749",
-    "theme": "Actualité décryptée",
-    "sujet": "GPT-6 et les \"Intelligent UI\" : quand l'interface devient métier, à condition que le métier soit prêt",
-    "post_x": "GPT-6 arrive avec des interfaces interactives intégrées à ChatGPT. Boutons, calculatrices, workflows. Plus beau, plus fluide. Mais une interface plus riche ne remplace pas un processus inexistant. Le fond doit précéder la forme.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-11-152237-weekend.png?v=152238"
-  },
-  {
     "date": "Lundi 12 octobre 2026",
     "timestamp": "2026-10-12T06:08:48.106422",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "On nous a appelés pour déployer un agent IA sur la relation client. En deux jours, on a compris que le vrai problème était ailleurs : personne ne savait où était la connaissance.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2117499033111367927",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-03-060802.png?v=060802"
+  },
+  {
+    "date": "Mercredi 4 novembre 2026",
+    "timestamp": "2026-11-04T06:08:49.387779",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Cartographier : la première étape que personne ne veut faire",
+    "post_x": "Cartographier, c'est inconfortable. On préfère agir. Mais déployer de l'IA sans savoir ce qui existe déjà, c'est construire sur du sable. La carte précède le chantier.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2117861433899712729",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-04-060806.png?v=060806"
   }
 ]
