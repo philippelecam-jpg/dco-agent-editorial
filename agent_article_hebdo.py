@@ -429,11 +429,12 @@ def notify_make_email(package, theme, image_buf, dossier):
     print(f"Email notifié via Make : {resp.status_code}")
 
 
-def publish_saved_draft(date_slug):
-    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_slug):
-        raise ValueError("La date du brouillon doit être au format AAAA-MM-JJ.")
-
-    drafts = list(Path(HISTORIQUE_DIR, "drafts").glob(f"{date_slug}-*/article.md"))
+def publish_saved_draft(selection):
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:-[a-z0-9-]+)?", selection):
+        raise ValueError("Indiquer une date AAAA-MM-JJ ou le nom complet du dossier.")
+    date_slug = selection[:10]
+    folder = f"{date_slug}-*" if selection == date_slug else selection
+    drafts = list(Path(HISTORIQUE_DIR, "drafts").glob(f"{folder}/article.md"))
     if len(drafts) != 1:
         raise ValueError(f"Un seul brouillon attendu pour {date_slug}, trouvé : {len(drafts)}.")
     draft = drafts[0]
