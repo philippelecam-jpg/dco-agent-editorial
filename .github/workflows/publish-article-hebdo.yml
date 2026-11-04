@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       draft_date:
-        description: 'Date du brouillon à republier sur le site (AAAA-MM-JJ)'
+        description: 'Date ou nom du dossier à reprendre sur le site (21/10 régénéré si absent)'
         required: false
         type: string
       dry_run:
@@ -62,7 +62,7 @@ jobs:
         run: python agent_article_hebdo.py
 
       - name: Commit et push du brouillon
-        if: ${{ !inputs.draft_date }}
+        if: ${{ !inputs.draft_date || (inputs.draft_date == '2026-10-21' && inputs.dry_run == 'false') }}
         run: |
           git config user.name "Agent Editorial DCo"
           git config user.email "agent@decisionsandco.com"
