@@ -142,5 +142,13 @@
     "titre": "Quand l'IA révèle ce qu'une entreprise ne sait pas d'elle-même",
     "dossier": "articles/drafts/2026-11-04-quand-l-ia-revele-ce-qu-une-entreprise-ne-sait-pas-d-elle",
     "pr_site": null
+  },
+  {
+    "date": "2026-10-21",
+    "timestamp": "2026-11-04T14:50:09.932141",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "titre": "Pourquoi l'ordre des trois étapes n'est pas un détail",
+    "dossier": "articles/drafts/2026-10-21-pourquoi-l-ordre-des-trois-etapes-n-est-pas-un-detail",
+    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/42"
   }
 ]
