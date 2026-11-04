@@ -29,6 +29,7 @@ import base64
 import re
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import requests
@@ -428,7 +429,40 @@ def notify_make_email(package, theme, image_buf, dossier):
     print(f"Email notifié via Make : {resp.status_code}")
 
 
+def publish_saved_draft(date_slug):
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_slug):
+        raise ValueError("La date du brouillon doit être au format AAAA-MM-JJ.")
+
+    drafts = list(Path(HISTORIQUE_DIR, "drafts").glob(f"{date_slug}-*/article.md"))
+    if len(drafts) != 1:
+        raise ValueError(f"Un seul brouillon attendu pour {date_slug}, trouvé : {len(drafts)}.")
+    draft = drafts[0]
+    entry = next(
+        (item for item in reversed(load_historique()) if item.get("dossier") == draft.parent.as_posix()),
+        None,
+    )
+    if not entry or entry.get("pr_site"):
+        raise ValueError("Historique absent ou pull request déjà enregistrée pour ce brouillon.")
+
+    heading, chapo, body = draft.read_text(encoding="utf-8").strip().split("\n\n", 2)
+    if not heading.startswith("# ") or not (chapo.startswith("*") and chapo.endswith("*")):
+        raise ValueError("Format de brouillon inattendu.")
+    body, separator, tail = body.rpartition("\n\n")
+    if not separator or not tail.startswith("#"):
+        body = body + separator + tail
+    package = {"titre": heading[2:], "chapo": chapo[1:-1], "corps": body}
+    slug = draft.parent.name[len(date_slug) + 1:]
+    pr_url = publish_to_site(package, {"theme": entry["theme"]}, slug, date_slug)
+    if not DRY_RUN and not pr_url:
+        raise RuntimeError("La reprise n’a créé aucune pull request.")
+
+
 def main():
+    draft_date = os.environ.get("DRAFT_DATE", "").strip()
+    if draft_date:
+        publish_saved_draft(draft_date)
+        return
+
     print(f"Agent éditorial D&Co — brouillon article hebdomadaire — {today_label()}")
 
     historique = load_historique()
