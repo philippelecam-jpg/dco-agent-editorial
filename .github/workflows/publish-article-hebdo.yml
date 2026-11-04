@@ -3,6 +3,10 @@ name: Agent Éditorial D&Co — Article hebdo (brouillon)
 on:
   workflow_dispatch:
     inputs:
+      draft_date:
+        description: 'Date du brouillon à republier sur le site (AAAA-MM-JJ)'
+        required: false
+        type: string
       dry_run:
         description: 'Mode test (génère tout, mais n’envoie pas l’email)'
         required: false
@@ -54,9 +58,11 @@ jobs:
           SITE_REPO: ${{ secrets.SITE_REPO }}
           SITE_REPO_PAT: ${{ secrets.SITE_REPO_PAT }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          DRAFT_DATE: ${{ inputs.draft_date }}
         run: python agent_article_hebdo.py
 
       - name: Commit et push du brouillon
+        if: ${{ !inputs.draft_date }}
         run: |
           git config user.name "Agent Editorial DCo"
           git config user.email "agent@decisionsandco.com"
