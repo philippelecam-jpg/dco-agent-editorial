@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 12 octobre 2026",
-    "timestamp": "2026-10-12T06:08:48.106422",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : la fonction Traiter, quand l'IA décide avec vous, pas à votre place",
-    "post_x": "L'IA de Microsoft branché sur votre ERP en temps réel. Bien. Mais si vos processus de décision ne sont pas codifiés, l'agent va juste automatiser vos approximations.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2109526463053692953",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-12-060753.png?v=060754"
-  },
-  {
     "date": "Mardi 13 octobre 2026",
     "timestamp": "2026-10-13T06:09:04.466725",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "Cartographier, c'est inconfortable. On préfère agir. Mais déployer de l'IA sans savoir ce qui existe déjà, c'est construire sur du sable. La carte précède le chantier.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2117861433899712729",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-04-060806.png?v=060806"
+  },
+  {
+    "date": "Jeudi 5 novembre 2026",
+    "timestamp": "2026-11-05T06:08:51.705405",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "Gouvernance IA : ce que les PME doivent faire concrètement, pas ce qu'elles craignent",
+    "post_x": "Une charte IA, ce n'est pas un document RH de plus. C'est la première brique de votre gouvernance. Sans elle, chaque agent IA déployé dans votre entreprise opère dans le vide.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2118223787988529631",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-05-060758.png?v=060758"
   }
 ]
