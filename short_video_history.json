@@ -79,7 +79,8 @@
     "https://www.01net.com/actualites/a-la-vitesse-de-la-machine-4-gangs-de-pirates-ont-confie-leurs-cyberattaques-a-lia.html",
     "https://www.01net.com/actualites/cyberattaque-frigos-supermarches-apres-france-pirates-attaquent-belgique.html",
     "https://www.blogdumoderateur.com/adobe-offre-firefly-acrobat-semrush-startups/",
-    "https://www.01net.com/actualites/chatgpt-a-lassaut-de-google-openai-revendique-deja-20-du-volume-de-recherche.html"
+    "https://www.01net.com/actualites/chatgpt-a-lassaut-de-google-openai-revendique-deja-20-du-volume-de-recherche.html",
+    "https://www.blogdumoderateur.com/perplexity-lance-teammates-agents-ia-taches-longue-haleine/"
   ],
   "scripts": [
     {
@@ -555,6 +556,12 @@
       "source": "actualite",
       "titre": "ChatGPT grignote Google : ce que ça change pour vous",
       "video_id": "Wa2rIqGhdYg"
+    },
+    {
+      "date": "2026-11-06T16:37:58.287236",
+      "source": "actualite",
+      "titre": "Agents IA : ce qui change vraiment pour vos équipes",
+      "video_id": "MA4n6UTdB-k"
     }
   ]
 }
