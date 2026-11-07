@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 14 octobre 2026",
-    "timestamp": "2026-10-14T06:08:42.767335",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Éliciter avant de déployer : ce que l'IA ne peut pas inventer à votre place",
-    "post_x": "L'IA connectée à votre CRM via MCP, c'est puissant. Mais si personne n'a jamais formalisé comment vos commerciaux qualifient un lead, elle amplifie du vide. Éliciter d'abord. Déployer ensuite.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2110251259357708731",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-14-060758.png?v=060759"
-  },
-  {
     "date": "Jeudi 15 octobre 2026",
     "timestamp": "2026-10-15T06:08:39.868688",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Perplexity lance des agents IA permanents dans vos équipes. Always-on. Ils n'attendent pas qu'on les sollicite. La vraie question : qu'est-ce qu'ils vont trouver à faire, en continu, dans votre organisation ?",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2118998109619687718",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-07-092408-weekend.png?v=092408"
+  },
+  {
+    "date": "Samedi 7 novembre 2026",
+    "timestamp": "2026-11-07T15:30:52.401105",
+    "theme": "Regard de fond",
+    "sujet": "Enquête Banque de France : 64 % des PME utilisent l'IA générative, ce que ce chiffre ne dit pas",
+    "post_x": "64 % des PME de 20 à 49 salariés utilisent l'IA générative. C'est beaucoup. Mais utiliser un outil et être prêt à l'accueillir, ce sont deux choses différentes. Le chiffre mesure la diffusion. Il ne mesure pas la structuration.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-07-152951-weekend.png?v=152951"
   }
 ]
