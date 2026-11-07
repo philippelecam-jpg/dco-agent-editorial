@@ -80,7 +80,8 @@
     "https://www.01net.com/actualites/cyberattaque-frigos-supermarches-apres-france-pirates-attaquent-belgique.html",
     "https://www.blogdumoderateur.com/adobe-offre-firefly-acrobat-semrush-startups/",
     "https://www.01net.com/actualites/chatgpt-a-lassaut-de-google-openai-revendique-deja-20-du-volume-de-recherche.html",
-    "https://www.blogdumoderateur.com/perplexity-lance-teammates-agents-ia-taches-longue-haleine/"
+    "https://www.blogdumoderateur.com/perplexity-lance-teammates-agents-ia-taches-longue-haleine/",
+    "https://www.actuia.com/actualite/agents-dia-jusqua-huit-points-decart-pour-un-meme-modele-selon-le-harnais/"
   ],
   "scripts": [
     {
@@ -562,6 +563,12 @@
       "source": "actualite",
       "titre": "Agents IA : ce qui change vraiment pour vos équipes",
       "video_id": "MA4n6UTdB-k"
+    },
+    {
+      "date": "2026-11-07T16:38:08.043917",
+      "source": "actualite",
+      "titre": "Agent IA : le modèle compte moins que vous croyez",
+      "video_id": "LYRjXxhwShE"
     }
   ]
 }
