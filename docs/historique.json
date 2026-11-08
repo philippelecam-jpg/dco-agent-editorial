@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 15 octobre 2026",
-    "timestamp": "2026-10-15T06:08:39.868688",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "35 % des PME ont des agents IA non approuvés qui tournent en ce moment même",
-    "post_x": "35 % des PME ont découvert des outils IA non approuvés dans leurs systèmes. Pas un problème d'IA. Un problème de gouvernance. Cartographier avant de déployer, c'est la règle.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2110613635131154498",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-15-060755.png?v=060756"
-  },
-  {
     "date": "Vendredi 16 octobre 2026",
     "timestamp": "2026-10-16T06:08:57.689773",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "64 % des PME de 20 à 49 salariés utilisent l'IA générative. C'est beaucoup. Mais utiliser un outil et être prêt à l'accueillir, ce sont deux choses différentes. Le chiffre mesure la diffusion. Il ne mesure pas la structuration.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-07-152951-weekend.png?v=152951"
+  },
+  {
+    "date": "Dimanche 8 novembre 2026",
+    "timestamp": "2026-11-08T09:25:05.854378",
+    "theme": "Actualité décryptée",
+    "sujet": "Baromètre France Num 2026 : 53 % des PME utilisent l'IA, mais la montée en compétences reste à la traîne",
+    "post_x": "Baromètre France Num : 53 % des PME utilisent l'IA, +19 points en un an. La diffusion est là. La préparation, elle, n'a pas suivi au même rythme. Un outil déployé sans structure n'accélère pas la performance. Il accélère ce qui existe déjà, y compris le désordre.",
+    "tweet_url": "",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-08-092405-weekend.png?v=092405"
   }
 ]
