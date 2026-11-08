@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 16 octobre 2026",
-    "timestamp": "2026-10-16T06:08:57.689773",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : ce que les collaborateurs apprennent ne suffit pas si l'organisation n'est pas prête à recevoir",
-    "post_x": "42 % des PME européennes utilisent déjà l'IA en RH. Presque aucune n'a structuré sa connaissance avant. La formation ne comble pas ce vide. Elle le révèle.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2110976056224289084",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-16-060803.png?v=060804"
-  },
-  {
     "date": "Samedi 17 octobre 2026",
     "timestamp": "2026-10-17T09:25:07.073382",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "Baromètre France Num : 53 % des PME utilisent l'IA, +19 points en un an. La diffusion est là. La préparation, elle, n'a pas suivi au même rythme. Un outil déployé sans structure n'accélère pas la performance. Il accélère ce qui existe déjà, y compris le désordre.",
     "tweet_url": "",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-08-092405-weekend.png?v=092405"
+  },
+  {
+    "date": "Dimanche 8 novembre 2026",
+    "timestamp": "2026-11-08T15:50:55.767224",
+    "theme": "Actualité décryptée",
+    "sujet": "Catalogue DGE / Hub France IA : 88 solutions souveraines pour PME et ETI, ce qu'il ne résout pas",
+    "post_x": "La DGE et Hub France IA viennent de référencer 88 solutions IA souveraines pour les PME. Un catalogue utile. Mais un outil référencé ne sait pas sur quelle connaissance il va s'appuyer. Ça, c'est votre travail. Avant.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2119457625314087076",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-08-154955-weekend.png?v=154955"
   }
 ]
