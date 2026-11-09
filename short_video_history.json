@@ -82,7 +82,8 @@
     "https://www.01net.com/actualites/chatgpt-a-lassaut-de-google-openai-revendique-deja-20-du-volume-de-recherche.html",
     "https://www.blogdumoderateur.com/perplexity-lance-teammates-agents-ia-taches-longue-haleine/",
     "https://www.actuia.com/actualite/agents-dia-jusqua-huit-points-decart-pour-un-meme-modele-selon-le-harnais/",
-    "https://www.actuia.com/actualite/lactualite-ia-du-mois-secteur-par-secteur-actuia-ouvre-sa-revue/"
+    "https://www.actuia.com/actualite/lactualite-ia-du-mois-secteur-par-secteur-actuia-ouvre-sa-revue/",
+    "https://www.01net.com/actualites/whatsapp-signal-messenger-la-france-renonce-a-forcer-lacces-aux-conversations-chiffrees.html"
   ],
   "scripts": [
     {
@@ -576,6 +577,12 @@
       "source": "actualite",
       "titre": "1300 brèves IA : votre vrai problème commence là",
       "video_id": "-8iO-OCMeBQ"
+    },
+    {
+      "date": "2026-11-09T16:38:02.146803",
+      "source": "actualite",
+      "titre": "Chiffrement : ce que ça change pour votre entreprise",
+      "video_id": "-sW9idNRcP4"
     }
   ]
 }
