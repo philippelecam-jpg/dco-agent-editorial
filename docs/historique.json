@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 17 octobre 2026",
-    "timestamp": "2026-10-17T09:25:07.073382",
-    "theme": "Actualité décryptée",
-    "sujet": "Les agents IA d'Anthropic travaillent 6 fois plus que les humains : ce que ça change pour l'organisation du travail",
-    "post_x": "Anthropic : les agents IA cumulent 6x plus d'heures que les salariés. Commits par ingénieur multipliés par 5. L'IA agentique n'est plus un horizon. C'est maintenant. La question n'est pas \"quand ça arrive\". C'est \"dans quel état est votre organisation quand ça arrive ?\"",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-17-092405-weekend.png?v=092405"
-  },
-  {
-    "date": "Samedi 17 octobre 2026",
     "timestamp": "2026-10-17T12:45:50.694541",
     "theme": "Regard de fond",
     "sujet": "Ce que l'ère des agents IA change au critère de recrutement : jugement et autonomie avant expertise technique",
@@ -268,5 +259,14 @@
     "post_x": "La DGE et Hub France IA viennent de référencer 88 solutions IA souveraines pour les PME. Un catalogue utile. Mais un outil référencé ne sait pas sur quelle connaissance il va s'appuyer. Ça, c'est votre travail. Avant.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2119457625314087076",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-08-154955-weekend.png?v=154955"
+  },
+  {
+    "date": "Lundi 9 novembre 2026",
+    "timestamp": "2026-11-09T06:08:41.927411",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : la fonction Traiter, là où la connaissance devient décision",
+    "post_x": "Stocker la connaissance, c'est bien. La faire circuler dans vos décisions, c'est autre chose. C'est la fonction Traiter de l'Entreprise OS. Sans elle, votre base de connaissance reste une bibliothèque vide.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2119673339136655364",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-09-060757.png?v=060758"
   }
 ]
