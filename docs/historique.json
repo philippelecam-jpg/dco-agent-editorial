@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 17 octobre 2026",
-    "timestamp": "2026-10-17T12:45:50.694541",
-    "theme": "Regard de fond",
-    "sujet": "Ce que l'ère des agents IA change au critère de recrutement : jugement et autonomie avant expertise technique",
-    "post_x": "Les recruteurs d'Anthropic ne cherchent plus l'expert qui exécute. Ils cherchent celui qui juge, arbitre, décide. Quand un agent fait le travail, ce qui reste précieux chez l'humain, c'est ce qu'on ne lui a jamais vraiment appris à l'école.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-17-124449-weekend.png?v=124449"
-  },
-  {
     "date": "Dimanche 18 octobre 2026",
     "timestamp": "2026-10-18T09:25:03.524785",
     "theme": "Regard de fond",
@@ -268,5 +259,14 @@
     "post_x": "Stocker la connaissance, c'est bien. La faire circuler dans vos décisions, c'est autre chose. C'est la fonction Traiter de l'Entreprise OS. Sans elle, votre base de connaissance reste une bibliothèque vide.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2119673339136655364",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-09-060757.png?v=060758"
+  },
+  {
+    "date": "Mardi 10 novembre 2026",
+    "timestamp": "2026-11-10T06:08:47.573732",
+    "theme": "Terrain et missions clients",
+    "sujet": "Quand l'IA arrive dans une PME qui ne sait pas ce qu'elle sait",
+    "post_x": "Un dirigeant voulait un agent IA pour ses devis. On a passé deux jours à chercher la connaissance métier. Elle était dans trois têtes, zéro document. L'IA attendra.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2120035751886987668",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-10-060803.png?v=060803"
   }
 ]
