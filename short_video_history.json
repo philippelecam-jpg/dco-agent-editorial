@@ -83,7 +83,8 @@
     "https://www.blogdumoderateur.com/perplexity-lance-teammates-agents-ia-taches-longue-haleine/",
     "https://www.actuia.com/actualite/agents-dia-jusqua-huit-points-decart-pour-un-meme-modele-selon-le-harnais/",
     "https://www.actuia.com/actualite/lactualite-ia-du-mois-secteur-par-secteur-actuia-ouvre-sa-revue/",
-    "https://www.01net.com/actualites/whatsapp-signal-messenger-la-france-renonce-a-forcer-lacces-aux-conversations-chiffrees.html"
+    "https://www.01net.com/actualites/whatsapp-signal-messenger-la-france-renonce-a-forcer-lacces-aux-conversations-chiffrees.html",
+    "https://www.blogdumoderateur.com/fable-5-2-mythos-5-2-nouveaux-modeles-anthropic/"
   ],
   "scripts": [
     {
@@ -583,6 +584,12 @@
       "source": "actualite",
       "titre": "Chiffrement : ce que ça change pour votre entreprise",
       "video_id": "-sW9idNRcP4"
+    },
+    {
+      "date": "2026-11-10T16:38:03.282240",
+      "source": "actualite",
+      "titre": "IA : arrêtez d'attendre la version parfaite",
+      "video_id": "BB1ayzKvuYA"
     }
   ]
 }
