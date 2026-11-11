@@ -1,15 +1,6 @@
 [
   {
     "date": "Dimanche 18 octobre 2026",
-    "timestamp": "2026-10-18T09:25:03.524785",
-    "theme": "Regard de fond",
-    "sujet": "Adoption IA dans les PME : 68 % satisfaits, mais satisfaits de quoi ?",
-    "post_x": "68 % des PME qui utilisent l'IA en sont satisfaites. C'est bien. Mais satisfaites de quoi ? D'un outil. Pas d'une transformation. La satisfaction à court terme est souvent l'ennemi de l'ancrage durable.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2111750369969594485",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-18-092402-weekend.png?v=092403"
-  },
-  {
-    "date": "Dimanche 18 octobre 2026",
     "timestamp": "2026-10-18T13:03:22.940953",
     "theme": "Conviction D&Co",
     "sujet": "La confusion entre usage et transformation : ce que les dirigeants de PME ne voient pas encore",
@@ -268,5 +259,14 @@
     "post_x": "Un dirigeant voulait un agent IA pour ses devis. On a passé deux jours à chercher la connaissance métier. Elle était dans trois têtes, zéro document. L'IA attendra.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2120035751886987668",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-10-060803.png?v=060803"
+  },
+  {
+    "date": "Mercredi 11 novembre 2026",
+    "timestamp": "2026-11-11T06:08:57.404444",
+    "theme": "Méthode Cartographier → Éliciter → Codifier",
+    "sujet": "Éliciter, c'est l'étape que personne ne veut faire. Et la seule qui compte vraiment.",
+    "post_x": "Éliciter, c'est faire sortir ce que les experts savent sans savoir qu'ils le savent. Pas de formulaire. Pas de réunion de plus. Une méthode. Sans ça, vous codifiez du vide.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2120398138301170104",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-11-060803.png?v=060803"
   }
 ]
