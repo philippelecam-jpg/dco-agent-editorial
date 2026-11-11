@@ -20,7 +20,8 @@
     "https://www.01net.com/actualites/applications-generees-par-ia-google-ouvre-une-porte-en-ferme-une-autre.html",
     "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/",
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
-    "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html"
+    "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html",
+    "https://www.actuia.com/actualite/la-justice-coreenne-plaide-pour-une-amende-contre-les-faux-arrets-de-lia/"
   ],
   "scripts": [
     {
@@ -142,6 +143,12 @@
       "source": "actualite",
       "titre": "118 millions volés à une banque française",
       "video_id": "JXcSY0c2u8c"
+    },
+    {
+      "date": "2026-11-11T17:04:04.037333",
+      "source": "actualite",
+      "titre": "Quand l'IA invente des jugements qui n'existent pas",
+      "video_id": "nm4nduLUXVA"
     }
   ]
 }
