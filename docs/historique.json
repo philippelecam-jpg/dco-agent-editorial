@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 18 octobre 2026",
-    "timestamp": "2026-10-18T13:03:22.940953",
-    "theme": "Conviction D&Co",
-    "sujet": "La confusion entre usage et transformation : ce que les dirigeants de PME ne voient pas encore",
-    "post_x": "Utiliser l'IA, c'est facile. Transformer son organisation avec l'IA, c'est autre chose. La plupart des dirigeants font le premier en pensant faire le second. Ce n'est pas un reproche. C'est un angle mort.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2111805297505234948",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-18-130158-weekend.png?v=130158"
-  },
-  {
     "date": "Lundi 19 octobre 2026",
     "timestamp": "2026-10-19T06:08:47.725154",
     "theme": "L'Entreprise OS",
@@ -268,5 +259,14 @@
     "post_x": "Éliciter, c'est faire sortir ce que les experts savent sans savoir qu'ils le savent. Pas de formulaire. Pas de réunion de plus. Une méthode. Sans ça, vous codifiez du vide.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2120398138301170104",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-11-060803.png?v=060803"
+  },
+  {
+    "date": "Jeudi 12 novembre 2026",
+    "timestamp": "2026-11-12T06:08:59.511132",
+    "theme": "Gouvernance et réglementation IA",
+    "sujet": "AI Act : ce que les PME doivent faire concrètement maintenant",
+    "post_x": "L'AI Act n'est pas une menace pour les PME. C'est un miroir. Il révèle ce que vous n'avez pas encore structuré.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2120760535977209863",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-12-060805.png?v=060805"
   }
 ]
