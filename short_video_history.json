@@ -85,7 +85,8 @@
     "https://www.actuia.com/actualite/lactualite-ia-du-mois-secteur-par-secteur-actuia-ouvre-sa-revue/",
     "https://www.01net.com/actualites/whatsapp-signal-messenger-la-france-renonce-a-forcer-lacces-aux-conversations-chiffrees.html",
     "https://www.blogdumoderateur.com/fable-5-2-mythos-5-2-nouveaux-modeles-anthropic/",
-    "https://www.01net.com/actualites/microsoft-corrige-plus-de-1-200-failles-windows-dont-une-breche-doutlook-deja-exploitee-par-des-pirates.html"
+    "https://www.01net.com/actualites/microsoft-corrige-plus-de-1-200-failles-windows-dont-une-breche-doutlook-deja-exploitee-par-des-pirates.html",
+    "https://www.blogdumoderateur.com/anthropic-claude-sheets-whiteboards-data/"
   ],
   "scripts": [
     {
@@ -597,6 +598,12 @@
       "source": "actualite",
       "titre": "Outlook piraté : ce que ça change pour vous",
       "video_id": "Nh3ZmGge9NU"
+    },
+    {
+      "date": "2026-11-12T16:38:04.217358",
+      "source": "actualite",
+      "titre": "Claude dans vos tableurs : ce que ça change vraiment",
+      "video_id": "c2neTVkdjow"
     }
   ]
 }
