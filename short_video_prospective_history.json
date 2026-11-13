@@ -1,9 +1,10 @@
 {
-  "last_theme_index": 5,
+  "last_theme_index": 0,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
-      "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses"
+      "Les reconfigurations macroéconomiques et systémiques de la valeur travail dans la répartition des richesses",
+      "L'identité professionnelle et le rapport psychologique de l'individu au travail dans une société post-salariale"
     ],
     "Technologie": [
       "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques",
@@ -110,6 +111,13 @@
       "angle": "Quel rôle l'éducation jouera-t-elle dans la reproduction ou la rupture des inégalités sociales à l'horizon 2050 ?",
       "titre": "2050 : et si apprendre ne voulait plus rien dire ?",
       "video_id": "jb5Skiee68k"
+    },
+    {
+      "date": "2026-11-13T09:20:22.152844",
+      "theme": "Travail",
+      "angle": "L'identité professionnelle et le rapport psychologique de l'individu au travail dans une société post-salariale",
+      "titre": "Et si votre métier n'existait plus, mais que vous, si ?",
+      "video_id": "YW3TngzvqLM"
     }
   ]
 }
