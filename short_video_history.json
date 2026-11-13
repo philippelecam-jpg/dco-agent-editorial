@@ -86,7 +86,8 @@
     "https://www.01net.com/actualites/whatsapp-signal-messenger-la-france-renonce-a-forcer-lacces-aux-conversations-chiffrees.html",
     "https://www.blogdumoderateur.com/fable-5-2-mythos-5-2-nouveaux-modeles-anthropic/",
     "https://www.01net.com/actualites/microsoft-corrige-plus-de-1-200-failles-windows-dont-une-breche-doutlook-deja-exploitee-par-des-pirates.html",
-    "https://www.blogdumoderateur.com/anthropic-claude-sheets-whiteboards-data/"
+    "https://www.blogdumoderateur.com/anthropic-claude-sheets-whiteboards-data/",
+    "https://www.clubic.com/actualite-639184-cyberattaque-contre-une-filiale-de-la-poste-les-donnees-de-22-millions-de-francais-derobees.html"
   ],
   "scripts": [
     {
@@ -604,6 +605,12 @@
       "source": "actualite",
       "titre": "Claude dans vos tableurs : ce que ça change vraiment",
       "video_id": "c2neTVkdjow"
+    },
+    {
+      "date": "2026-11-13T16:38:03.197863",
+      "source": "actualite",
+      "titre": "Vos données fournisseurs : le vrai risque ignoré",
+      "video_id": "Vw9N8jRGtnM"
     }
   ]
 }
