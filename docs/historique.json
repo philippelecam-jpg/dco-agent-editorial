@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 19 octobre 2026",
-    "timestamp": "2026-10-19T06:08:47.725154",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : Stocker, la première fonction que personne ne veut traiter en premier",
-    "post_x": "Avant de traiter ou diffuser, une organisation doit stocker. Pas des fichiers. De la connaissance gouvernée. C'est la base de l'Entreprise OS. Sans elle, l'IA tourne dans le vide.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2112063178972574074",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-19-060754.png?v=060754"
-  },
-  {
     "date": "Mardi 20 octobre 2026",
     "timestamp": "2026-10-20T06:08:55.750542",
     "theme": "Terrain et missions clients",
@@ -268,5 +259,14 @@
     "post_x": "L'AI Act n'est pas une menace pour les PME. C'est un miroir. Il révèle ce que vous n'avez pas encore structuré.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2120760535977209863",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-12-060805.png?v=060805"
+  },
+  {
+    "date": "Vendredi 13 novembre 2026",
+    "timestamp": "2026-11-13T06:08:49.585403",
+    "theme": "Formation et culture IA",
+    "sujet": "Formation IA : ce qu'elle change, et ce qu'elle ne change pas",
+    "post_x": "Une formation IA sans connaissance structurée, c'est apprendre à conduire sur une route qui n'existe pas encore. L'outil ne suffit pas. La matière, si.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2121122923767546282",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-13-060804.png?v=060805"
   }
 ]
