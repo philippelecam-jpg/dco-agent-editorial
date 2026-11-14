@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 21 octobre 2026",
-    "timestamp": "2026-10-21T06:08:54.298218",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Méthode Cartographier → Éliciter → Codifier : ce qu'on trouve avant de toucher quoi que ce soit",
-    "post_x": "La plupart des projets IA échouent avant même de commencer. Pas par manque d'outils. Par manque de cartographie. On déploie sans savoir ce qu'on a.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2112787981320732871",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-21-060800.png?v=060800"
-  },
-  {
     "date": "Jeudi 22 octobre 2026",
     "timestamp": "2026-10-22T06:08:53.141267",
     "theme": "Gouvernance et réglementation IA",
@@ -268,5 +259,14 @@
     "post_x": "Anthropic lance un LLM \"pour l'industrie\". Il connaît le secteur en général. Pas votre usine. Pas vos process. Pas ce que sait votre chef d'atelier depuis 18 ans. Ça, c'est votre travail. Avant.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2121534837857083864",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-14-092401-weekend.png?v=092401"
+  },
+  {
+    "date": "Samedi 14 novembre 2026",
+    "timestamp": "2026-11-14T15:38:36.699186",
+    "theme": "Actualité décryptée",
+    "sujet": "ChatGPT Wallet : les agents IA peuvent désormais acheter à votre place",
+    "post_x": "OpenAI lance ChatGPT Wallet : un agent IA qui achète pour vous. Utile. Mais avant de déléguer la décision d'achat à une IA, encore faut-il lui avoir dit ce que vous achetez, pourquoi, et selon quelles règles.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2121628849519972726",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-14-153734-weekend.png?v=153735"
   }
 ]
