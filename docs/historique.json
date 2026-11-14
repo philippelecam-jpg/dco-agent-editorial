@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mardi 20 octobre 2026",
-    "timestamp": "2026-10-20T06:08:55.750542",
-    "theme": "Terrain et missions clients",
-    "sujet": "Quand l'IA arrive dans une organisation qui ne se connaît pas elle-même",
-    "post_x": "Mission en cours. ETI de 400 personnes. Elles voulaient un copilot IA. On a d'abord passé deux jours à chercher où était leur connaissance métier. Réponse : dans les têtes. Nulle part ailleurs.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2112425598895395013",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-20-060802.png?v=060802"
-  },
-  {
     "date": "Mercredi 21 octobre 2026",
     "timestamp": "2026-10-21T06:08:54.298218",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
@@ -268,5 +259,14 @@
     "post_x": "Une formation IA sans connaissance structurée, c'est apprendre à conduire sur une route qui n'existe pas encore. L'outil ne suffit pas. La matière, si.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2121122923767546282",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-13-060804.png?v=060805"
+  },
+  {
+    "date": "Samedi 14 novembre 2026",
+    "timestamp": "2026-11-14T09:25:02.180495",
+    "theme": "Actualité décryptée",
+    "sujet": "Anthropic lance Claude for Manufacturing : ce que ça révèle sur la connaissance métier dans l'industrie",
+    "post_x": "Anthropic lance un LLM \"pour l'industrie\". Il connaît le secteur en général. Pas votre usine. Pas vos process. Pas ce que sait votre chef d'atelier depuis 18 ans. Ça, c'est votre travail. Avant.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2121534837857083864",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-14-092401-weekend.png?v=092401"
   }
 ]
