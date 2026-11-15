@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 22 octobre 2026",
-    "timestamp": "2026-10-22T06:08:53.141267",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "L'AI Act n'est pas un problème de conformité. C'est un révélateur d'organisation.",
-    "post_x": "40 % des PME utilisent l'IA. 11 % seulement automatisent vraiment. L'écart, ce n'est pas un manque d'outils. C'est un manque de gouvernance.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2113150363318853633",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-22-060758.png?v=060759"
-  },
-  {
     "date": "Vendredi 23 octobre 2026",
     "timestamp": "2026-10-23T06:09:31.324314",
     "theme": "Formation et culture IA",
@@ -268,5 +259,14 @@
     "post_x": "OpenAI lance ChatGPT Wallet : un agent IA qui achète pour vous. Utile. Mais avant de déléguer la décision d'achat à une IA, encore faut-il lui avoir dit ce que vous achetez, pourquoi, et selon quelles règles.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2121628849519972726",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-14-153734-weekend.png?v=153735"
+  },
+  {
+    "date": "Dimanche 15 novembre 2026",
+    "timestamp": "2026-11-15T09:25:18.010443",
+    "theme": "Actualité décryptée",
+    "sujet": "ChatGPT Business Hub : OpenAI permet aux entreprises de revendiquer leur fiche dans l'assistant",
+    "post_x": "OpenAI lance les fiches entreprises dans ChatGPT. Un réflexe à avoir, comme Google Business Profile en son temps. Mais avant de revendiquer votre fiche, une question : qu'est-ce que vous allez y mettre ?",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2121897288389849467",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-15-092416-weekend.png?v=092417"
   }
 ]
