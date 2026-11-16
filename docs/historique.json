@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 23 octobre 2026",
-    "timestamp": "2026-10-23T06:09:31.324314",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : l'enthousiasme ne suffit pas",
-    "post_x": "53 % des PME utilisent l'IA. 11 % automatisent vraiment des tâches. Ce n'est pas un problème d'outil. C'est un problème de préparation.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2113512742019551620",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-23-060756.png?v=060757"
-  },
-  {
     "date": "Samedi 24 octobre 2026",
     "timestamp": "2026-10-24T09:25:09.601890",
     "theme": "Actualité décryptée",
@@ -268,5 +259,14 @@
     "post_x": "OpenAI lance les fiches entreprises dans ChatGPT. Un réflexe à avoir, comme Google Business Profile en son temps. Mais avant de revendiquer votre fiche, une question : qu'est-ce que vous allez y mettre ?",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2121897288389849467",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-15-092416-weekend.png?v=092417"
+  },
+  {
+    "date": "Lundi 16 novembre 2026",
+    "timestamp": "2026-11-16T06:08:58.649186",
+    "theme": "L'Entreprise OS",
+    "sujet": "L'Entreprise OS : votre organisation a besoin d'un nouveau système d'exploitation",
+    "post_x": "Votre SI stocke des données. L'Entreprise OS, lui, fait circuler la connaissance là où les décisions se prennent. Ce n'est pas la même chose.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2122210083656614230",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-16-060804.png?v=060804"
   }
 ]
