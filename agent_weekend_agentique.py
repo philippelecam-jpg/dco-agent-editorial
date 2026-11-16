@@ -17,6 +17,7 @@ la couche de décision change.
 import os
 import json
 import re
+import subprocess
 import requests
 from datetime import datetime
 
@@ -31,7 +32,6 @@ from agent import (
     nettoyer_package,
     save_visual,
     save_package,
-    git_commit_push,
     generate_visual,
     upload_media_to_x,
     publish_to_x,
@@ -76,6 +76,7 @@ ETAT = {
     "visuel_url": "",
     "image_ok": False,
     "tweet_url": "",
+    "linkedin_notifie": False,
 }
 
 
@@ -196,6 +197,8 @@ def _evaluer_sensibilite_sujet(sujet, resume_angle):
 
 
 def _preparer_contenu(theme, sujet, post_x, post_linkedin, hashtags):
+    if ETAT["image_ok"]:
+        raise RuntimeError("Le contenu est déjà associé à un visuel déployé.")
     package = {
         "theme": theme,
         "sujet": sujet,
@@ -226,7 +229,39 @@ def _preparer_contenu(theme, sujet, post_x, post_linkedin, hashtags):
     return {"statut": "contenu enregistré", "sujet": sujet}
 
 
+class ErreurDeploiementVisuel(RuntimeError):
+    """Le visuel doit être disponible avant tout envoi aux réseaux sociaux."""
+
+
+def _git(*args, check=True):
+    return subprocess.run(["git", *args], check=check)
+
+
+def _synchroniser_main():
+    _git("fetch", "origin", "main")
+    if _git("rebase", "FETCH_HEAD", check=False).returncode:
+        _git("rebase", "--abort", check=False)
+        raise RuntimeError("Conflit Git pendant la synchronisation avec main.")
+
+
+def _pousser_fichiers(paths, message):
+    _git("config", "user.name", "agent-editorial-dco")
+    _git("config", "user.email", "agent@decisionsandco.com")
+    _git("add", "--", *paths)
+    _git("commit", "-m", message, "--", *paths)
+
+    for _ in range(3):
+        _synchroniser_main()
+        if _git("push", "origin", "HEAD:refs/heads/main", check=False).returncode == 0:
+            return
+    raise RuntimeError("Échec du push sur main après trois tentatives.")
+
+
 def _generer_et_deployer_visuel():
+    if ETAT["image_ok"]:
+        return {"visuel_url": ETAT["visuel_url"], "deploye": True}
+    if not ETAT["package"]:
+        raise RuntimeError("Préparer le contenu avant de générer le visuel.")
     package = ETAT["package"]
     # Nom de fichier unique par EXÉCUTION, pas seulement par jour. Le CDN de
     # GitHub Pages met en cache par chemin de fichier et ignore le paramètre
@@ -250,22 +285,30 @@ def _generer_et_deployer_visuel():
     package["visuel_url"] = visuel_url
     save_package(package, ETAT["agenda"])
 
-    git_commit_push(
-        ["docs/package.json", visuel_path],
-        f"Visuel et package week-end du {date_slug}",
-    )
+    try:
+        _pousser_fichiers(
+            ["docs/package.json", visuel_path],
+            f"Visuel et package week-end du {date_slug}",
+        )
+    except (subprocess.CalledProcessError, RuntimeError) as erreur:
+        raise ErreurDeploiementVisuel("Impossible de pousser le visuel sur main.") from erreur
 
-    image_ok = attendre_url(visuel_url)
+    if not attendre_url(visuel_url):
+        raise ErreurDeploiementVisuel(f"Visuel indisponible sur GitHub Pages : {visuel_url}")
 
     ETAT["image_buf"] = image_buf
     ETAT["visuel_path"] = visuel_path
     ETAT["visuel_url"] = visuel_url
-    ETAT["image_ok"] = image_ok
+    ETAT["image_ok"] = True
 
-    return {"visuel_url": visuel_url, "deploye": image_ok}
+    return {"visuel_url": visuel_url, "deploye": True}
 
 
 def _publier_x():
+    if not ETAT["image_ok"]:
+        raise ErreurDeploiementVisuel("Publication X bloquée : visuel indisponible.")
+    if ETAT["tweet_url"]:
+        return {"tweet_url": ETAT["tweet_url"]}
     package = ETAT["package"]
 
     if DRY_RUN:
@@ -274,6 +317,7 @@ def _publier_x():
         ETAT["tweet_url"] = tweet_url
         return {"tweet_url": tweet_url, "dry_run": True}
 
+    ETAT["image_buf"].seek(0)
     media_id = upload_media_to_x(ETAT["image_buf"])
     result = publish_to_x(
         post_text=package["post_x"],
@@ -287,16 +331,24 @@ def _publier_x():
 
 
 def _publier_linkedin():
+    if not ETAT["image_ok"]:
+        raise ErreurDeploiementVisuel("Publication LinkedIn bloquée : visuel indisponible.")
+    if ETAT["linkedin_notifie"]:
+        return {"statut": "déjà notifié"}
+    if not ETAT["tweet_url"]:
+        raise RuntimeError("Publier sur X avant de notifier LinkedIn.")
     if DRY_RUN:
         print("[DRY_RUN] publier_linkedin aurait notifié Make.com — appel réel ignoré.")
         return {"statut": "notifié (dry_run)", "dry_run": True}
 
-    notify_make_linkedin(
+    if not notify_make_linkedin(
         ETAT["package"],
         ETAT["agenda"],
-        image_url=ETAT["visuel_url"] if ETAT["image_ok"] else "",
-        has_image=ETAT["image_ok"],
-    )
+        image_url=ETAT["visuel_url"],
+        has_image=True,
+    ):
+        raise RuntimeError("Make n’a pas confirmé la réception du post LinkedIn.")
+    ETAT["linkedin_notifie"] = True
     return {"statut": "notifié"}
 
 
@@ -348,8 +400,9 @@ def _terminer_execution(resume):
     package = ETAT.get("package") or {}
     if DRY_RUN:
         print(f"[DRY_RUN] terminer_execution — historique.json non modifié (test).")
-    elif package.get("sujet"):
-        save_historique(ETAT["historique"], {
+    elif ETAT["tweet_url"]:
+        _synchroniser_main()
+        save_historique(load_historique(), {
             "date": today_label(),
             "timestamp": datetime.now().isoformat(),
             "theme": package.get("theme", "Week-end"),
@@ -358,6 +411,9 @@ def _terminer_execution(resume):
             "tweet_url": ETAT.get("tweet_url", ""),
             "visuel_url": ETAT.get("visuel_url", ""),
         })
+        _pousser_fichiers(["docs/historique.json"], "Historique éditorial week-end")
+    if not DRY_RUN and ETAT["tweet_url"] and not ETAT["linkedin_notifie"]:
+        raise RuntimeError("Publication X effectuée, notification LinkedIn non confirmée.")
     print(f"[FIN WEEK-END] {resume}")
     return {"statut": "terminé"}
 
@@ -477,7 +533,11 @@ def main():
                     "tool_use_id": block["id"],
                     "content": json.dumps(resultat, ensure_ascii=False, default=str),
                 })
+            except ErreurDeploiementVisuel:
+                raise
             except Exception as e:
+                if nom_outil == "terminer_execution":
+                    raise
                 tool_results.append({
                     "type": "tool_result",
                     "tool_use_id": block["id"],

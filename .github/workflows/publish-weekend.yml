@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -46,15 +49,8 @@ jobs:
           # Jeton fourni automatiquement par GitHub Actions — aucun secret à
           # créer. Sert uniquement à créer l'issue de notification d'escalade.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Sur déclenchement manuel : valeur choisie dans l'interface (true par défaut).
+          # Sur déclenchement manuel : valeur choisie dans l'interface (false par défaut).
           # Sur déclenchement cron (week-end réel) : toujours false, jamais de test en prod.
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: python agent_weekend_agentique.py
 
-      - name: Commit et push du package
-        run: |
-          git config user.name "Agent Editorial DCo Weekend"
-          git config user.email "agent@decisionsandco.com"
-          git add docs/
-          git diff --staged --quiet || git commit -m "Package éditorial week-end $(date '+%Y-%m-%d-%H%M')"
-          git push

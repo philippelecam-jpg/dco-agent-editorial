@@ -618,8 +618,10 @@ def notify_make_linkedin(package, agenda, image_url="", has_image=False):
         )
         resp.raise_for_status()
         print(f"LinkedIn notifié via Make : {resp.status_code} (image : {has_image})")
+        return True
     except Exception as e:
         print(f"Erreur notification Make LinkedIn : {e}")
+        return False
 
 
 def save_package(package, agenda):
