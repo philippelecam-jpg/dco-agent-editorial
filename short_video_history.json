@@ -89,7 +89,8 @@
     "https://www.blogdumoderateur.com/anthropic-claude-sheets-whiteboards-data/",
     "https://www.clubic.com/actualite-639184-cyberattaque-contre-une-filiale-de-la-poste-les-donnees-de-22-millions-de-francais-derobees.html",
     "https://www.01net.com/actualites/panne-microsoft-chatgpt-et-claude-egalement-touches-et-ils-ne-sont-pas-les-seuls.html",
-    "https://www.01net.com/actualites/1-h-30-de-plus-par-jour-lia-devait-vous-faire-gagner-du-temps-mais-ce-nest-finalement-pas-le-cas.html"
+    "https://www.01net.com/actualites/1-h-30-de-plus-par-jour-lia-devait-vous-faire-gagner-du-temps-mais-ce-nest-finalement-pas-le-cas.html",
+    "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-novembre-2026/"
   ],
   "scripts": [
     {
@@ -625,6 +626,12 @@
       "source": "actualite",
       "titre": "L'IA ne réduit pas le temps de travail, elle le déplace",
       "video_id": "b5DP_nxmIyg"
+    },
+    {
+      "date": "2026-11-16T16:38:03.808790",
+      "source": "actualite",
+      "titre": "Agents IA : le vrai critère de choix que vous ratez",
+      "video_id": "nF8tO72MIgI"
     }
   ]
 }
