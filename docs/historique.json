@@ -1,14 +1,5 @@
 [
   {
-    "date": "Samedi 24 octobre 2026",
-    "timestamp": "2026-10-24T13:10:03.099170",
-    "theme": "Actualité décryptée",
-    "sujet": "Mistral AI lance Voxtral 3 : l'assistant téléphonique IA enfin accessible aux PME",
-    "post_x": "Mistral rend l'IA vocale accessible à la minute. Voxtral 3 peut décrocher à votre place, prendre des rendez-vous, répondre aux clients. Puissant. Mais si personne n'a jamais codifié vos règles de traitement, il va automatiser vos approximations. L'outil est prêt. L'organisation, elle ?",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-24-130912-weekend.png?v=130913"
-  },
-  {
     "date": "Dimanche 25 octobre 2026",
     "timestamp": "2026-10-25T09:25:10.332331",
     "theme": "Regard de fond",
@@ -268,5 +259,21 @@
     "post_x": "Un client nous a demandé d'automatiser ses comptes-rendus de réunion. On a accepté. Deux semaines plus tard, on lui a rendu son vrai problème : personne ne savait ce qui était décidé, ni par qui, ni pourquoi.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2122572445286580385",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-17-060757.png?v=060757"
+  },
+  {
+    "date": "Mardi 17 novembre 2026",
+    "timestamp": "2026-11-17T14:52:06.492840",
+    "theme": "ROI et déploiement",
+    "sujet": "57 % des dirigeants de PME-ETI n'ont pas de stratégie IA formalisée : ce que ce chiffre révèle sur la qualité des pilotes en cours",
+    "angle": "Le paradoxe Bpifrance Le Lab — quand un dirigeant perçoit l'IA comme un enjeu de survie mais n'a pas défini de critères de succès, comment distingue-t-il du temps réellement libéré d'un temps simplement déplacé dans ses équipes ?",
+    "question_metier": "Comment mesurer, avant de généraliser un pilote, si le gain de temps constaté est structurel ou simplement reporté sur d'autres tâches non visibles ?",
+    "sources": [
+      "https://lelab.bpifrance.fr/storage/sites/31/2026/01/IA-dans-les-PME-et-ETI-Francaises-Revolution-Tranquille.pdf",
+      "https://www.digitalgagnant.fr/adoption-ia-par-pme-francaises-2025-2026/"
+    ],
+    "statut": "publié sur X",
+    "post_x": "57 % des dirigeants de PME-ETI n'ont pas de stratégie IA formalisée. Sans critères définis, comment savoir si le temps gagné est réel ou simplement déplacé dans les équipes ?",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2122704123946832094",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-17-145112.png?v=145112"
   }
 ]
