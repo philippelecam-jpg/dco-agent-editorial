@@ -35,7 +35,7 @@ jobs:
           python-version: '3.11'
 
       - name: Installer les dépendances
-        run: pip install requests requests-oauthlib Pillow
+        run: pip install requests requests-oauthlib Pillow twitter-text-parser==3.0.0 'setuptools<81'
 
       - name: Lancer l'agent week-end (agentique)
         env:

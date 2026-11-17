@@ -4,6 +4,7 @@
 import os
 import json
 import re
+import unicodedata
 import requests
 from datetime import datetime
 from io import BytesIO
@@ -601,13 +602,55 @@ def upload_media_to_x(image_buf):
     return resp.json()["media_id_string"]
 
 
+# Marge sous la limite de 280 pour les comptes X qui publient des posts courts.
+X_POST_WEIGHT_LIMIT = 270
+
+
+def _formater_post_x(post_text, hashtags):
+    # Seuls les workflows qui publient sur X ont besoin de cette dépendance.
+    from twitter_text import parse_tweet
+    from twitter_text.config import config
+
+    post_text = unicodedata.normalize("NFC", post_text).replace("\r\n", "\n").replace("\r", "\n").strip()
+    tags = hashtags.split()
+
+    while tags:
+        candidate = f"{post_text}\n\n{' '.join(tags)}".strip()
+        parsed = parse_tweet(candidate)
+        if parsed.valid and parsed.weightedLength <= X_POST_WEIGHT_LIMIT:
+            return candidate
+        tags.pop()
+
+    parsed = parse_tweet(post_text)
+    if parsed.valid and parsed.weightedLength <= X_POST_WEIGHT_LIMIT:
+        return post_text
+    if parsed.weightedLength <= X_POST_WEIGHT_LIMIT:
+        raise ValueError("Le texte du post X est vide ou contient des caractères refusés.")
+
+    suffix = " …"
+    options = {
+        **config["defaults"],
+        "max_weighted_tweet_length": X_POST_WEIGHT_LIMIT - parse_tweet(suffix).weightedLength,
+    }
+    # La plage de twitter-text conserve les URL et les séquences emoji entières.
+    # Son index est exprimé en unités UTF-16, contrairement aux slices Python.
+    end = (parse_tweet(post_text, options).validRangeEnd + 1) * 2
+    prefix = post_text.encode("utf-16-le")[:end].decode("utf-16-le")
+    if prefix[-1:].strip() and post_text[len(prefix):len(prefix) + 1].strip():
+        words = prefix.rsplit(maxsplit=1)
+        if len(words) == 2:
+            prefix = words[0]
+    candidate = prefix.rstrip() + suffix
+    parsed = parse_tweet(candidate)
+    if not parsed.valid or parsed.weightedLength > X_POST_WEIGHT_LIMIT:
+        raise ValueError("Impossible de raccourcir le texte du post X dans la limite autorisée.")
+    return candidate
+
+
 def publish_to_x(post_text, hashtags="", media_id=None):
     """Publie un tweet avec image optionnelle."""
+    full_text = _formater_post_x(post_text, hashtags)
     auth = OAuth1(X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET)
-    full_text = f"{post_text}\n\n{hashtags}".strip() if hashtags else post_text
-    if len(full_text) > 280:
-        print(f"ATTENTION : texte X à {len(full_text)} caractères, troncature à 280.")
-        full_text = full_text[:279].rstrip() + "…"
     payload = {"text": full_text}
     if media_id:
         payload["media"] = {"media_ids": [media_id]}
