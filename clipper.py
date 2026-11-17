@@ -325,21 +325,28 @@ class Transcriber:
         self.cache_dir = Path(config["storage"]["transcript_cache_dir"])
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.logger = logger
+        self.attempted = 0
+        self.available = 0
 
     def get_transcript(self, video_id: str) -> Optional[list[dict]]:
         """Retourne la transcription segmentée [{text, start, duration}]."""
+        self.attempted += 1
         cache_file = self.cache_dir / f"{video_id}.json"
         if cache_file.exists():
             self.logger.debug(f"Transcript en cache : {video_id}")
             with open(cache_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                transcript = json.load(f)
+            if transcript:
+                self.available += 1
+                return transcript
 
         transcript = self._fetch_youtube_transcript(video_id)
 
-        if transcript is None and self.cfg.get("fallback_to_whisper"):
+        if not transcript and self.cfg.get("fallback_to_whisper"):
             transcript = self._fetch_whisper_transcript(video_id)
 
         if transcript:
+            self.available += 1
             with open(cache_file, "w", encoding="utf-8") as f:
                 json.dump(transcript, f, ensure_ascii=False, indent=2)
 
@@ -377,7 +384,7 @@ class Transcriber:
             if not vtt_files:
                 self.logger.warning(f"  Pas de sous-titres VTT : {video_id}")
                 if result.stderr:
-                    self.logger.debug(f"  yt-dlp stderr : {result.stderr[-300:]}")
+                    self.logger.warning("  yt-dlp sous-titres (%s) : %s", video_id, result.stderr.strip()[-1500:])
                 return None
 
             # Préférer français si disponible
@@ -456,7 +463,7 @@ class Transcriber:
                     "-o", audio_path,
                     f"https://youtu.be/{video_id}",
                 ],
-                check=True, capture_output=True, timeout=120,
+                check=True, capture_output=True, text=True, timeout=120,
             )
             model = whisper.load_model(self.cfg.get("whisper_model", "base"))
             # Laisser Whisper détecter la langue automatiquement
@@ -479,6 +486,12 @@ class Transcriber:
                 f"(langue détectée : {detected_lang}, {len(segments)} segments)"
             )
             return segments
+        except subprocess.CalledProcessError as exc:
+            self.logger.error(
+                "  Téléchargement audio yt-dlp (%s, code %s) : %s",
+                video_id, exc.returncode, (exc.stderr or exc.stdout or "").strip()[-1500:],
+            )
+            return None
         except Exception as e:
             self.logger.error(f"  Whisper échoué : {e}")
             return None
@@ -1064,6 +1077,8 @@ class ClippingEngine:
                 self.logger.error(f"Thème introuvable : {theme_filter}")
                 return
 
+        self.transcriber.attempted = 0
+        self.transcriber.available = 0
         max_total = max_clips_override or self.config["clipping"]["max_clips_per_run"]
         clips_generated = 0
         all_clips_meta = []
@@ -1107,6 +1122,10 @@ class ClippingEngine:
             f"\n=== Terminé : {clips_generated} clip(s) généré(s) ==="
         )
         self._print_summary(all_clips_meta)
+        if self.transcriber.attempted and not self.transcriber.available:
+            raise RuntimeError(
+                f"Aucune transcription obtenue sur {self.transcriber.attempted} tentative(s)."
+            )
 
     def _process_video(
         self, video: dict, theme: dict, max_clips_override: int = 3
