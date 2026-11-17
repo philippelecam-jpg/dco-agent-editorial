@@ -1,0 +1,42 @@
+name: Reprendre les articles du 28 octobre et du 4 novembre
+on:
+  push:
+    branches: [retry/articles-2026-10-28-2026-11-04]
+    paths: [.github/workflows/backfill-articles-2026-10-28-2026-11-04.yml]
+permissions:
+  contents: read
+jobs:
+  publier:
+    if: github.run_attempt == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        dossier:
+          - 2026-10-28-trois-etapes-dans-l-ordre-pas-une-de-moins
+          - 2026-11-04-ce-que-votre-charte-ia-doit-vraiment-contenir
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests requests-oauthlib Pillow
+      - name: Publier le brouillon existant
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SITE_REPO: ${{ secrets.SITE_REPO }}
+          SITE_REPO_PAT: ${{ secrets.SITE_REPO_PAT }}
+          DRAFT_DATE: ${{ matrix.dossier }}
+          DRY_RUN: 'false'
+        run: python -u agent_article_hebdo.py
