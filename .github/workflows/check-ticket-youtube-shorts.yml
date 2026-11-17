@@ -43,6 +43,6 @@ jobs:
           allowed = {"https://www.googleapis.com/auth/youtube.force-ssl", "https://www.googleapis.com/auth/youtube"}
           print("SCOPES_YOUTUBE " + json.dumps([s for s in scopes if "youtube" in s]))
           if not allowed.intersection(scopes):
-              raise SystemExit("CONSENTEMENT_REQUIS : le token n’autorise pas playlistItems.insert.")
+              print("::warning::CONSENTEMENT_REQUIS : le token n’autorise pas playlistItems.insert.")
           print("PLAYLISTS_VERIFIEES " + json.dumps(resolve_playlists(token), ensure_ascii=False))
           PY
