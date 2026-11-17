@@ -381,10 +381,8 @@ def _fit_title(draw, titre: str, font_path: str, max_width: int, max_height: int
     return font, _wrap_text(draw, titre_ajuste.upper(), font, max_width)
 
 
-def _draw_title_and_badge(canvas, titre: str, left_w: int):
-    """Identique au mécanisme du format avatar -- même garantie de
-    fiabilité (jamais tronqué), badge 'IA' repris pour l'identité de marque
-    partagée entre les 3 formats du dispositif."""
+def _draw_title(canvas, titre: str, left_w: int):
+    """Ajoute le titre dans la zone gauche de la miniature."""
     draw = ImageDraw.Draw(canvas, "RGBA")
     FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     margin = 56
@@ -399,25 +397,6 @@ def _draw_title_and_badge(canvas, titre: str, left_w: int):
         draw.text((margin, y), line, font=font_title, fill=(255, 255, 255, 255))
         y += line_height
 
-    badge_cx, badge_cy, badge_r = margin + 34, THUMB_H - 70, 34
-    for glow_r in range(badge_r + 14, badge_r, -2):
-        alpha = int(60 * (glow_r - badge_r) / 14)
-        draw.ellipse(
-            [(badge_cx - glow_r, badge_cy - glow_r), (badge_cx + glow_r, badge_cy + glow_r)],
-            outline=(0, 168, 168, alpha), width=2,
-        )
-    draw.ellipse(
-        [(badge_cx - badge_r, badge_cy - badge_r), (badge_cx + badge_r, badge_cy + badge_r)],
-        outline=(0, 168, 168, 255), width=3,
-    )
-    try:
-        font_badge = ImageFont.truetype(FONT_PATH, 26)
-    except Exception:
-        font_badge = ImageFont.load_default()
-    bbox = draw.textbbox((0, 0), "IA", font=font_badge)
-    bw, bh = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    draw.text((badge_cx - bw / 2, badge_cy - bh / 2 - bbox[1]), "IA",
-               font=font_badge, fill=(0, 168, 168, 255))
     return canvas
 
 
@@ -479,7 +458,7 @@ def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
     canvas = img.resize((THUMB_W, THUMB_H), Image.LANCZOS)
 
     LEFT_W = int(THUMB_W * 0.58)
-    _draw_title_and_badge(canvas, titre, LEFT_W)
+    _draw_title(canvas, titre, LEFT_W)
     canvas.save(out_path, "JPEG", quality=92)
     return out_path
 
@@ -517,7 +496,7 @@ def generate_thumbnail_fallback(titre: str, out_path: Path) -> Path:
     photo = photo.resize((RIGHT_W, THUMB_H), Image.LANCZOS)
     canvas.paste(photo, (LEFT_W, 0))
 
-    _draw_title_and_badge(canvas, titre, LEFT_W)
+    _draw_title(canvas, titre, LEFT_W)
     canvas.save(out_path, "JPEG", quality=92)
     return out_path
 
