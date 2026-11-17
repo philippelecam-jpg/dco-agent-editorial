@@ -1,14 +1,6 @@
 [
   {
     "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T09:12:49.963704",
-    "theme": "L'Entreprise OS",
-    "titre": "Ce que votre organisation fait sans le savoir depuis des années",
-    "dossier": "articles/drafts/2026-08-25-ce-que-votre-organisation-fait-sans-le-savoir-depuis-des-ann",
-    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/1"
-  },
-  {
-    "date": "Mardi 25 août 2026",
     "timestamp": "2026-08-25T12:18:02.966174",
     "theme": "Gouvernance et réglementation IA",
     "titre": "Ce que l'AI Act change vraiment pour votre entreprise",
@@ -158,5 +150,21 @@
     "titre": "Ce que vos collaborateurs apprennent en formation IA, et oublient le lundi suivant",
     "dossier": "articles/drafts/2026-11-11-ce-que-vos-collaborateurs-apprennent-en-formation-ia-et",
     "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/43"
+  },
+  {
+    "date": "Mardi 17 novembre 2026",
+    "sujet": "Passage à l'échelle : quel seuil de qualité conditionne la généralisation d'un automatisme dans une PME ou ETI ?",
+    "angle": "Angle passage à l'échelle — Partant du constat que la Banque de France qualifie 67 % des usages d'IA générative de « principalement limités ou expérimentaux », cet angle traite de la décision de bascule entre pilote et déploiement généralisé : comment définir un seuil de qualité acceptable (taux d'erreur, fréquence des exceptions, satisfaction des utilisateurs métier), qui le fixe dans l'organisation, et quel processus de validation enclenche la décision d'extension. Exemple hypothétique : un automatisme de traitement de bons de commande dans une ETI de distribution.",
+    "question_metier": "Quel niveau de fiabilité et quel volume d'exceptions traitées manuellement doivent conditionner la décision de généraliser un automatisme IA — et qui dans l'organisation est légitime pour trancher ?",
+    "sources": [
+      "https://www.sowaycom.com/blog/adoption-ia-entreprises-france-insee-banque-de-france-bpifrance-2026",
+      "https://subventions-ia.fr/dossier/intelligence-artificielle-pme-2026"
+    ],
+    "statut": "PR site enregistrée",
+    "timestamp": "2026-11-17T14:56:32.486421",
+    "theme": "ROI et déploiement",
+    "titre": "67 % d'expérimentations : comment décider de passer à l'échelle",
+    "dossier": "articles/drafts/2026-11-17-67-d-experimentations-comment-decider-de-passer-a-l-echelle",
+    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/46"
   }
 ]
