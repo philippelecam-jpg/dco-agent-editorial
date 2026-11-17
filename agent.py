@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from requests_oauthlib import OAuth1
 
 from editorial_selector import select_subject, subject_brief, subject_fields
+from editorial_style import REGLE_TIRETS, sans_tirets_longs
 
 # --- Config ---
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
@@ -75,7 +76,7 @@ Secteurs : industrie, transport, services, secteur public.
 ## Ton
 Direct. Ancré. Concret. Exigeant sans être arrogant.
 Phrases courtes. Une idée par phrase.
-Ponctuation sobre : virgule, point, deux-points. Jamais de tiret cadratin.
+Ponctuation sobre. La règle commune sur les tirets longs s'applique à tous les contenus.
 Mots interdits : révolution, disruptif, écosystème, synergies,
 "Dans un monde où", "L'IA change tout".
 Mots D&Co : matière, connaissance, gouvernance, structurer, codifier, ancrer.
@@ -88,7 +89,7 @@ def today_label():
 
 
 # --- Nettoyage des sorties ---
-CHAMPS_A_NETTOYER = ("sujet", "titre", "post_x", "post_linkedin", "newsletter", "article")
+CHAMPS_A_NETTOYER = ("sujet", "titre", "post_x", "post_linkedin", "newsletter", "article", "hashtags")
 
 
 def nettoyer_texte(txt):
@@ -112,12 +113,7 @@ def nettoyer_texte(txt):
     # 2. Signature : retire l'arobase et normalise la casse
     txt = re.sub(r"(?:@[ \t]*)?d[ée]cisions[ \t]*&[ \t]*co\b", SIGNATURE, txt, flags=re.I)
 
-    # 3. Tiret cadratin en début de ligne (signature) : on le supprime
-    #    Le trait d'union simple est préservé pour ne pas casser les listes.
-    txt = re.sub(r"(?m)^[ \t]*[—–][ \t]*", "", txt)
-
-    # 4. Tiret cadratin ou demi-cadratin dans le corps du texte
-    txt = re.sub(r"\s*[—–]\s*", ", ", txt)
+    txt = sans_tirets_longs(txt)
 
     # 5. Nettoyage des artefacts produits par les substitutions
     txt = re.sub(r",[\s,]*,", ",", txt)
@@ -211,9 +207,7 @@ CONTRAINTES DE FORMAT STRICTES (non négociables) :
    ni titres avec #. LinkedIn et X n'interprètent pas le markdown et affichent
    les astérisques en clair, ce qui décrédibilise le post.
    Pour mettre en valeur une idée, utilise une phrase courte isolée par un saut de ligne.
-7. AUCUN tiret cadratin (—) ni demi-cadratin (–). C'est une signature d'écriture
-   générée par IA, immédiatement reconnaissable. Utilise une virgule, un deux-points,
-   un point, ou coupe la phrase en deux.
+7. {REGLE_TIRETS}
 8. Signature exacte, sans arobase : "{SIGNATURE}"
    L'arobase ne crée aucun lien sur LinkedIn, il s'affiche tel quel.
 
@@ -542,8 +536,8 @@ def _formater_post_x(post_text, hashtags):
     from twitter_text import parse_tweet
     from twitter_text.config import config
 
-    post_text = unicodedata.normalize("NFC", post_text).replace("\r\n", "\n").replace("\r", "\n").strip()
-    tags = hashtags.split()
+    post_text = unicodedata.normalize("NFC", sans_tirets_longs(post_text)).replace("\r\n", "\n").replace("\r", "\n").strip()
+    tags = sans_tirets_longs(hashtags).split()
 
     while tags:
         candidate = f"{post_text}\n\n{' '.join(tags)}".strip()
@@ -607,9 +601,9 @@ def notify_make_linkedin(package, agenda, image_url="", has_image=False):
             webhook_url,
             headers={"x-make-apikey": MAKE_API_KEY},
             json={
-                "sujet": package.get("sujet", ""),
-                "post_linkedin": package.get("post_linkedin", ""),
-                "post_x": package.get("post_x", ""),
+                "sujet": sans_tirets_longs(package.get("sujet", "")),
+                "post_linkedin": sans_tirets_longs(package.get("post_linkedin", "")),
+                "post_x": sans_tirets_longs(package.get("post_x", "")),
                 "theme": agenda["theme"],
                 "date": today_label(),
                 "image_url": image_url,

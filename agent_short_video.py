@@ -39,13 +39,14 @@ import os
 import json
 import base64
 import random
-import re
 import subprocess
 import textwrap
 from datetime import datetime
 from pathlib import Path
 
 import requests
+
+from editorial_style import REGLE_TIRETS, sans_tirets_longs
 import feedparser
 from PIL import Image, ImageDraw, ImageFont
 
@@ -80,14 +81,7 @@ except Exception as e:
         solid.putalpha(alpha)
         return solid
 
-    def nettoyer_texte(txt):
-        # Fallback minimal : retire au moins les tirets cadratins/demi-cadratins
-        # si agent.py n'est pas importable. Moins complet que la version
-        # d'agent.py (pas de nettoyage markdown), mais évite le principal
-        # signal "écrit par IA" en attendant que l'import soit rétabli.
-        if not isinstance(txt, str):
-            return txt
-        return re.sub(r"\s*[—–]\s*", ", ", txt)
+    nettoyer_texte = sans_tirets_longs
 
 
 def get_palette():
@@ -226,6 +220,7 @@ def generate_script_from_news(news_item: dict) -> dict:
         "saisir. L'actu est un point de départ, pas le sujet du short.\n\n"
         f"Actualité du jour : {news_item['titre']}\n"
         f"Résumé : {news_item['resume'][:400]}\n\n"
+        f"{REGLE_TIRETS} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
         " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel), "
@@ -271,6 +266,7 @@ def generate_script(theme: str) -> dict:
         "jamais jargon creux. Le texte doit être fait pour être LU À VOIX HAUTE : "
         "phrases courtes, rythme naturel, pas de mise en forme. "
         "Thème du jour : " + theme + ". "
+        f"{REGLE_TIRETS} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
         " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel), "

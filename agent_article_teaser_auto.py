@@ -37,6 +37,8 @@ from urllib.parse import quote
 
 import requests
 
+from editorial_style import REGLE_TIRETS
+
 from agent import (
     ANTHROPIC_API_KEY,
     MAKE_WEBHOOK_URL,
@@ -115,10 +117,11 @@ URL : {article_url}
 
 RÈGLES :
 1. 3 à 5 phrases maximum, format post LinkedIn (pas de titre, pas de markdown).
-2. Accroche forte dès la première phrase — pas de "Découvrez notre nouvel article".
+2. Accroche forte dès la première phrase. Pas de "Découvrez notre nouvel article".
 3. Donne un aperçu concret de l'angle de l'article, pas juste son titre reformulé.
 4. Termine par une invitation claire à cliquer sur le lien (le lien lui-même sera ajouté séparément, ne l'écris pas dans le texte).
 5. Jamais : révolution, disruptif, écosystème, synergies, "Dans un monde où".
+6. {REGLE_TIRETS}
 
 Génère UNIQUEMENT un JSON valide, sans markdown autour :
 {{"post_linkedin":"...","sujet":"...","hashtags":"#tag1 #tag2 #tag3"}}

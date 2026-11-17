@@ -62,6 +62,8 @@ from datetime import datetime
 from pathlib import Path
 
 import requests
+
+from editorial_style import REGLE_TIRETS, sans_tirets_longs
 import feedparser
 from PIL import Image, ImageDraw, ImageFont
 
@@ -168,8 +170,8 @@ def _clean_titre_et_texte(script_data):
         script_data["texte_voix"] = nettoyer_texte(script_data["texte_voix"])
     except Exception as e:
         print("[nettoyer_texte] Indisponible (%s) -- nettoyage minimal appliqué." % e)
-        script_data["titre"] = re.sub(r"\s*[\u2014\u2013]\s*", ", ", script_data["titre"])
-        script_data["texte_voix"] = re.sub(r"\s*[\u2014\u2013]\s*", ", ", script_data["texte_voix"])
+        script_data["titre"] = sans_tirets_longs(script_data["titre"])
+        script_data["texte_voix"] = sans_tirets_longs(script_data["texte_voix"])
     return script_data
 
 
@@ -189,6 +191,7 @@ def generate_script_from_news(news_item):
         "comparaison, ou une question qui parle à tout le monde.\n\n"
         "Actualité du jour : %s\n"
         "Résumé : %s\n\n"
+        f"{REGLE_TIRETS} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
         " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel, "
@@ -223,6 +226,7 @@ def generate_script_evergreen(theme):
         "Rachel, présentatrice de la chaîne. Public généraliste concerné ou "
         "curieux de l'IA. Ton chaleureux, clair, pédagogique. Première "
         "personne, fait pour être lu à voix haute. Thème du jour : " + theme + ". "
+        f"{REGLE_TIRETS} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
         " où texte_voix fait entre 70 et 110 mots, titre fait moins de 60 "

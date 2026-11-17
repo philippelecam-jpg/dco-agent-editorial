@@ -67,6 +67,8 @@ from datetime import datetime
 from pathlib import Path
 
 import requests
+
+from editorial_style import REGLE_TIRETS, sans_tirets_longs
 from PIL import Image, ImageDraw, ImageFont
 
 HISTORY_FILE = Path("short_video_prospective_history.json")
@@ -207,8 +209,8 @@ def _clean_script(script_data: dict) -> dict:
         script_data["texte_voix"] = nettoyer_texte(script_data["texte_voix"])
     except Exception as e:
         print("[nettoyer_texte] Indisponible (%s) -- nettoyage minimal appliqué." % e)
-        script_data["titre"] = re.sub(r"\s*[\u2014\u2013]\s*", ", ", script_data["titre"])
-        script_data["texte_voix"] = re.sub(r"\s*[\u2014\u2013]\s*", ", ", script_data["texte_voix"])
+        script_data["titre"] = sans_tirets_longs(script_data["titre"])
+        script_data["texte_voix"] = sans_tirets_longs(script_data["texte_voix"])
     return script_data
 
 
@@ -243,6 +245,7 @@ def generate_script(theme: str, angle: str) -> dict:
         "Ton chaleureux mais habité, presque conteur. Phrases courtes, "
         "rythme naturel à l'oral, fait pour être lu à voix haute par "
         "Rachel à la première personne. Environ 190 à 220 mots.\n\n"
+        f"{REGLE_TIRETS} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format "
         'exact : {"titre": "...", "texte_voix": "..."} où titre fait moins '
         "de 60 caractères et donne envie de cliquer sans tout dévoiler."

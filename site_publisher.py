@@ -43,6 +43,8 @@ from io import BytesIO
 import requests
 from PIL import Image, ImageOps
 
+from editorial_style import REGLE_TIRETS, sans_tirets_longs
+
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 SITE_REPO = os.environ.get("SITE_REPO", "")
@@ -198,6 +200,9 @@ def _echapper(texte):
 def build_site_prompt(package, theme):
     return f"""Tu restructures un article déjà rédigé pour LinkedIn afin de le publier sur le site decisionsandco.com. NE RÉINVENTE PAS le contenu : restructure et enrichis la mise en forme, sans changer le fond ni l'angle ni ajouter de faits nouveaux.
 
+{REGLE_TIRETS}
+Cette règle couvre le corps HTML, les métadonnées, les textes d’accessibilité, les CTA et la FAQ.
+
 ARTICLE SOURCE (déjà validé, format LinkedIn) :
 Titre : {package.get('titre', '')}
 Chapo : {package.get('chapo', '')}
@@ -207,14 +212,14 @@ Corps :
 CE QU'IL FAUT PRODUIRE :
 1. "corps_html" : le corps ci-dessus reformaté en HTML (pas de Markdown, pas de "#", pas de "**gras**" Markdown). Pas de <h1> (généré automatiquement par le site à partir du titre). Sections principales en <h2>, sous-sections éventuelles en <h3>. Paragraphes en <p>, emphase en <strong>/<em>. Guillemets français « » pour les citations ou expressions, apostrophes typographiques ' acceptées telles quelles.
    Tu peux utiliser AU MAXIMUM 2 encarts stylés au total parmi cette liste, et seulement s'ils s'imposent naturellement (jamais pour remplir) :
-   - <div class="highlight-box"><p><strong>🎯 En bref :</strong> ...</p></div> — résumé d'ouverture, juste après le premier paragraphe
-   - <div class="definition-box"><h4>💡 Définition : ...</h4><p>...</p></div> — pour définir un terme clé
-   - <div class="expert-tip"><h4>💡 ...</h4><p>...</p></div> — conseil ou point d'attention
-   - <div class="case-study"><h4>🎯 ...</h4><p>...</p></div> — exemple concret ou cas pratique
+   - Résumé d’ouverture, juste après le premier paragraphe : <div class="highlight-box"><p><strong>🎯 En bref :</strong> ...</p></div>
+   - Définition d’un terme clé : <div class="definition-box"><h4>💡 Définition : ...</h4><p>...</p></div>
+   - Conseil ou point d’attention : <div class="expert-tip"><h4>💡 ...</h4><p>...</p></div>
+   - Exemple concret ou cas pratique : <div class="case-study"><h4>🎯 ...</h4><p>...</p></div>
    N'invente aucun fait, aucun chiffre, aucune section nouvelle qui ne soit pas déjà dans le corps source.
 2. "titre_site" : le titre "{package.get('titre', '')}" repris tel quel SAUF s'il dépasse 120 caractères, auquel cas raccourcis-le en préservant le sens (sinon renvoie-le identique).
 3. "subtitle" : une phrase de valeur qui complète le titre, ton éditorial site web (pas une redite du chapo LinkedIn).
-4. "description" : résumé de l'article en 2 phrases maximum, 600 caractères MAX — respecte strictement cette limite.
+4. "description" : résumé de l'article en 2 phrases maximum, dans la limite de 600 caractères.
 5. "category" : choisis EXACTEMENT une valeur parmi cette liste fermée, aucune autre valeur n'est acceptée : {json.dumps(CATEGORIES, ensure_ascii=False)}
 6. "coverAlt" : description factuelle et accessible de l'image de couverture, une phrase, sans mentionner qu'elle est générée par IA.
 7. "style_visuel" : choisis EXACTEMENT une valeur parmi cette liste fermée, celle qui convient le mieux au contenu de CET article précis (varie le choix d'un article à l'autre, ne reste pas systématiquement sur la même valeur) : {json.dumps(list(STYLES_VISUELS.keys()), ensure_ascii=False)}
@@ -222,10 +227,10 @@ CE QU'IL FAUT PRODUIRE :
    - "photo_realiste" : photographie professionnelle réaliste (bureau, réunion), personnes anonymes non identifiables
    - "schema_technique" : schéma/diagramme technique propre, icônes et flèches, fond clair
    - "grille_icones" : collage d'icônes colorées représentant les concepts clés, fond clair
-8. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan — uniquement des scènes génériques, de loin ou de dos.
-9. "cta_titre" : une accroche courte (5 à 10 mots), avec un emoji au début, reliant le sujet précis de cet article à l'IA — formulée comme une question ou une invitation. Exemples de ton (ne pas copier) : "🚀 Vos processus sont-ils prêts pour l'IA agentique ?", "🚀 L'IA Agent : votre prochain avantage concurrentiel ?"
+8. "image_prompt" : en anglais, 1 à 2 phrases, décrivant précisément le visuel à générer DANS LE STYLE CHOISI ci-dessus, cohérent avec le thème "{theme['theme']}". Pas de texte incrusté dans l'image. Si le style choisi est "photo_realiste", ne jamais décrire un visage identifiable en gros plan. Décris uniquement des scènes génériques, de loin ou de dos.
+9. "cta_titre" : une accroche courte (5 à 10 mots), avec un emoji au début, reliant le sujet précis de cet article à l'IA. Formule-la comme une question ou une invitation. Exemples de ton (ne pas copier) : "🚀 Vos processus sont-ils prêts pour l'IA agentique ?", "🚀 L'IA Agent : votre prochain avantage concurrentiel ?"
 10. "cta_texte" : 1 à 2 phrases qui relient le sujet précis de cet article à l'accompagnement Decisions & Co, SANS répéter mot à mot une phrase déjà présente dans le corps.
-11. "faq" : une liste de 0 à 3 paires question/réponse SEULEMENT si le sujet de l'article s'y prête vraiment naturellement (questions qu'un dirigeant se poserait concrètement en lisant cet article précis) — sinon renvoie une liste vide []. Format : [{{"question":"...","answer":"..."}}]. Ne réponds jamais par une évidence ou une reformulation du titre.
+11. "faq" : une liste de 0 à 3 paires question/réponse SEULEMENT si le sujet de l'article s'y prête vraiment naturellement (questions qu'un dirigeant se poserait concrètement en lisant cet article précis). Sinon, renvoie une liste vide []. Format : [{{"question":"...","answer":"..."}}]. Ne réponds jamais par une évidence ou une reformulation du titre.
 
 Réponds UNIQUEMENT en JSON valide, sans markdown autour :
 {{"corps_html":"...","titre_site":"...","subtitle":"...","description":"...","category":"...","coverAlt":"...","style_visuel":"...","image_prompt":"...","cta_titre":"...","cta_texte":"...","faq":[]}}
@@ -254,6 +259,11 @@ def generate_site_content(package, theme):
     texte = resp.json()["content"][0]["text"].strip()
     texte = re.sub(r"^```(?:json)?\s*|\s*```$", "", texte)
     data = json.loads(texte)
+    for key in ("titre_site", "subtitle", "description", "coverAlt", "cta_titre", "cta_texte"):
+        if isinstance(data.get(key), str):
+            data[key] = sans_tirets_longs(data[key])
+    if isinstance(data.get("corps_html"), str):
+        data["corps_html"] = sans_tirets_longs(data["corps_html"], html=True)
 
     if data.get("category") not in CATEGORIES:
         print(f"Catégorie renvoyée invalide ({data.get('category')!r}) — repli sur {DEFAULT_CATEGORY!r}.")
@@ -285,7 +295,10 @@ def generate_site_content(package, theme):
         ]
         if len(faq_valides) != len(faq_brute):
             data["_faq_malformee"] = True
-        data["faq"] = faq_valides[:3]
+        data["faq"] = [
+            {key: sans_tirets_longs(item[key]) for key in ("question", "answer")}
+            for item in faq_valides[:3]
+        ]
 
     return data
 
@@ -424,9 +437,10 @@ def generate_site_cover(site_data):
 
 
 def build_markdown(package, site_data, slug, date_slug):
+    titre = site_data.get("titre_site") or sans_tirets_longs(package.get("titre", ""))
     lignes = [
         "---",
-        f'title: "{_echapper(site_data.get("titre_site") or package.get("titre", ""))}"',
+        f'title: "{_echapper(titre)}"',
         f'subtitle: "{_echapper(site_data.get("subtitle", ""))}"',
         f'description: "{_echapper(site_data.get("description", ""))}"',
         f"publishedAt: {date_slug}",
@@ -534,10 +548,11 @@ URL : {article_url}
 
 RÈGLES :
 1. 3 à 5 phrases maximum, format post LinkedIn (pas de titre, pas de markdown).
-2. Accroche forte dès la première phrase — pas de "Découvrez notre nouvel article".
+2. Accroche forte dès la première phrase. Pas de "Découvrez notre nouvel article".
 3. Donne un aperçu concret de l'angle de l'article, pas juste son titre reformulé.
 4. Termine par une invitation claire à cliquer sur le lien (le lien lui-même sera ajouté séparément, ne l'écris pas dans le texte).
 5. Jamais : révolution, disruptif, écosystème, synergies, "Dans un monde où".
+6. {REGLE_TIRETS}
 
 Génère UNIQUEMENT un JSON valide, sans markdown autour :
 {{"post_linkedin":"...","sujet":"..."}}
@@ -562,6 +577,9 @@ Génère UNIQUEMENT un JSON valide, sans markdown autour :
     raw = next((b["text"] for b in resp.json()["content"] if b["type"] == "text"), "")
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip())
     package = json.loads(raw)
+    for key in ("sujet", "post_linkedin"):
+        if isinstance(package.get(key), str):
+            package[key] = sans_tirets_longs(package[key])
     package["post_linkedin"] = f"{package.get('post_linkedin', '')}\n\n{article_url}"
     return package
 
