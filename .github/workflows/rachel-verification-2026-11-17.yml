@@ -33,12 +33,11 @@ jobs:
             exit 1
           fi
       - name: Récupérer le checkpoint d'une exécution précédente
-        if: ${{ '' != '' && 'youtube_unlisted' != 'check' && 'youtube_unlisted' != 'youtube_existing' && 'youtube_unlisted' != 'youtube_finalize' }}
         uses: actions/download-artifact@v4
         with:
-          name: rachel-capsule-${{ '' }}
+          name: rachel-capsule-44004755855
           path: lead_pipeline/test-output
-          run-id: ${{ '' }}
+          run-id: '44004755855'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Vérifier les accès de livraison
         if: ${{ '' != '' }}
