@@ -566,7 +566,10 @@ const api=async(url,payload)=>{const response=await fetch(url,payload?{method:'P
 const busy=(form,value,label)=>{const button=form.querySelector('button[type=submit]');if(value){button.dataset.label=button.textContent;button.textContent=label;}else{button.textContent=button.dataset.label||button.textContent;}button.disabled=value;};
 const saveSite=value=>{try{localStorage.setItem('fabrik_site',value);}catch(_){};};
 const rememberedSite=()=>{const fromLink=new URL(location.href).searchParams.get('site');if(fromLink){try{const site=normalizeSite(fromLink);saveSite(site);history.replaceState(null,'','/');return site;}catch(_){}}try{return localStorage.getItem('fabrik_site')||'';}catch(_){return '';}};
-const requestingNewLink=new URL(location.href).searchParams.get('new-link')==='1';
+const accessParams=new URL(location.href).searchParams;
+const requestingNewLink=accessParams.get('new-link')==='1';
+const isDemoSite=value=>{try{return new URL(normalizeSite(value)).hostname.toLowerCase().replace(/^www[.]/,'')==='decisionsandco.com';}catch(_){return false;}};
+let openDemoForm=isDemoSite(accessParams.get('site')||'');
 const saved=rememberedSite();$('signup-site').value=saved;$('site').value=saved;
 $('rachelImage').addEventListener('change',()=>{
   const name=$('rachelImage').value;
@@ -579,9 +582,36 @@ let retryId=null;
 $('signup').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;let site;try{site=normalizeSite($('signup-site').value);}catch(error){show('signup-status',error.message,true);return;}$('signup-site').value=site;saveSite(site);if(!identityOpen){identityOpen=true;$('identity-fields').hidden=false;$('name').disabled=false;$('company').disabled=false;$('signup-note').textContent='Complétez votre nom et votre entreprise pour recevoir votre lien.';form.querySelector('button').textContent='Recevoir mon lien';$('name').focus();return;}busy(form,true,'Envoi du lien…');show('signup-status','Envoi en cours…');try{await api('/api/signup',Object.fromEntries(new FormData(form)));show('signup-status','Votre lien d’accès a été demandé. Vérifiez votre messagerie et les indésirables. Il est valable 15 minutes.');}catch(error){show('signup-status',error.message,true);}finally{busy(form,false);}});
 const statuses={queued:'Votre capsule est en attente de génération.',processing:'Votre capsule est en préparation.',generating:'Votre capsule est en préparation.',completed:'Votre capsule est prête.',published:'Votre capsule est publiée.',failed:'La génération a rencontré un problème.',blocked:'La demande nécessite une vérification.'};
 const renderRequest=(request,canRepeat=false)=>{currentRequest=request;retryId=null;$('publish').hidden=!(request.status==='completed'&&request.github_run_id&&request.publication_status!=='review_required');$('publish').textContent=request.youtube_id?'Finaliser la publication YouTube':'Publier la capsule sur YouTube';$('retry').hidden=request.status!=='failed'||!!request.is_internal;$('repeat').hidden=!canRepeat;stage('done');$('done-title').textContent=({queued:'Votre capsule est lancée.',processing:request.publication_status==='uploading'?'Publication en cours.':'Votre capsule est en préparation.',completed:'Votre vidéo est générée.',published:'Votre capsule est disponible.',failed:'Votre demande peut être corrigée.'})[request.status]||'Votre demande est enregistrée.';$('done-status').classList.toggle('error',request.status==='failed');$('done-status').textContent=request.status==='completed'?(request.publication_status==='review_required'?'La publication nécessite une vérification.':(request.youtube_id?'YouTube doit confirmer la disponibilité de votre vidéo.':'Il reste à publier votre vidéo sur YouTube.')):(request.status==='processing'&&request.publication_status==='uploading'?'Votre vidéo est en cours de publication sur YouTube.':statuses[request.status]||'Votre demande est enregistrée.');$('request-id').textContent='';$('request-id').hidden=true;$('done-copy').textContent=request.delivery_error||(request.status==='failed'?'La préparation n’a pas abouti. Modifiez votre demande ou contactez-nous.':null)||(request.notified_at?'Le lien a été envoyé à votre adresse email.':(request.status==='completed'&&request.publication_status!=='review_required'?'Le bouton ci-dessous reprend la publication de la vidéo existante, sans nouvelle génération.':(request.status==='published'?'Votre lien est disponible ci-dessous. L’envoi email est en cours.':'Retrouvez ici le statut de votre demande.')));$('video-link').hidden=true;if(request.youtube_url){try{const url=new URL(request.youtube_url);if(url.protocol==='https:'&&['www.youtube.com','youtube.com','youtu.be'].includes(url.hostname)){$('video-link').href=url.href;$('video-link').hidden=false;}}catch(_){}}};
-async function loadSession(){try{const data=await api('/api/me');if(!$('companyName').value)$('companyName').value=data.company;if(data.request){renderRequest(data.request,data.canRepeat);$('tracking-warning').hidden=!data.trackingWarning;$('tracking-warning').textContent=data.trackingWarning||'';}else{stage('request');$('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';}}catch(error){if(!['Session absente.','Session invalide.'].includes(error.message)){show('session-status','Impossible de vérifier votre accès. '+error.message,true);return;}}$('session-status').hidden=true;}
+async function loadSession(){
+  try{
+    const data=await api('/api/me');
+    if(!$('companyName').value)$('companyName').value=data.company;
+    // Un lien demandé pour le démonstrateur doit ouvrir son formulaire même si
+    // le compte conserve déjà une capsule d’une autre entreprise.
+    const showDemoForm=openDemoForm&&(!data.request||data.request.company_domain!=='decisionsandco.com');
+    openDemoForm=false;
+    if(showDemoForm){
+      $('companyName').value='Décisions & Co';
+      stage('request');
+      $('welcome').textContent='Décisions & Co · Email vérifié. Complétez votre demande.';
+    }else if(data.request){
+      renderRequest(data.request,data.canRepeat);
+      $('tracking-warning').hidden=!data.trackingWarning;
+      $('tracking-warning').textContent=data.trackingWarning||'';
+    }else{
+      stage('request');
+      $('welcome').textContent=data.company+' · Email vérifié. Complétez votre demande.';
+    }
+  }catch(error){
+    if(!['Session absente.','Session invalide.'].includes(error.message)){
+      show('session-status','Impossible de vérifier votre accès. '+error.message,true);
+      return;
+    }
+  }
+  $('session-status').hidden=true;
+}
 $('request').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const payload=Object.fromEntries(new FormData(form));if(retryId){payload.retryId=retryId;payload.retryKey=currentRequest?.generation_key||null;}try{payload.site=normalizeSite(payload.site);if(payload.sourceText.trim()&&payload.sourceText.trim().length<120)throw new Error('Ajoutez au moins 120 caractères à votre texte d’actualité.');}catch(error){show('request-status',error.message,true);return;}saveSite(payload.site);busy(form,true,'Enregistrement…');show('request-status','Votre demande est en cours d’enregistrement…');try{const data=await api('/api/request',payload);renderRequest(data,data.canRepeat);}catch(error){show('request-status',error.message,true);}finally{busy(form,false);}});
-const updateQuotaNote=()=>{let exempt=false;try{exempt=new URL(normalizeSite($('site').value)).hostname.toLowerCase().replace(/^www\./,'')==='decisionsandco.com';}catch(_){}$('quota-note').textContent=exempt?'Démonstrateur':'Une seule demande par entreprise.';};
+const updateQuotaNote=()=>{$('quota-note').textContent=isDemoSite($('site').value)?'Démonstrateur':'Une seule demande par entreprise.';};
 $('site').addEventListener('input',updateQuotaNote);
 $('publish').addEventListener('click',async()=>{if(!currentRequest)return;$('publish').disabled=true;try{const data=await api('/api/publish',{id:currentRequest.id});renderRequest(data);}catch(error){show('done-status',error.message,true);}finally{$('publish').disabled=false;}});
 $('retry').addEventListener('click',()=>{if(!currentRequest||currentRequest.status!=='failed')return;retryId=currentRequest.id;$('companyName').value=currentRequest.company_name||$('companyName').value;$('site').value=currentRequest.company_site;$('sourceText').value=currentRequest.source_text||'';$('siren').value=currentRequest.siren||'';$('rachelImage').value=currentRequest.rachel_image||'Rachel Tertiaire';$('rachelImage').dispatchEvent(new Event('change'));$('request-status').hidden=true;stage('request');updateQuotaNote();$('welcome').textContent='Corrigez votre demande. La relance peut générer de nouveaux frais si des appels fournisseurs avaient déjà eu lieu.';$('companyName').focus();});

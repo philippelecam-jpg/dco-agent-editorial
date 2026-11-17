@@ -251,3 +251,33 @@ test("an unverified email still cannot submit a request", async () => {
   assert.equal(response.status, 400);
   assert.equal(db.inserted.length, 0);
 });
+
+
+test("an access link for Décisions & Co opens a new form even after an Exco capsule", async () => {
+  const page = await (await worker.fetch(new Request(origin), {})).text();
+  const script = page.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const nodes = new Map();
+  const document = {getElementById(id) {
+    if (!nodes.has(id)) nodes.set(id, {value:"", hidden:true, textContent:"", classList:{toggle(){}}, addEventListener(){}});
+    return nodes.get(id);
+  }};
+  const verifiedUrl = origin + "/?site=https%3A%2F%2Fwww.decisionsandco.com%2F";
+  const location = {href:verifiedUrl};
+  const calls = [];
+  vm.runInNewContext(script, {
+    document,location,URL,
+    history:{replaceState(_a,_b,url){location.href=origin+url;}},
+    localStorage:{setItem(){},getItem(){return null;}},
+    setInterval(){},
+    async fetch(path) {
+      calls.push(path);
+      return {ok:true, async text(){return JSON.stringify({company:"Exco AVEC",canRepeat:false,request:{status:"published",company_domain:"exco.fr",youtube_url:"https://youtu.be/test"}});}};
+    },
+  });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(calls, ["/api/me"]);
+  assert.equal(nodes.get("request-stage").hidden, false);
+  assert.equal(nodes.get("done-stage").hidden, true);
+  assert.equal(nodes.get("companyName").value, "Décisions & Co");
+  assert.equal(nodes.get("site").value, "https://www.decisionsandco.com/");
+});
