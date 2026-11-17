@@ -56,7 +56,7 @@ jobs:
 
           print("Visuel vérifié. Envoi du package ServiceNow à X.")
           media_id = upload_media_to_x(BytesIO(image.content))
-          result = publish_to_x(package["post_x"], package.get("hashtags", ""), media_id)
+          result = publish_to_x(package["post_x"], "#IA #AgentsIA", media_id)
           tweet_id = result["data"]["id"]
           print(f"Publication X confirmée : https://x.com/DecisionsAndco/status/{tweet_id}")
           if not notify_make_linkedin(package, {"theme": package["theme"]}, image_url=image_url, has_image=True):
