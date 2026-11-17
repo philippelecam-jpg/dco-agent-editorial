@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 0,
+  "last_theme_index": 1,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
@@ -8,7 +8,8 @@
     ],
     "Technologie": [
       "L'évolution des rapports de pouvoir entre États, entreprises et individus dans la gouvernance des infrastructures technologiques",
-      "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques"
+      "La transformation des capacités cognitives et sensorielles humaines par l'intégration croissante des dispositifs numériques",
+      "Les effets systémiques des dépendances technologiques sur la résilience des sociétés face aux crises"
     ],
     "Économie": [
       "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives",
@@ -118,6 +119,13 @@
       "angle": "L'identité professionnelle et le rapport psychologique de l'individu au travail dans une société post-salariale",
       "titre": "Et si votre métier n'existait plus, mais que vous, si ?",
       "video_id": "YW3TngzvqLM"
+    },
+    {
+      "date": "2026-11-17T14:23:26.261652",
+      "theme": "Technologie",
+      "angle": "Les effets systémiques des dépendances technologiques sur la résilience des sociétés face aux crises",
+      "titre": "Et si votre prochain problème venait d'un fournisseur que vous ne connaissez pas ?",
+      "video_id": "Pjg4FrSTYQQ"
     }
   ]
 }
