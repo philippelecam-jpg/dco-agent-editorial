@@ -1,0 +1,116 @@
+name: Publications hors planning du 17 novembre
+
+on:
+  push:
+    branches:
+      - test/editorial-hors-planning-2026-11-17
+    paths:
+      - .github/workflows/editorial-hors-planning-2026-11-17.yml
+
+jobs:
+  publish-x:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib Pillow twitter-text-parser==3.0.0 'setuptools<81'
+
+      - name: Lancer l'agent (mode normal)
+
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}          
+        run: |
+          python - <<'PY'
+          import agent
+
+          def linkedin_reserve_a_l_article(*args, **kwargs):
+              print("LinkedIn sera publié par le teaser de l’article.")
+              return False
+
+          agent.notify_make_linkedin = linkedin_reserve_a_l_article
+          agent.main()
+          PY
+
+      - name: Commit et push du package
+        run: |
+          git config user.name "Agent Editorial DCo"
+          git config user.email "agent@decisionsandco.com"
+          git add docs/
+          git diff --staged --quiet || git commit -m "Package éditorial $(date '+%Y-%m-%d-%H%M')"
+          git push
+
+  generate-article:
+    needs: publish-x
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install requests requests-oauthlib Pillow
+
+      - name: Générer le brouillon d'article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Réutilisés : ce script importe agent.py, dont les variables de
+          # module (X_API_KEY etc.) sont lues à l'import même si elles ne
+          # servent pas ici — même convention que agent_weekend_agentique.py.
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          # Webhook et clé déjà existants (scénario LinkedIn) : aucun nouveau
+          # secret à créer. Le Router côté Make distingue les deux flux par
+          # le contenu du payload (voir notify_make_email dans le script).
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+          # Nouveaux secrets pour la publication automatique sur
+          # decisionsandco.com (voir site_publisher.py). Si l'un des trois
+          # est absent, cette étape est silencieusement sautée — le flux
+          # LinkedIn ci-dessus continue de fonctionner normalement.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SITE_REPO: ${{ secrets.SITE_REPO }}
+          SITE_REPO_PAT: ${{ secrets.SITE_REPO_PAT }}
+          DRY_RUN: "false"
+          DRAFT_DATE: ""
+        run: python agent_article_hebdo.py
+
+      - name: Commit et push du brouillon
+
+        run: |
+          git config user.name "Agent Editorial DCo"
+          git config user.email "agent@decisionsandco.com"
+          git add articles/
+          git diff --staged --quiet || git commit -m "Brouillon article et historique du $(date '+%Y-%m-%d')"
+          git push
