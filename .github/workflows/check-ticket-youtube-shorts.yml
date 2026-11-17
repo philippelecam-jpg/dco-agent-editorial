@@ -1,0 +1,48 @@
+name: Vérifier le ticket YouTube Shorts
+on:
+  push:
+    branches: [test/ticket-youtube-shorts-2026-11-17]
+    paths: [.github/workflows/check-ticket-youtube-shorts.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install requests pillow pyyaml
+      - run: python -m unittest discover -s tests -p test_youtube_shorts.py -v
+      - name: Vérifier les droits et les playlists existantes
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
+        run: |
+          python - <<'PY'
+          import json, os, requests
+          from youtube_short_policy import resolve_playlists
+          r = requests.post("https://oauth2.googleapis.com/token", data={
+              "client_id": os.environ["YOUTUBE_CLIENT_ID"],
+              "client_secret": os.environ["YOUTUBE_CLIENT_SECRET"],
+              "refresh_token": os.environ["YOUTUBE_REFRESH_TOKEN"],
+              "grant_type": "refresh_token",
+          }, timeout=30)
+          if not r.ok:
+              raise SystemExit(f"Renouvellement du token refusé (HTTP {r.status_code}).")
+          token = r.json()["access_token"]
+          print("::add-mask::" + token)
+          info = requests.get("https://oauth2.googleapis.com/tokeninfo", params={"access_token": token}, timeout=30)
+          if not info.ok:
+              raise SystemExit("Les droits du token n’ont pas pu être vérifiés.")
+          scopes = info.json().get("scope", "").split()
+          allowed = {"https://www.googleapis.com/auth/youtube.force-ssl", "https://www.googleapis.com/auth/youtube"}
+          print("SCOPES_YOUTUBE " + json.dumps([s for s in scopes if "youtube" in s]))
+          if not allowed.intersection(scopes):
+              raise SystemExit("CONSENTEMENT_REQUIS : le token n’autorise pas playlistItems.insert.")
+          print("PLAYLISTS_VERIFIEES " + json.dumps(resolve_playlists(token), ensure_ascii=False))
+          PY
