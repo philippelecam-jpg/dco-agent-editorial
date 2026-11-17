@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 24 octobre 2026",
-    "timestamp": "2026-10-24T09:25:09.601890",
-    "theme": "Actualité décryptée",
-    "sujet": "Microsoft Copilot passe à la facturation à l'usage pour ses fonctions IA avancées",
-    "post_x": "Microsoft facture désormais l'IA avancée à la consommation. Bonne nouvelle pour qui sait ce qu'il consomme. Mauvaise pour qui ne sait pas encore ce qu'il utilise vraiment. La note va rendre visible ce que le forfait cachait.",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-24-092408-weekend.png?v=092408"
-  },
-  {
-    "date": "Samedi 24 octobre 2026",
     "timestamp": "2026-10-24T13:10:03.099170",
     "theme": "Actualité décryptée",
     "sujet": "Mistral AI lance Voxtral 3 : l'assistant téléphonique IA enfin accessible aux PME",
@@ -268,5 +259,14 @@
     "post_x": "Votre SI stocke des données. L'Entreprise OS, lui, fait circuler la connaissance là où les décisions se prennent. Ce n'est pas la même chose.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2122210083656614230",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-16-060804.png?v=060804"
+  },
+  {
+    "date": "Mardi 17 novembre 2026",
+    "timestamp": "2026-11-17T06:08:51.952914",
+    "theme": "Terrain et missions clients",
+    "sujet": "Quand l'IA révèle ce que l'organisation ne sait pas d'elle-même",
+    "post_x": "Un client nous a demandé d'automatiser ses comptes-rendus de réunion. On a accepté. Deux semaines plus tard, on lui a rendu son vrai problème : personne ne savait ce qui était décidé, ni par qui, ni pourquoi.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2122572445286580385",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-17-060757.png?v=060757"
   }
 ]
