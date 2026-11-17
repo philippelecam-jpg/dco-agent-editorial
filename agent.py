@@ -561,6 +561,33 @@ def attendre_url(url, timeout=150, intervalle=10):
     return False
 
 
+def _verifier_reponse_x(resp, operation):
+    if resp.status_code >= 400:
+        try:
+            body = resp.json()
+        except ValueError:
+            body = {}
+
+        champs = ("type", "title", "detail", "reason", "code", "message")
+        diagnostic = {}
+        if isinstance(body, dict):
+            diagnostic.update({champ: body[champ] for champ in champs if isinstance(body.get(champ), (str, int))})
+            erreurs = body.get("errors")
+            if isinstance(erreurs, list):
+                diagnostic["errors"] = [
+                    {champ: erreur[champ] for champ in champs if isinstance(erreur.get(champ), (str, int))}
+                    for erreur in erreurs[:5] if isinstance(erreur, dict)
+                ]
+
+        detail = json.dumps(diagnostic, ensure_ascii=True) if diagnostic else "aucun détail JSON exploitable"
+        for secret in (X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET):
+            if secret:
+                detail = detail.replace(secret, "[masqué]")
+        print(f"[API X] {operation} : HTTP {resp.status_code} | {detail[:1500]}", flush=True)
+
+    resp.raise_for_status()
+
+
 def upload_media_to_x(image_buf):
     """Upload une image sur X via l'API v1.1 et retourne le media_id."""
     auth = OAuth1(X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET)
@@ -570,7 +597,7 @@ def upload_media_to_x(image_buf):
         files={"media": ("visual.png", image_buf, "image/png")},
         timeout=60,
     )
-    resp.raise_for_status()
+    _verifier_reponse_x(resp, "Envoi du visuel (POST /1.1/media/upload.json)")
     return resp.json()["media_id_string"]
 
 
@@ -590,7 +617,7 @@ def publish_to_x(post_text, hashtags="", media_id=None):
         json=payload,
         timeout=30,
     )
-    resp.raise_for_status()
+    _verifier_reponse_x(resp, "Création du post (POST /2/tweets)")
     return resp.json()
 
 
