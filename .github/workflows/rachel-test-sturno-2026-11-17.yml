@@ -1,0 +1,65 @@
+name: Rachel Entreprises — test Groupe Sturno
+on:
+  push:
+    branches: [test/rachel-groupe-sturno-2026-11-17]
+    paths: [.github/workflows/rachel-test-sturno-2026-11-17.yml]
+permissions:
+  contents: read
+concurrency:
+  group: rachel-entreprises-first-test
+  cancel-in-progress: false
+jobs:
+  capsule:
+    if: github.run_attempt == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: lead_pipeline
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Vérifier le moteur
+        run: python -m unittest discover -s tests -v
+      - name: Installer les dépendances
+        run: |
+          python -m pip install -r backend/requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Générer la capsule Groupe Sturno
+        env:
+          TEST_MODE: video
+          COMPANY_NAME: Groupe Sturno
+          COMPANY_SITE: https://groupesturno.com/
+          RACHEL_ENTERPRISE_PHOTO_PATH: ../assets/Rachel BTP.png
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python -u -m backend.first_capsule
+      - name: Publier en non répertorié sur YouTube
+        env:
+          TEST_MODE: youtube_unlisted
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python -u -m backend.publish_capsule
+      - name: Conserver les artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rachel-capsule-${{ github.run_id }}
+          path: |
+            lead_pipeline/test-output/checkpoint.json
+            lead_pipeline/test-output/voice.mp3
+            lead_pipeline/test-output/rachel.mp4
+            lead_pipeline/test-output/report.json
+          if-no-files-found: ignore
+          retention-days: 7
