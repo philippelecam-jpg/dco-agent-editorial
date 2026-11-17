@@ -1,0 +1,118 @@
+{
+  "public": "Dirigeants et responsables métier de PME et ETI françaises (DG, DAF, DRH, DSI, responsables opérations, commerce et formation).",
+  "sources": "Favoriser les publications originales (éditeurs, ANSSI, CNIL, France Num, institutions, études dont la méthode est décrite). Utiliser la presse spécialisée pour repérer des faits, puis privilégier la source primaire quand elle est disponible.",
+  "familles": [
+    {
+      "nom": "Usages métier",
+      "pistes": [
+        "préparation des devis",
+        "gestion des réclamations",
+        "contrôle qualité",
+        "maintenance",
+        "achats"
+      ],
+      "questions": [
+        "Quelles demandes au service client un assistant peut-il traiter sans escalade ?",
+        "Quels contrôles réservent au technicien la décision sur une anomalie de production ?",
+        "À quel moment la préparation d'un devis par IA fait-elle perdre la trace des hypothèses de prix ?"
+      ],
+      "style_visuel": "Terrain et missions clients"
+    },
+    {
+      "nom": "ROI et déploiement",
+      "pistes": [
+        "coût complet",
+        "choix du pilote",
+        "qualité du service",
+        "adoption",
+        "passage à l'échelle"
+      ],
+      "questions": [
+        "Comment distinguer du temps réellement libéré du temps simplement déplacé par un copilote ?",
+        "Quel seuil de qualité doit conditionner l'extension d'un pilote de traitement de factures ?",
+        "Comment mesurer le coût des exceptions avant de généraliser un automatisme de support ?"
+      ],
+      "style_visuel": "Méthode Cartographier → Éliciter → Codifier"
+    },
+    {
+      "nom": "Données et connaissance",
+      "pistes": [
+        "fraîcheur des sources",
+        "droits d'accès",
+        "documentation métier",
+        "qualité des données",
+        "Entreprise OS"
+      ],
+      "questions": [
+        "Comment empêcher un assistant interne de servir un tarif périmé ?",
+        "Qui valide les règles métier extraites de documents contradictoires ?",
+        "Quelle preuve de provenance faut-il conserver pour un chiffre produit par un assistant financier ?"
+      ],
+      "style_visuel": "L'Entreprise OS"
+    },
+    {
+      "nom": "Agents et automatisation",
+      "pistes": [
+        "validation humaine",
+        "enchaînements multi-outils",
+        "observabilité",
+        "rattrapage des erreurs",
+        "autonomie"
+      ],
+      "questions": [
+        "À partir de quel montant un agent achats doit-il demander une validation humaine ?",
+        "Comment reprendre un dossier quand un agent a réalisé deux actions sur trois ?",
+        "Quelles actions peut-on ouvrir à un agent sur un outil RH avant de lui donner le droit d'écriture ?"
+      ],
+      "style_visuel": "Méthode Cartographier → Éliciter → Codifier"
+    },
+    {
+      "nom": "Fournisseurs et résilience",
+      "pistes": [
+        "dépendance SaaS",
+        "changements de modèle",
+        "réversibilité",
+        "sous-traitants",
+        "continuité d'activité"
+      ],
+      "questions": [
+        "Quelles fonctions d'un service client doivent rester accessibles si le fournisseur IA est indisponible ?",
+        "Que faut-il savoir exporter avant de changer de fournisseur de recherche documentaire ?",
+        "Comment repérer un changement de modèle susceptible de dégrader un contrôle métier ?"
+      ],
+      "style_visuel": "Terrain et missions clients"
+    },
+    {
+      "nom": "Management et formation",
+      "pistes": [
+        "apprentissage au travail",
+        "organisation des équipes",
+        "compétences",
+        "rôle des managers",
+        "transmission"
+      ],
+      "questions": [
+        "Comment mesurer la qualité de la revue humaine assurée par des équipes récemment formées ?",
+        "Quel geste métier un manager devrait-il faire pratiquer chaque semaine après une formation IA ?",
+        "Quand faut-il une règle collective sur l'usage de l'IA plutôt que des bonnes pratiques individuelles ?"
+      ],
+      "style_visuel": "Formation et culture IA"
+    },
+    {
+      "nom": "Gouvernance et sécurité",
+      "pistes": [
+        "traçabilité",
+        "protection des données",
+        "gestion des incidents",
+        "responsabilités",
+        "règles applicables"
+      ],
+      "questions": [
+        "Quels événements doit-on journaliser pour expliquer une erreur d'un assistant interne ?",
+        "Que faire lorsqu'un outil génératif restitue à une équipe une information réservée à une autre ?",
+        "Qui décide de remettre en service une automatisation après un incident et sur quelles preuves ?"
+      ],
+      "style_visuel": "Gouvernance et réglementation IA"
+    }
+  ]
+}
