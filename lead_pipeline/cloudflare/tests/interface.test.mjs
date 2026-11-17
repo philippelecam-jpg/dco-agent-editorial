@@ -253,7 +253,11 @@ test("an unverified email still cannot submit a request", async () => {
 });
 
 
-test("an access link for Décisions & Co opens a new form even after an Exco capsule", async () => {
+for (const scenario of [
+  {label:"after a published Exco capsule",domain:"exco.fr",status:"published",openForm:true},
+  {label:"after a published Décisions & Co capsule",domain:"decisionsandco.com",status:"published",openForm:true},
+  {label:"while a Décisions & Co capsule is processing",domain:"decisionsandco.com",status:"processing",openForm:false},
+]) test("a Décisions & Co access link " + scenario.label, async () => {
   const page = await (await worker.fetch(new Request(origin), {})).text();
   const script = page.match(/<script>([\s\S]*?)<\/script>/)[1];
   const nodes = new Map();
@@ -271,13 +275,13 @@ test("an access link for Décisions & Co opens a new form even after an Exco cap
     setInterval(){},
     async fetch(path) {
       calls.push(path);
-      return {ok:true, async text(){return JSON.stringify({company:"Exco AVEC",canRepeat:false,request:{status:"published",company_domain:"exco.fr",youtube_url:"https://youtu.be/test"}});}};
+      return {ok:true, async text(){return JSON.stringify({company:"Exco AVEC",canRepeat:scenario.domain==="decisionsandco.com",request:{status:scenario.status,company_domain:scenario.domain,youtube_url:"https://youtu.be/test"}});}};
     },
   });
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(calls, ["/api/me"]);
-  assert.equal(nodes.get("request-stage").hidden, false);
-  assert.equal(nodes.get("done-stage").hidden, true);
-  assert.equal(nodes.get("companyName").value, "Décisions & Co");
+  assert.equal(nodes.get("request-stage").hidden, !scenario.openForm);
+  assert.equal(nodes.get("done-stage").hidden, scenario.openForm);
+  if (scenario.openForm) assert.equal(nodes.get("companyName").value, "Décisions & Co");
   assert.equal(nodes.get("site").value, "https://www.decisionsandco.com/");
 });

@@ -587,8 +587,10 @@ async function loadSession(){
     const data=await api('/api/me');
     if(!$('companyName').value)$('companyName').value=data.company;
     // Un lien demandé pour le démonstrateur doit ouvrir son formulaire même si
-    // le compte conserve déjà une capsule d’une autre entreprise.
-    const showDemoForm=openDemoForm&&(!data.request||data.request.company_domain!=='decisionsandco.com');
+    // le compte conserve déjà une capsule. Une génération D&Co en cours
+    // reste affichée pour que l’utilisateur puisse suivre sa demande.
+    const demoInProgress=data.request?.company_domain==='decisionsandco.com'&&['queued','processing','generating'].includes(data.request.status);
+    const showDemoForm=openDemoForm&&!demoInProgress;
     openDemoForm=false;
     if(showDemoForm){
       $('companyName').value='Décisions & Co';
