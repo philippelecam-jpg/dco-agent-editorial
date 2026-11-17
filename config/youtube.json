@@ -1,10 +1,21 @@
 {
-  "jours_publication": {"statique": [0, 3], "avatar": [1], "prospective": [4]},
+  "jours_publication": {
+    "statique": [
+      0,
+      3
+    ],
+    "avatar": [
+      1
+    ],
+    "prospective": [
+      4
+    ]
+  },
   "maximum_par_semaine": 4,
   "playlists": {
-    "Agents IA et outils": "",
-    "Cybersécurité et incidents": "",
-    "IA et organisation du travail": "",
-    "Prospective : et si… ?": ""
+    "Agents IA et outils": "PLSA1kBoe79Mk",
+    "Cybersécurité et incidents": "PLJtdOy-siWm8",
+    "IA et organisation du travail": "PLZqbr8W-5R9U",
+    "Prospective : et si… ?": "PLNV2Bb7Vod40"
   }
 }

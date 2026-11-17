@@ -14,6 +14,8 @@ La cadence commune dans `config/youtube.json` prévoit les Shorts statiques lund
 
 Les playlists publiques existantes sont retrouvées par leur nom exact sur la chaîne autorisée. Les identifiants peuvent aussi être renseignés dans `config/youtube.json` ou dans le secret JSON `YOUTUBE_PLAYLIST_IDS`. Aucun identifiant n'est prérempli tant qu'il n'a pas été vérifié. Le token YouTube doit autoriser `https://www.googleapis.com/auth/youtube.force-ssl` ou `https://www.googleapis.com/auth/youtube`. Le scope `youtube.upload` seul ne permet pas l'ajout aux playlists. Un renouvellement du consentement dans l'outil habituel est nécessaire si le token actuel n'a que ce scope.
 
-Le journal `youtube_publications.json` est écrit immédiatement après l'upload. Si l'ajout à la playlist échoue, la prochaine exécution reprend cette étape avant de considérer une nouvelle vidéo. GitHub sérialise les trois workflows et conserve ce journal même en cas d'échec.
+Le journal `youtube_publications.json` est écrit immédiatement après l'upload. Si l'ajout à la playlist échoue, la prochaine exécution reprend cette étape avant de considérer une nouvelle vidéo. Si le token manque uniquement du droit d’ajout aux playlists, une alerte est journalisée et les nouvelles vidéos peuvent être publiées selon la cadence prévue. GitHub sérialise les trois workflows et conserve ce journal même en cas d'échec.
 
 Les vidéos déjà publiées et le nom de la chaîne se gèrent dans YouTube Studio. La première image fait partie du fichier vidéo, indépendamment du choix de miniature proposé par Studio.
+
+La configuration HeyGen v3 utilise `aspect_ratio: 9:16` et `resolution: 1080p`. Les dimensions réelles sont contrôlées sur le fichier reçu.

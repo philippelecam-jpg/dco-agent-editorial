@@ -113,6 +113,29 @@ class YouTubeRules(unittest.TestCase):
                 attach.assert_called_once_with("token", "video-published", "PL-test")
                 self.assertEqual(json.loads(journal.read_text())[0]["statut"], "publié")
 
+    def test_missing_playlist_permission_keeps_upload_and_queue(self):
+        denied = response({"error": {"errors": [{"reason": "insufficientPermissions"}]}})
+        denied.status_code = 403
+        with patch.object(policy, "_get", return_value={"items": []}), \
+             patch.object(policy.requests, "post", return_value=denied):
+            with self.assertRaises(policy.PlaylistPermissionRequired):
+                policy.attach_playlist("token", "video", "playlist")
+
+        data = script()
+        data["_publication_plan"] = {"nom": "Cybersécurité et incidents", "id": "PL-test"}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder, "test.mp4")
+            path.write_bytes(b"test")
+            journal = Path(folder, "journal.json")
+            with patch.object(policy, "JOURNAL", journal), patch.object(policy, "inspect_video"), \
+                 patch.object(policy, "reject_duplicate"), \
+                 patch.object(policy.requests, "post", return_value=response(headers={"Location": "https://example.org/upload"})), \
+                 patch.object(policy.requests, "put", return_value=response({"id": "published"})), \
+                 patch.object(policy, "attach_playlist", side_effect=policy.PlaylistPermissionRequired("consentement")):
+                self.assertEqual(policy.upload_short(path, data, "token", "avatar"), "published")
+                policy.retry_playlists("token")
+                self.assertEqual(json.loads(journal.read_text())[0]["statut"], "playlist_en_attente")
+
     def test_playlist_insert_is_idempotent(self):
         with patch.object(policy, "_get", return_value={"items": [{"id": "exists"}]}), \
              patch.object(policy.requests, "post") as post:

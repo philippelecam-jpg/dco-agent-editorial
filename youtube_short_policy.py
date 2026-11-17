@@ -118,8 +118,8 @@ def prepare_script(data, prospective=False):
     keywords = data.get("mots_cles")
     if not isinstance(keywords, list) or not 5 <= len(keywords) <= 8 or any(
         not isinstance(word, str) or not word.strip() for word in keywords
-    ):
-        raise ValueError("Cinq à huit mots-clés liés au sujet sont attendus.")
+    ) or len({word.strip().casefold() for word in keywords}) < 5:
+        raise ValueError("Cinq à huit mots-clés distincts liés au sujet sont attendus.")
     reject_duplicate(data["titre"])
     return data
 
@@ -247,9 +247,6 @@ def resolve_playlists(token):
         page = result.get("nextPageToken")
         if not page:
             break
-    missing = [name for name, value in configured.items() if not value]
-    if missing:
-        raise ValueError("Identifiants de playlists manquants : " + ", ".join(missing))
     return configured
 
 
@@ -279,6 +276,10 @@ def save_journal(entries):
     temporary.replace(JOURNAL)
 
 
+class PlaylistPermissionRequired(RuntimeError):
+    """Le token autorise l'upload mais nécessite un nouveau consentement pour les playlists."""
+
+
 def attach_playlist(token, video_id, playlist_id):
     # Vérification préalable pour rendre les reprises idempotentes.
     result = _get(token, "playlistItems", part="id", playlistId=playlist_id, videoId=video_id, maxResults=1)
@@ -291,6 +292,10 @@ def attach_playlist(token, video_id, playlist_id):
                           "resourceId": {"kind": "youtube#video", "videoId": video_id}}},
         timeout=30,
     )
+    if response.status_code == 403:
+        reasons = {item.get("reason") for item in response.json().get("error", {}).get("errors", [])}
+        if "insufficientPermissions" in reasons:
+            raise PlaylistPermissionRequired("Le token YouTube nécessite le droit youtube.force-ssl pour les playlists.")
     response.raise_for_status()
 
 
@@ -298,7 +303,11 @@ def retry_playlists(token):
     entries = json.loads(JOURNAL.read_text()) if JOURNAL.exists() else []
     for row in entries:
         if row["statut"] == "playlist_en_attente":
-            attach_playlist(token, row["video_id"], row["playlist_id"])
+            try:
+                attach_playlist(token, row["video_id"], row["playlist_id"])
+            except PlaylistPermissionRequired as error:
+                print(f"::warning::{error} Vidéo {row['video_id']} conservée dans la file d’attente.")
+                return
             row["statut"] = "publié"
             save_journal(entries)
 
@@ -329,7 +338,11 @@ def upload_short(path, data, token, kind):
     })
     save_journal(entries)
     print(f"[YouTube] Vidéo envoyée : https://youtube.com/shorts/{video_id}", flush=True)
-    attach_playlist(token, video_id, playlist_id)
+    try:
+        attach_playlist(token, video_id, playlist_id)
+    except PlaylistPermissionRequired as error:
+        print(f"::warning::{error} Vidéo {video_id} publiée, ajout à la playlist en attente.")
+        return video_id
     entries[-1]["statut"] = "publié"
     save_journal(entries)
     return video_id
@@ -338,6 +351,8 @@ def upload_short(path, data, token, kind):
 def prepare_publication(data, token, kind):
     playlists = resolve_playlists(token)
     playlist_name = classify_playlist(data, prospective=kind == "prospective")
+    if not isinstance(playlists.get(playlist_name), str) or not playlists[playlist_name].strip():
+        raise ValueError(f"Identifiant de playlist manquant : {playlist_name}")
     # Contrôle distant incluant les vidéos publiées par d'autres outils.
     channels = _get(token, "channels", part="contentDetails", mine="true")
     uploads = channels["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
