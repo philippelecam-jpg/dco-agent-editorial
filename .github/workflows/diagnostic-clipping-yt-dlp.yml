@@ -1,0 +1,33 @@
+name: Diagnostic clipping sur une vidéo
+on:
+  push:
+    branches: [diagnostic/clipping-yt-dlp-2026-11-17]
+    paths: [.github/workflows/diagnostic-clipping-yt-dlp.yml]
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --upgrade yt-dlp
+      - name: Tester les sous-titres et l’audio
+        run: |
+          set -uo pipefail
+          yt-dlp --version
+          source='https://www.youtube.com/watch?v=439Lxbudhhw'
+          mkdir -p "$RUNNER_TEMP/clipping-diagnostic"
+          cd "$RUNNER_TEMP/clipping-diagnostic"
+          subtitles=0
+          audio=0
+          yt-dlp --skip-download --write-subs --write-auto-subs --sub-langs 'fr,en,fr-FR,en-US' --convert-subs vtt --retries 1 --socket-timeout 15 "$source" || subtitles=$?
+          yt-dlp -x --audio-format mp3 --retries 1 --socket-timeout 15 -o 'source.%(ext)s' "$source" || audio=$?
+          echo "Sous-titres : $subtitles | Audio : $audio"
+          ls -lh
+          if ! compgen -G '*.vtt' >/dev/null && [ ! -s source.mp3 ]; then
+            echo 'Aucun sous-titre ni audio récupéré.'
+            exit 1
+          fi
