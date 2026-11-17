@@ -1,0 +1,64 @@
+name: Reprise du package week-end du 17 novembre
+
+on:
+  push:
+    branches:
+      - retry/weekend-package-2026-11-17
+    paths:
+      - .github/workflows/retry-weekend-2026-11-17.yml
+
+permissions:
+  contents: read
+
+jobs:
+  reprendre:
+    if: github.run_attempt == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests requests-oauthlib Pillow
+      - name: Publier le package ServiceNow existant
+        env:
+          ANTHROPIC_API_KEY: ''
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+        run: |
+          python -u - <<'PY'
+          import json
+          import subprocess
+          from io import BytesIO
+
+          import requests
+
+          from agent import notify_make_linkedin, publish_to_x, upload_media_to_x
+
+          snapshot = "b8d92f317d9df03105df87e91749aea5ac023857"
+          package = json.loads(subprocess.check_output(["git", "show", f"{snapshot}:docs/package.json"], text=True))
+          image_url = package["visuel_url"]
+          expected_url = "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-17-004704-weekend.png"
+          if image_url.split("?", 1)[0] != expected_url:
+              raise RuntimeError("Le visuel enregistré ne correspond pas au package ServiceNow.")
+          image = requests.get(image_url, timeout=20)
+          image.raise_for_status()
+          if not image.headers.get("Content-Type", "").startswith("image/"):
+              raise RuntimeError("Le visuel GitHub Pages est indisponible.")
+
+          print("Visuel vérifié. Envoi du package ServiceNow à X.")
+          media_id = upload_media_to_x(BytesIO(image.content))
+          result = publish_to_x(package["post_x"], package.get("hashtags", ""), media_id)
+          tweet_id = result["data"]["id"]
+          print(f"Publication X confirmée : https://x.com/DecisionsAndco/status/{tweet_id}")
+          if not notify_make_linkedin(package, {"theme": package["theme"]}, image_url=image_url, has_image=True):
+              raise RuntimeError("X est publié. Make n’a pas confirmé la réception du post LinkedIn.")
+          PY
