@@ -41,7 +41,7 @@ import time
 from io import BytesIO
 
 import requests
-from PIL import Image
+from PIL import Image, ImageOps
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
@@ -58,7 +58,14 @@ ALERTE_EMAIL_SITE = os.environ.get("ALERTE_EMAIL_SITE", "false").lower() == "tru
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
 MODEL = "claude-sonnet-4-6"
-IMAGE_MODEL = "gpt-image-1"
+IMAGE_MODEL = "gpt-image-2.5-sunburst"
+COVER_SIZE = (1536, 864)
+SITE_COVER_ASSETS = {
+    "Formation IA": "formation.jpg",
+    "Réglementation IA": "gouvernance.jpg",
+    "Transformation IA": "terrain_clients.jpg",
+}
+DEFAULT_SITE_COVER_ASSET = "entreprise_os.jpg"
 
 SITE_ARTICLE_BASE = "https://www.decisionsandco.com/actualites"
 SITE_IMAGE_BASE = "https://www.decisionsandco.com/images/content"
@@ -348,14 +355,7 @@ def detect_anomalies(site_data, package):
 
 
 def generate_cover_openai(image_prompt):
-    """Génère la couverture via l'API Images d'OpenAI (gpt-image-1).
-
-    Demande explicitement du webp, MAIS reconvertit systématiquement le
-    résultat via Pillow avant de le retourner : certains modèles de cette
-    famille (gpt-image-2 notamment) renvoient du PNG malgré une demande de
-    webp (bug connu côté API/SDK). La conversion locale garantit le format
-    final quel que soit ce que l'API renvoie réellement.
-    """
+    """Génère une couverture éditoriale via l’API Images et la convertit en WebP."""
     resp = requests.post(
         "https://api.openai.com/v1/images/generations",
         headers={
@@ -364,8 +364,12 @@ def generate_cover_openai(image_prompt):
         },
         json={
             "model": IMAGE_MODEL,
-            "prompt": image_prompt,
-            "size": "1536x1024",
+            "prompt": (
+                f"{image_prompt}\n"
+                "Full-bleed editorial website illustration. No embedded text, "
+                "headlines, category banners, logos, watermarks, or social media overlays."
+            ),
+            "size": f"{COVER_SIZE[0]}x{COVER_SIZE[1]}",
             "output_format": "webp",
             "quality": "high",
         },
@@ -386,11 +390,37 @@ def generate_cover_openai(image_prompt):
     b64 = resp.json()["data"][0]["b64_json"]
     raw = base64.b64decode(b64)
 
-    img = Image.open(BytesIO(raw)).convert("RGB")
+    with Image.open(BytesIO(raw)) as img:
+        return _encode_cover_webp(img.convert("RGB"))
+
+
+def _encode_cover_webp(image):
     buf = BytesIO()
-    img.save(buf, format="WEBP", quality=90)
+    image.save(buf, format="WEBP", quality=90)
     buf.seek(0)
     return buf
+
+
+def generate_site_cover(site_data):
+    if OPENAI_API_KEY:
+        print(f"Génération de la couverture du site via OpenAI Images ({IMAGE_MODEL})...")
+        try:
+            return generate_cover_openai(site_data["image_prompt"])
+        except (requests.RequestException, ValueError, KeyError, IndexError, TypeError, OSError) as exc:
+            print(f"Couverture OpenAI indisponible ({type(exc).__name__}).")
+    else:
+        print("Clé OpenAI absente pour la génération de couverture.")
+
+    filename = SITE_COVER_ASSETS.get(site_data["category"], DEFAULT_SITE_COVER_ASSET)
+    path = os.path.join(os.path.dirname(__file__), "assets", filename)
+    print(f"Couverture de repli du site : {filename}.")
+    with Image.open(path) as source:
+        image = ImageOps.fit(ImageOps.exif_transpose(source).convert("RGB"), COVER_SIZE, Image.Resampling.LANCZOS)
+        image_buf = _encode_cover_webp(image)
+
+    # Le visuel de repli est décoratif. La description générée concernait une autre image.
+    site_data["coverAlt"] = ""
+    return image_buf
 
 
 def build_markdown(package, site_data, slug, date_slug):
@@ -665,24 +695,7 @@ def publish_to_site(package, theme, slug, date_slug):
     site_data = generate_site_content(package, theme)
     print(f"Catégorie retenue : {site_data.get('category')}")
 
-    image_buf = None
-    if OPENAI_API_KEY and not DRY_RUN:
-        print("Génération de la couverture via l'API Images OpenAI...")
-        try:
-            image_buf = generate_cover_openai(site_data["image_prompt"])
-        except requests.HTTPError as exc:
-            if exc.response is None or exc.response.status_code != 400:
-                raise
-            draft_cover = f"articles/drafts/{date_slug}-{slug}/cover.png"
-            if not os.path.isfile(draft_cover):
-                raise
-            print("API Images refusée — réutilisation de la couverture du brouillon.")
-            image_buf = BytesIO()
-            with Image.open(draft_cover) as image:
-                image.convert("RGB").save(image_buf, format="WEBP", quality=90)
-            image_buf.seek(0)
-    else:
-        print("[DRY_RUN ou clé OpenAI absente] Couverture non générée.")
+    image_buf = None if DRY_RUN else generate_site_cover(site_data)
 
     markdown = build_markdown(package, site_data, slug, date_slug)
     branch = f"article/{date_slug}-{slug}"
