@@ -11,7 +11,7 @@ DIFFÉRENCES avec agent_short_video.py (format "fond statique") :
     - Public visé : grand public concerné/impacté par l'IA, PAS uniquement
       les dirigeants PME/ETI. Angle pédagogique et accessible.
     - Cadence : hebdomadaire, automatisée (cron), sans intervention manuelle.
-    - Format natif 16:9, PAS de recadrage vertical — publiée comme vidéo
+    - Format natif 9:16, PAS de recadrage vertical — publiée comme vidéo
       courte classique, pas comme YouTube Short au sens strict (qui impose
       un format vertical). Choix assumé : pas de perte de cadrage liée à un
       crop automatique sur le visage.
@@ -63,7 +63,14 @@ from pathlib import Path
 
 import requests
 
-from editorial_style import REGLE_TIRETS, sans_tirets_longs
+from editorial_style import sans_tirets_longs
+from youtube_short_policy import (
+    SCRIPT_RULES, check_audio_duration, prepare_script,
+    publication_due, render_avatar_short, retry_playlists, prepare_publication,
+    description as short_description,
+    upload_short as publish_youtube_short,
+)
+
 import feedparser
 from PIL import Image, ImageDraw, ImageFont
 
@@ -191,10 +198,10 @@ def generate_script_from_news(news_item):
         "comparaison, ou une question qui parle à tout le monde.\n\n"
         "Actualité du jour : %s\n"
         "Résumé : %s\n\n"
-        f"{REGLE_TIRETS} "
+        f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
-        " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel, "
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel, "
         "commence naturellement comme si Rachel parlait), titre fait moins "
         "de 60 caractères, et hashtags contient 3 à 5 tags sans le symbole #."
     ) % (news_item["titre"], news_item["resume"][:400])
@@ -207,7 +214,7 @@ def generate_script_from_news(news_item):
         },
         json={
             "model": "claude-sonnet-4-6",
-            "max_tokens": 500,
+            "max_tokens": 1000,
             "system": system_prompt,
             "messages": [{"role": "user", "content": "Génère le script du jour."}],
         },
@@ -226,10 +233,10 @@ def generate_script_evergreen(theme):
         "Rachel, présentatrice de la chaîne. Public généraliste concerné ou "
         "curieux de l'IA. Ton chaleureux, clair, pédagogique. Première "
         "personne, fait pour être lu à voix haute. Thème du jour : " + theme + ". "
-        f"{REGLE_TIRETS} "
+        f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
-        " où texte_voix fait entre 70 et 110 mots, titre fait moins de 60 "
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        " où texte_voix fait entre 75 et 100 mots, titre fait moins de 60 "
         "caractères, et hashtags contient 3 à 5 tags sans le symbole #."
     )
     resp = requests.post(
@@ -241,7 +248,7 @@ def generate_script_evergreen(theme):
         },
         json={
             "model": "claude-sonnet-4-6",
-            "max_tokens": 500,
+            "max_tokens": 1000,
             "system": system_prompt,
             "messages": [{"role": "user", "content": "Génère le script du jour."}],
         },
@@ -290,7 +297,7 @@ def generate_avatar_video(photo_asset_id, audio_asset_id, titre):
     """Lance la génération HeyGen, attend sa fin, retourne l'URL de la vidéo.
     Doc : POST /v3/videos avec type='image' + audio_asset_id (mutuellement
     exclusif avec script+voice_id, puisqu'on fournit déjà l'audio ElevenLabs).
-    aspect_ratio='16:9' : format natif, PAS de recadrage nécessaire ensuite."""
+    aspect_ratio='9:16' : format natif, PAS de recadrage nécessaire ensuite."""
     api_key = os.environ["HEYGEN_API_KEY"]
 
     resp = requests.post(
@@ -302,7 +309,7 @@ def generate_avatar_video(photo_asset_id, audio_asset_id, titre):
             "audio_asset_id": audio_asset_id,
             "title": titre[:100],
             "resolution": "1080p",
-            "aspect_ratio": "16:9",
+            "aspect_ratio": "9:16",
         },
         timeout=30,
     )
@@ -358,31 +365,10 @@ def get_access_token():
     return resp.json()["access_token"]
 
 
-def upload_video(video_path, titre, description, tags):
-    access_token = get_access_token()
-    metadata = {
-        "snippet": {"title": titre[:100], "description": description, "tags": tags, "categoryId": "22"},
-        "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
-    }
-    init_resp = requests.post(
-        "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
-        headers={
-            "Authorization": "Bearer %s" % access_token,
-            "Content-Type": "application/json; charset=UTF-8",
-            "X-Upload-Content-Type": "video/mp4",
-        },
-        json=metadata,
-        timeout=30,
-    )
-    init_resp.raise_for_status()
-    upload_url = init_resp.headers["Location"]
-    with open(video_path, "rb") as f:
-        video_data = f.read()
-    upload_resp = requests.put(
-        upload_url, headers={"Content-Type": "video/mp4"}, data=video_data, timeout=300
-    )
-    upload_resp.raise_for_status()
-    return upload_resp.json()["id"]
+def upload_video(video_path, titre, description, tags=None, script_data=None):
+    if script_data is None:
+        raise ValueError("Le script complet est nécessaire aux métadonnées YouTube.")
+    return publish_youtube_short(video_path, script_data, get_access_token(), "avatar")
 
 
 # ---------------------------------------------------------------------------
@@ -465,7 +451,7 @@ def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
 
     prompt = (
         "Créer un arrière-plan de vignette YouTube premium au format paysage "
-        "16:9, dans le style des meilleures miniatures YouTube actuelles : "
+        "9:16, dans le style des meilleures miniatures YouTube actuelles : "
         "impact immédiat, fort contraste, composition dynamique, rendu très "
         "professionnel.\n\n"
         "IMPORTANT -- NE JAMAIS ÉCRIRE DE TEXTE, TITRE, LETTRE, MOT, CHIFFRE "
@@ -667,6 +653,10 @@ def upload_thumbnail(video_id: str, thumbnail_path: Path):
 
 
 def main():
+    token = get_access_token()
+    retry_playlists(token)
+    if not publication_due("avatar"):
+        return
     photo_asset_id = os.environ["RACHEL_PHOTO_ASSET_ID"]
     history = load_history()
 
@@ -689,9 +679,12 @@ def main():
         history.setdefault("themes_used", []).append(theme)
         history["themes_used"] = history["themes_used"][-10:]
 
+    script_data = prepare_script(script_data, prospective=False)
+    prepare_publication(script_data, token, "avatar")
     print("[2/6] Script généré : %s" % script_data["titre"])
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
+    check_audio_duration(audio_path)
     print("[3/6] Voix générée")
 
     audio_asset_id = upload_audio_to_heygen(audio_path)
@@ -700,35 +693,12 @@ def main():
     print("[5/6] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
     video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "avatar.mp4")
-    print("[5/6] Vidéo avatar générée (16:9 natif, aucun recadrage)")
+    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "avatar-vertical.mp4")
+    print("[5/6] Vidéo avatar générée (1080 × 1920, accroche dès la première image)")
 
-    description = script_data["texte_voix"] + "\n\n" + " ".join(
-        "#%s" % t for t in script_data["hashtags"]
-    )
-    video_id = upload_video(video_path, script_data["titre"], description, script_data["hashtags"])
+    description = short_description(script_data)
+    video_id = upload_video(video_path, script_data["titre"], description, script_data.get("hashtags", []), script_data=script_data)
     print("[6/6] Vidéo publiée : https://youtube.com/watch?v=%s" % video_id)
-
-    thumb_path = WORKDIR / "thumbnail.jpg"
-    try:
-        generate_thumbnail_ai(script_data["titre"], thumb_path)
-        print("[thumbnail] Miniature générée via l'API OpenAI Images (IA).")
-    except Exception as e:
-        print("[thumbnail] Génération IA indisponible (%s) -- repli sur la "
-              "version PIL déterministe." % e)
-        try:
-            generate_thumbnail(script_data["titre"], thumb_path)
-            print("[thumbnail] Miniature générée via PIL (repli).")
-        except Exception as e2:
-            print("[thumbnail] Non appliquée (%s) -- la vidéo reste publiée "
-                  "normalement, juste avec la miniature auto de YouTube." % e2)
-            thumb_path = None
-
-    if thumb_path:
-        try:
-            upload_thumbnail(video_id, thumb_path)
-        except Exception as e:
-            print("[thumbnail] Upload échoué (%s) -- vidéo déjà publiée, "
-                  "sans impact sur le reste du run." % e)
 
     if news_item:
         history.setdefault("news_used_links", []).append(news_item["lien"])

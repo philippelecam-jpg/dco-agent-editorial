@@ -1,0 +1,10 @@
+{
+  "jours_publication": {"statique": [0, 3], "avatar": [1], "prospective": [4]},
+  "maximum_par_semaine": 4,
+  "playlists": {
+    "Agents IA et outils": "",
+    "Cybersécurité et incidents": "",
+    "IA et organisation du travail": "",
+    "Prospective : et si… ?": ""
+  }
+}

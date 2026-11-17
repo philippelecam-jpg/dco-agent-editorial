@@ -24,7 +24,7 @@ DIFFÉRENCES avec agent_short_video_avatar.py :
       une question ouverte en fin de script. Pas de synthèse de recherche,
       pas d'angle "impact dirigeant" explicite (le dirigeant se reconnaît
       de lui-même dans la scène).
-    - Durée cible ~90s (vs 30-45s pour les 2 autres formats) : environ
+    - Durée cible ~30 à 60 s (vs 30-45s pour les 2 autres formats) : environ
       190-220 mots de texte voix.
     - Identité visuelle de la miniature différente : trajectoires qui
       divergent (symbolisant les futurs multiples), palette bleu-nuit/
@@ -68,7 +68,14 @@ from pathlib import Path
 
 import requests
 
-from editorial_style import REGLE_TIRETS, sans_tirets_longs
+from editorial_style import sans_tirets_longs
+from youtube_short_policy import (
+    SCRIPT_RULES, check_audio_duration, prepare_script,
+    publication_due, render_avatar_short, retry_playlists, prepare_publication,
+    description as short_description,
+    upload_short as publish_youtube_short,
+)
+
 from PIL import Image, ImageDraw, ImageFont
 
 HISTORY_FILE = Path("short_video_prospective_history.json")
@@ -215,13 +222,13 @@ def _clean_script(script_data: dict) -> dict:
 
 
 def generate_script(theme: str, angle: str) -> dict:
-    """Génère le script de ~90s dans le registre prospectif validé :
+    """Génère le script de ~30 à 60 s dans le registre prospectif validé :
     ouverture en scène concrète et visualisable ('et si...'), bascule
     ('ce n'est pas de la fiction lointaine'), question ouverte en fin --
     PAS de résolution business proprette, PAS de mention explicite du
     dirigeant comme cible (il se reconnaît de lui-même)."""
     system_prompt = (
-        "Tu écris le script d'une vidéo de prospective IA de 90 secondes "
+        "Tu écris le script d'une vidéo de prospective IA de 30 à 60 secondes "
         "pour Rachel, présentatrice de la chaîne. Le public est constitué "
         "de dirigeants de PME/ETI, mais NE LES NOMME JAMAIS explicitement "
         "comme cible -- ils doivent se reconnaître d'eux-mêmes dans la "
@@ -231,8 +238,8 @@ def generate_script(theme: str, angle: str) -> dict:
         "pas de rassurer avec une conclusion actionnable propre. C'est un "
         "'et si...', pas un plan d'action.\n\n"
         "STRUCTURE OBLIGATOIRE :\n"
-        "1. Ouverture en scène concrète et visualisable, commençant "
-        "idéalement par 'Et si...' -- quelque chose qu'on peut se "
+        "1. Ouverture avec une conséquence concrète ou un fait documenté. "
+        "La formule Et si peut figurer dans le titre et après l’accroche. Décris une scène à se "
         "représenter mentalement, pas un constat abstrait.\n"
         "2. Une bascule qui ancre cette scène dans le réel : 'Ce n'est pas "
         "de la science-fiction lointaine, les briques existent déjà "
@@ -244,14 +251,14 @@ def generate_script(theme: str, angle: str) -> dict:
         "la vidéo, pas se résoudre proprement.\n\n"
         "Ton chaleureux mais habité, presque conteur. Phrases courtes, "
         "rythme naturel à l'oral, fait pour être lu à voix haute par "
-        "Rachel à la première personne. Environ 190 à 220 mots.\n\n"
-        f"{REGLE_TIRETS} "
+        "Rachel à la première personne. Environ 75 à 100 mots.\n\n"
+        f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format "
-        'exact : {"titre": "...", "texte_voix": "..."} où titre fait moins '
+        'exact : {"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."]} où titre fait moins '
         "de 60 caractères et donne envie de cliquer sans tout dévoiler."
     )
     user_message = "Grand thème : %s\nAngle retenu : %s" % (theme, angle)
-    raw = _call_claude(system_prompt, user_message, max_tokens=700)
+    raw = _call_claude(system_prompt, user_message, max_tokens=1000)
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return _clean_script(json.loads(raw))
 
@@ -304,7 +311,7 @@ def generate_avatar_video(photo_asset_id: str, audio_asset_id: str, titre: str) 
             "audio_asset_id": audio_asset_id,
             "title": titre[:100],
             "resolution": "1080p",
-            "aspect_ratio": "16:9",
+            "aspect_ratio": "9:16",
         },
         timeout=30,
     )
@@ -315,7 +322,7 @@ def generate_avatar_video(photo_asset_id: str, audio_asset_id: str, titre: str) 
     video_id = resp.json()["data"]["video_id"]
 
     max_wait_seconds = 600  # un peu plus long que les 2 autres formats : la
-    # vidéo dure ~90s au lieu de 30-45s, le rendu HeyGen peut prendre plus de temps
+    # vidéo dure ~30 à 60 s au lieu de 30-45s, le rendu HeyGen peut prendre plus de temps
     waited = 0
     poll_interval = 15
     while waited < max_wait_seconds:
@@ -410,7 +417,7 @@ def generate_thumbnail_ai(titre: str, out_path: Path) -> Path:
     api_key = os.environ["OPENAI_API_KEY"]
 
     prompt = (
-        "Créer un arrière-plan de vignette premium au format paysage 16:9, "
+        "Créer un arrière-plan de vignette premium au format paysage 9:16, "
         "dans un registre analytique et prospectif -- sobre, feutré, "
         "réflexion stratégique. PAS de drapeaux, PAS de score, PAS de "
         "confrontation, PAS d'icônes d'actualité.\n\n"
@@ -522,55 +529,20 @@ def get_access_token() -> str:
     return resp.json()["access_token"]
 
 
-def upload_video(video_path: Path, titre: str, description: str) -> str:
-    access_token = get_access_token()
-    metadata = {
-        "snippet": {"title": titre[:100], "description": description,
-                    "tags": ["prospectiveIA", "IA", "futur", "DecisionsAndCo"],
-                    "categoryId": "22"},
-        "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
-    }
-    init_resp = requests.post(
-        "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
-        headers={
-            "Authorization": "Bearer %s" % access_token,
-            "Content-Type": "application/json; charset=UTF-8",
-            "X-Upload-Content-Type": "video/mp4",
-        },
-        json=metadata,
-        timeout=30,
-    )
-    init_resp.raise_for_status()
-    upload_url = init_resp.headers["Location"]
-    with open(video_path, "rb") as f:
-        video_data = f.read()
-    upload_resp = requests.put(
-        upload_url, headers={"Content-Type": "video/mp4"}, data=video_data, timeout=300
-    )
-    upload_resp.raise_for_status()
-    return upload_resp.json()["id"]
-
-
-def upload_thumbnail(video_id: str, thumbnail_path: Path):
-    access_token = get_access_token()
-    with open(thumbnail_path, "rb") as f:
-        resp = requests.post(
-            "https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=%s" % video_id,
-            headers={"Authorization": "Bearer %s" % access_token, "Content-Type": "image/jpeg"},
-            data=f.read(),
-            timeout=60,
-        )
-    if resp.status_code >= 400:
-        print("[upload_thumbnail] Miniature refusée (%s)." % resp.status_code)
-        return False
-    print("[upload_thumbnail] Miniature appliquée.")
-    return True
+def upload_video(video_path, titre, description, tags=None, script_data=None):
+    if script_data is None:
+        raise ValueError("Le script complet est nécessaire aux métadonnées YouTube.")
+    return publish_youtube_short(video_path, script_data, get_access_token(), "prospective")
 
 
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 def main():
+    token = get_access_token()
+    retry_playlists(token)
+    if not publication_due("prospective"):
+        return
     history = load_history()
 
     theme = pick_theme_of_week(history)
@@ -583,9 +555,12 @@ def main():
     print("[3/7] Angle retenu : %s" % angle_retenu)
 
     script_data = generate_script(theme, angle_retenu)
+    script_data = prepare_script(script_data, prospective=True)
+    prepare_publication(script_data, token, "prospective")
     print("[4/7] Script généré : %s" % script_data["titre"])
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
+    check_audio_duration(audio_path)
     audio_asset_id = upload_audio_to_heygen(audio_path)
     print("[5/7] Voix générée et uploadée (asset %s)" % audio_asset_id)
 
@@ -593,31 +568,12 @@ def main():
     print("[6/7] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
     video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "prospective.mp4")
+    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "prospective-vertical.mp4")
     print("[6/7] Vidéo avatar générée")
 
-    description = (
-        script_data["texte_voix"]
-        + "\n\n#ProspectiveIA #IntelligenceArtificielle #Futur #DecisionsAndCo"
-    )
-    video_id = upload_video(video_path, script_data["titre"], description)
+    description = short_description(script_data)
+    video_id = upload_video(video_path, script_data["titre"], description, script_data=script_data)
     print("[7/7] Vidéo publiée : https://youtube.com/watch?v=%s" % video_id)
-
-    thumb_path = WORKDIR / "thumbnail.jpg"
-    try:
-        generate_thumbnail_ai(script_data["titre"], thumb_path)
-        print("[thumbnail] Générée via IA.")
-    except Exception as e:
-        print("[thumbnail] IA indisponible (%s) -- repli PIL." % e)
-        try:
-            generate_thumbnail_fallback(script_data["titre"], thumb_path)
-        except Exception as e2:
-            print("[thumbnail] Non appliquée (%s)." % e2)
-            thumb_path = None
-    if thumb_path:
-        try:
-            upload_thumbnail(video_id, thumb_path)
-        except Exception as e:
-            print("[thumbnail] Upload échoué (%s)." % e)
 
     history.setdefault("angles_par_theme", {}).setdefault(theme, []).append(angle_retenu)
     history["angles_par_theme"][theme] = history["angles_par_theme"][theme][-10:]

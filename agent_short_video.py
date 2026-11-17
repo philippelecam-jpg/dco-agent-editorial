@@ -37,16 +37,21 @@ Intégration avec agent.py :
 
 import os
 import json
-import base64
 import random
 import subprocess
-import textwrap
 from datetime import datetime
 from pathlib import Path
 
 import requests
 
-from editorial_style import REGLE_TIRETS, sans_tirets_longs
+from editorial_style import sans_tirets_longs
+from youtube_short_policy import (
+    SCRIPT_RULES, check_audio_duration, hook_image, prepare_script,
+    publication_due, retry_playlists, prepare_publication,
+    description as short_description,
+    upload_short as publish_youtube_short,
+)
+
 import feedparser
 from PIL import Image, ImageDraw, ImageFont
 
@@ -220,10 +225,10 @@ def generate_script_from_news(news_item: dict) -> dict:
         "saisir. L'actu est un point de départ, pas le sujet du short.\n\n"
         f"Actualité du jour : {news_item['titre']}\n"
         f"Résumé : {news_item['resume'][:400]}\n\n"
-        f"{REGLE_TIRETS} "
+        f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
-        " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel), "
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel), "
         "titre fait moins de 60 caractères, et hashtags contient 3 à 5 tags "
         "pertinents sans le symbole #."
     )
@@ -237,7 +242,7 @@ def generate_script_from_news(news_item: dict) -> dict:
         },
         json={
             "model": "claude-sonnet-4-6",
-            "max_tokens": 500,
+            "max_tokens": 1000,
             "system": system_prompt,
             "messages": [{"role": "user", "content": "Génère le script du jour."}],
         },
@@ -266,10 +271,10 @@ def generate_script(theme: str) -> dict:
         "jamais jargon creux. Le texte doit être fait pour être LU À VOIX HAUTE : "
         "phrases courtes, rythme naturel, pas de mise en forme. "
         "Thème du jour : " + theme + ". "
-        f"{REGLE_TIRETS} "
+        f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "hashtags": ["...", "...", "..."]}'
-        " où texte_voix fait entre 70 et 110 mots (30-45s à débit naturel), "
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel), "
         "titre fait moins de 60 caractères, et hashtags contient 3 à 5 tags "
         "pertinents sans le symbole #."
     )
@@ -283,7 +288,7 @@ def generate_script(theme: str) -> dict:
         },
         json={
             "model": "claude-sonnet-4-6",
-            "max_tokens": 500,
+            "max_tokens": 1000,
             "system": system_prompt,
             "messages": [{"role": "user", "content": "Génère le script du jour."}],
         },
@@ -335,90 +340,7 @@ def get_audio_duration(audio_path: Path) -> float:
 # 3. Fond visuel brandé statique (PIL)
 # ---------------------------------------------------------------------------
 def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
-    palette = get_palette()
-    img = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), palette["bg"])
-    draw = ImageDraw.Draw(img)
-
-    try:
-        font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 72)
-        font_tags = ImageFont.truetype("DejaVuSans.ttf", 40)
-        font_rubrique = ImageFont.truetype("DejaVuSans-Bold.ttf", 30)
-    except OSError:
-        font_title = ImageFont.load_default()
-        font_tags = ImageFont.load_default()
-        font_rubrique = ImageFont.load_default()
-
-    # Bande d'accent en haut
-    draw.rectangle([(0, 0), (VIDEO_WIDTH, 16)], fill=palette["accent"])
-
-    # Titre centré, wrap automatique
-    wrapped = textwrap.wrap(titre, width=22)
-    y = VIDEO_HEIGHT // 2 - (len(wrapped) * 90) // 2
-    for line in wrapped:
-        bbox = draw.textbbox((0, 0), line, font=font_title)
-        w = bbox[2] - bbox[0]
-        draw.text(((VIDEO_WIDTH - w) / 2, y), line, font=font_title, fill=palette["text"])
-        y += 90
-
-    # Hashtags en bas, avec retour à la ligne automatique (évite le
-    # dépassement hors cadre observé en V1 sur les listes de 4-5 tags).
-    MARGIN = 60
-    max_line_width = VIDEO_WIDTH - 2 * MARGIN
-
-    def text_width(s, font):
-        bbox = draw.textbbox((0, 0), s, font=font)
-        return bbox[2] - bbox[0]
-
-    tags_with_hash = [f"#{t}" for t in hashtags]
-    tag_lines = []
-    current_line = ""
-    for tag in tags_with_hash:
-        candidate = f"{current_line}  {tag}".strip()
-        if text_width(candidate, font_tags) <= max_line_width:
-            current_line = candidate
-        else:
-            if current_line:
-                tag_lines.append(current_line)
-            current_line = tag
-    if current_line:
-        tag_lines.append(current_line)
-
-    y_tags = VIDEO_HEIGHT - 60 - (len(tag_lines) * 55)
-    for line in tag_lines:
-        w = text_width(line, font_tags)
-        draw.text(((VIDEO_WIDTH - w) / 2, y_tags), line, font=font_tags, fill=palette["subtext"])
-        y_tags += 55
-
-    # Logo si le module de branding est disponible — on journalise
-    # explicitement les cas d'échec plutôt que de les avaler silencieusement,
-    # pour pouvoir diagnostiquer depuis les logs GitHub Actions sans avoir à
-    # reproduire le run en local.
-    logo_bottom_y = 120  # valeur de repli si le logo ne se charge pas, pour
-                          # que la rubrique reste correctement positionnée
-    try:
-        logo_raw = Image.open(LOGO_PATH).convert("RGBA")
-        logo = recolor_logo(logo_raw, palette["text"])
-        logo.thumbnail((260, 260))
-        logo_y = 120
-        img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, logo_y), logo)
-        logo_bottom_y = logo_y + logo.height
-    except FileNotFoundError:
-        print(f"[build_background_image] Logo non trouvé à {LOGO_PATH} — "
-              "vérifier que ce chemin existe bien dans le repo.")
-    except Exception as e:
-        print(f"[build_background_image] Logo non appliqué : {e}")
-
-    # Rubrique fixe sous le logo — donne une identité de "série" reconnaissable
-    # d'un short à l'autre, indépendante du sujet du jour.
-    rubrique = "30 SECONDES, 1 ACTU IA"
-    rubrique_w = text_width(rubrique, font_rubrique)
-    draw.text(
-        ((VIDEO_WIDTH - rubrique_w) / 2, logo_bottom_y + 20),
-        rubrique, font=font_rubrique, fill=palette["accent"],
-    )
-
-    img.save(out_path)
-    return out_path
+    return hook_image(titre, out_path, transparent=False)
 
 
 # ---------------------------------------------------------------------------
@@ -460,50 +382,20 @@ def get_access_token() -> str:
     return resp.json()["access_token"]
 
 
-def upload_short(video_path: Path, titre: str, description: str, tags: list) -> str:
-    access_token = get_access_token()
-
-    metadata = {
-        "snippet": {
-            "title": titre[:100],
-            "description": description,
-            "tags": tags,
-            "categoryId": "22",  # People & Blogs
-        },
-        "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
-    }
-
-    init_resp = requests.post(
-        "https://www.googleapis.com/upload/youtube/v3/videos"
-        "?uploadType=resumable&part=snippet,status",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json; charset=UTF-8",
-            "X-Upload-Content-Type": "video/mp4",
-        },
-        json=metadata,
-        timeout=30,
-    )
-    init_resp.raise_for_status()
-    upload_url = init_resp.headers["Location"]
-
-    with open(video_path, "rb") as f:
-        video_data = f.read()
-
-    upload_resp = requests.put(
-        upload_url,
-        headers={"Content-Type": "video/mp4"},
-        data=video_data,
-        timeout=300,
-    )
-    upload_resp.raise_for_status()
-    return upload_resp.json()["id"]
+def upload_short(video_path, titre, description, tags=None, script_data=None):
+    if script_data is None:
+        raise ValueError("Le script complet est nécessaire aux métadonnées YouTube.")
+    return publish_youtube_short(video_path, script_data, get_access_token(), "statique")
 
 
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 def main():
+    token = get_access_token()
+    retry_playlists(token)
+    if not publication_due("statique"):
+        return
     history = load_history()
 
     news_item = None
@@ -523,23 +415,24 @@ def main():
         history["themes_used"].append(theme)
         history["themes_used"] = history["themes_used"][-10:]
 
+    script_data = prepare_script(script_data, prospective=False)
+    prepare_publication(script_data, token, "statique")
     print(f"[2/5] Script généré : {script_data['titre']}")
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
+    check_audio_duration(audio_path)
     duration = get_audio_duration(audio_path)
     print(f"[3/5] Voix générée ({duration:.1f}s)")
 
     image_path = build_background_image(
-        script_data["titre"], script_data["hashtags"], WORKDIR / "background.png"
+        script_data["accroche"], script_data.get("hashtags", []), WORKDIR / "background.png"
     )
     video_path = build_video(image_path, audio_path, duration, WORKDIR / "short.mp4")
     print("[4/5] Vidéo assemblée")
 
-    description = script_data["texte_voix"] + "\n\n" + " ".join(
-        f"#{t}" for t in script_data["hashtags"]
-    )
+    description = short_description(script_data)
     video_id = upload_short(
-        video_path, script_data["titre"], description, script_data["hashtags"]
+        video_path, script_data["titre"], description, script_data.get("hashtags", []), script_data=script_data
     )
     print(f"[5/5] Short publié : https://youtube.com/shorts/{video_id}")
 
@@ -564,7 +457,7 @@ def get_refresh_token_once():
 
     flow = InstalledAppFlow.from_client_secrets_file(
         "client_secret.json",
-        scopes=["https://www.googleapis.com/auth/youtube.upload"],
+        scopes=["https://www.googleapis.com/auth/youtube.force-ssl"],
     )
     creds = flow.run_local_server(port=0)
     print("Refresh token à copier dans le secret YOUTUBE_REFRESH_TOKEN :")

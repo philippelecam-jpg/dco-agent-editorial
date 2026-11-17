@@ -1,7 +1,16 @@
 name: Agent Short Video Avatar (Rachel / YouTube)
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_publication:
+        description: "Publication hors planning (contrôles de durée et doublons maintenus)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: youtube-shorts-publication
+  cancel-in-progress: false
 
 jobs:
   short-video-avatar:
@@ -11,17 +20,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Install Python dependencies
         run: pip install requests feedparser pillow requests_oauthlib
 
       - name: Run avatar short video agent
         env:
+          FORCE_PUBLICATION: ${{ inputs.force_publication && 'true' || 'false' }}
+          YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
@@ -42,10 +58,12 @@ jobs:
         run: python agent_short_video_avatar.py
 
       - name: Commit updated history
+        if: always()
         run: |
-          if [ -n "$(git status --porcelain short_video_avatar_history.json)" ]; then
+          if [ -n "$(git status --porcelain youtube_publications.json short_video_avatar_history.json)" ]; then
             git config user.name "dco-agent-editorial"
             git config user.email "actions@github.com"
+            if [ -f youtube_publications.json ]; then git add youtube_publications.json; fi
             git add short_video_avatar_history.json
             git commit -m "chore: update short_video_avatar history [skip ci]"
             git pull --rebase origin main
