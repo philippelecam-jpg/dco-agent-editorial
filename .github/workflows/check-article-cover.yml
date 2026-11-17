@@ -1,0 +1,46 @@
+name: Vérifier les couvertures éditoriales
+on:
+  push:
+    branches: [fix/article-cover-sunburst]
+    paths: [.github/workflows/check-article-cover.yml]
+permissions:
+  contents: read
+jobs:
+  cover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests Pillow
+      - name: Vérifier le repli avec les images du dépôt
+        run: |
+          python -u - <<'PY'
+          from unittest.mock import patch
+          import requests
+          from PIL import Image
+          import site_publisher as site
+          for category in (*site.SITE_COVER_ASSETS, "Innovation IA"):
+              data = {"category": category, "coverAlt": "Description du visuel demandé", "image_prompt": "A meeting room"}
+              with patch.object(site, "OPENAI_API_KEY", "test"), patch.object(site, "generate_cover_openai", side_effect=requests.HTTPError("HTTP 400")):
+                  with Image.open(site.generate_site_cover(data)) as image:
+                      assert image.format == "WEBP" and image.size == site.COVER_SIZE
+                  assert data["coverAlt"] == ""
+          print("Toutes les photos de repli sont lisibles et converties en WebP.")
+          PY
+      - name: Générer une couverture avec la clé du workflow
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -u - <<'PY'
+          from PIL import Image
+          import site_publisher as site
+          assert site.OPENAI_API_KEY, "Clé OpenAI absente"
+          with Image.open(site.generate_cover_openai("Editorial photograph of an office workshop with a facilitator and a team arranging unmarked cards on a table, daylight, viewed from behind.")) as image:
+              assert image.format == "WEBP" and image.size == site.COVER_SIZE
+          print("Couverture générée et validée en WebP.")
+          PY
