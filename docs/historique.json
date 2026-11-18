@@ -1,15 +1,6 @@
 [
   {
     "date": "Dimanche 25 octobre 2026",
-    "timestamp": "2026-10-25T09:25:10.332331",
-    "theme": "Regard de fond",
-    "sujet": "Payer pour l'IA ne suffit pas : ce que révèle le fossé entre les 19 % de PME qui ont un abonnement IA et les 11 % qui automatisent vraiment",
-    "post_x": "19 % des PME paient pour un outil IA. 11 % automatisent vraiment des tâches. Un abonnement n'est pas une transformation. La question n'est pas \"combien ça coûte ?\" mais \"à quoi on lui demande de servir, exactement ?\"",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2114287118826848740",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-25-092410-weekend.png?v=092411"
-  },
-  {
-    "date": "Dimanche 25 octobre 2026",
     "timestamp": "2026-10-25T13:37:06.278180",
     "theme": "Actualité décryptée",
     "sujet": "GPT-6 \"Luna\" dans ChatGPT gratuit : ce que ça change vraiment pour une PME",
@@ -275,5 +266,18 @@
     "post_x": "57 % des dirigeants de PME-ETI n'ont pas de stratégie IA formalisée. Sans critères définis, comment savoir si le temps gagné est réel ou simplement déplacé dans les équipes ?",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2122704123946832094",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-17-145112.png?v=145112"
+  },
+  {
+    "date": "Mercredi 18 novembre 2026",
+    "timestamp": "2026-11-18T06:09:15.245500",
+    "theme": "Agents et automatisation",
+    "sujet": "ChatGPT Wallet permet aux agents IA d'acheter à votre place : où placer le seuil de validation humaine dans une PME ?",
+    "angle": "L'annonce de ChatGPT Wallet (14 novembre 2026) rend concret un scénario jusqu'ici théorique : un agent peut déclencher une dépense réelle dans votre nom. L'angle traite de la décision de seuil dans une PME ou ETI, qui doit fixer à quel montant ou à quel type d'achat l'agent doit s'arrêter et demander une validation humaine, comment ce seuil est documenté dans la politique achats, et qui en est responsable.",
+    "question_metier": "À partir de quel montant ou de quel type d'engagement un agent IA connecté à vos outils achats doit-il interrompre son action et demander une validation explicite, et qui dans l'organisation est légitime pour fixer cette limite ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "ChatGPT Wallet peut acheter à votre place. La vraie question n'est pas technique : c'est qui dans votre organisation décide du seuil d'engagement, et est-ce que c'est écrit quelque part ?",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2122934972747014198",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-18-060831.png?v=060831"
   }
 ]
