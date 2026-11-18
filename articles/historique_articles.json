@@ -1,14 +1,6 @@
 [
   {
     "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T12:18:02.966174",
-    "theme": "Gouvernance et réglementation IA",
-    "titre": "Ce que l'AI Act change vraiment pour votre entreprise",
-    "dossier": "articles/drafts/2026-08-25-ce-que-l-ai-act-change-vraiment-pour-votre-entreprise",
-    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/2"
-  },
-  {
-    "date": "Mardi 25 août 2026",
     "timestamp": "2026-08-25T14:52:46.855653",
     "theme": "Terrain et missions clients",
     "titre": "Ce que nous avons trouvé dans les tiroirs d'un directeur industriel",
@@ -166,5 +158,18 @@
     "titre": "67 % d'expérimentations : comment décider de passer à l'échelle",
     "dossier": "articles/drafts/2026-11-17-67-d-experimentations-comment-decider-de-passer-a-l-echelle",
     "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/46"
+  },
+  {
+    "date": "Mercredi 18 novembre 2026",
+    "sujet": "Éliciter les règles implicites qui gouvernent vos achats avant de les confier à un agent",
+    "angle": "Angle Éliciter. Dans la plupart des PME, les règles achats réelles ne figurent pas dans une politique écrite : elles vivent dans la tête du responsable, dans des habitudes de validation informelles et dans des exceptions jamais formalisées. Quand un agent comme ChatGPT Wallet peut déclencher une commande, ces règles implicites deviennent un risque opérationnel. Cet article montre comment éliciter ces règles (seuils, fournisseurs exclus, engagements pluriannuels, règles de cumul) avant de les codifier dans les paramètres de l'agent. Exemple hypothétique d'une ETI de services qui découvre, lors de l'élicitation, que trois personnes différentes appliquaient trois seuils de validation différents pour le même type d'achat.",
+    "question_metier": "Quelles règles d'achat non écrites votre organisation applique-t-elle réellement aujourd'hui, et comment les rendre explicites avant de les confier à un agent autorisé à engager des dépenses ?",
+    "sources": [],
+    "statut": "PR site enregistrée",
+    "timestamp": "2026-11-18T06:17:11.060952",
+    "theme": "Agents et automatisation",
+    "titre": "Ce que votre agent achats ne peut pas deviner tout seul",
+    "dossier": "articles/drafts/2026-11-18-ce-que-votre-agent-achats-ne-peut-pas-deviner-tout-seul",
+    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/47"
   }
 ]
