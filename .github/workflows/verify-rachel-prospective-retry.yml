@@ -1,0 +1,111 @@
+name: Verification hors planning Prospective (Rachel / YouTube)
+
+on:
+  push:
+    branches: ['test/rachel-complete-2026-11-19']
+    paths: ['.github/workflows/verify-rachel-prospective-retry.yml']
+
+concurrency:
+  group: youtube-shorts-publication
+  cancel-in-progress: false
+
+jobs:
+  short-video-prospective:
+    runs-on: ubuntu-latest
+    outputs:
+      instagram_artifact_id: ${{ steps.instagram_archive.outputs.artifact-id }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Refuser une regeneration par relance
+        env:
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: test "$RUN_ATTEMPT" = "1"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install requests pillow requests_oauthlib cryptography
+
+      - name: Run prospective short video agent
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          FORCE_PUBLICATION: 'true'
+          YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          RACHEL_PHOTO_ASSET_ID: ${{ secrets.RACHEL_PHOTO_ASSET_ID }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          # Lues à l'import de agent.py même si non utilisées ici -- même
+          # convention que les autres modules satellites du dispositif.
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+        run: python -u agent_short_video_prospective.py
+
+      - name: Conserver le MP4 chiffré pour Instagram
+        id: instagram_archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: rachel-reel-${{ github.run_id }}
+          path: |
+            tmp_instagram_reel/manifest.json
+            tmp_instagram_reel/reel.enc
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Commit updated history
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain youtube_publications.json short_video_prospective_history.json rachel_assets.json)" ]; then
+            git config user.name "dco-agent-editorial"
+            git config user.email "actions@github.com"
+            if [ -f youtube_publications.json ]; then git add youtube_publications.json; fi
+            if [ -f rachel_assets.json ]; then git add rachel_assets.json; fi
+            git add short_video_prospective_history.json
+            git commit -m "chore: update short_video_prospective history [skip ci]"
+            git pull --rebase origin main
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -sS -X POST "$MAKE_WEBHOOK_URL" \
+            -H "x-make-apikey: $MAKE_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"alerte\": \"echec_short_video_prospective\", \"run_url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\", \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+        env:
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+
+  instagram:
+    needs: short-video-prospective
+    if: needs.short-video-prospective.outputs.instagram_artifact_id != ''
+    permissions:
+      actions: read
+      contents: write
+    uses: ./.github/workflows/instagram_reels.yml
+    with:
+      source_run_id: ${{ format('{0}', github.run_id) }}
+    secrets:
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
