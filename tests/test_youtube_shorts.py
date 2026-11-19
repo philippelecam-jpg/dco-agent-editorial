@@ -276,6 +276,22 @@ class YouTubeRules(unittest.TestCase):
             policy.generate_validated_script(generate)
         self.assertEqual(generate.call_count, 3)
 
+    def test_narration_rewrite_uses_measured_duration_and_rechecks_publication(self):
+        generate, voice, preflight = Mock(return_value=script()), Mock(return_value=Path("voice.mp3")), Mock()
+        with patch.object(policy, "check_audio_duration", side_effect=[ValueError("too short"), 42]), \
+             patch.object(policy, "media_duration", return_value=25):
+            data, path = policy.generate_validated_narration(generate, voice, Path("voice.mp3"), preflight)
+        self.assertEqual(voice.call_count, 2)
+        self.assertEqual(preflight.call_count, 2)
+        self.assertIn("25.00 secondes", generate.call_args.args[0])
+        self.assertIn("42 secondes", generate.call_args.args[0])
+        with patch.object(policy, "check_audio_duration", side_effect=ValueError("still too short")), \
+             patch.object(policy, "media_duration", return_value=25):
+            voice.reset_mock()
+            with self.assertRaisesRegex(ValueError, "still too short"):
+                policy.generate_validated_narration(generate, voice, path, preflight)
+            self.assertEqual(voice.call_count, 3)
+
     def test_duration_budget_never_truncates_narration(self):
         self.assertEqual(policy.finished_duration(58), 59)
         with self.assertRaisesRegex(ValueError, "jamais tronquer"):

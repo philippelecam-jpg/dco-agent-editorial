@@ -175,6 +175,32 @@ def generate_validated_script(generate, prospective=False):
                     {key: data.get(key) for key in ("titre", "texte_voix")}, ensure_ascii=False)
 
 
+def generate_validated_narration(generate, voice, path, preflight, prospective=False):
+    """Réécrit au plus deux fois une narration hors durée avant tout rendu vidéo."""
+    duration_feedback = ""
+    for attempt in range(3):
+        data = generate_validated_script(
+            lambda feedback: generate(duration_feedback + "\n" + feedback), prospective=prospective)
+        preflight(data)
+        audio = voice(data["texte_voix"], path)
+        try:
+            check_audio_duration(audio)
+            return data, audio
+        except ValueError:
+            if attempt == 2:
+                raise
+            duration = media_duration(audio)
+            target_words = max(1, round(len(data["texte_voix"].split()) * 42 / duration))
+            duration_feedback = (
+                f"La narration précédente dure {duration:.2f} secondes. "
+                f"Réécris environ {target_words} mots pour viser 42 secondes, "
+                "avec une accroche courte et une fin complète. "
+                "Garde le même sujet et corrige sa longueur sans inventer de faits. "
+                "Ce nombre de mots remplace la consigne habituelle de longueur.\n"
+                "Proposition à corriger : " + json.dumps(data, ensure_ascii=False))
+            print(f"[Durée] Réécriture demandée après une voix de {duration:.2f} s.", flush=True)
+
+
 def reject_duplicate(title, rows=None):
     title = normal_title(title)
     for row in unique_recent() if rows is None else rows:
