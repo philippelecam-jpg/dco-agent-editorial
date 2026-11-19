@@ -72,6 +72,7 @@ from editorial_style import sans_tirets_longs
 from instagram_reels import stage_reel
 from rachel_catalogue import prepare_rachel_image
 from youtube_short_policy import (
+    generate_validated_narration,
     SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
     description as short_description,
@@ -554,14 +555,13 @@ def main():
     angle_retenu = select_angle(theme, angles, history)
     print("[3/7] Angle retenu : %s" % angle_retenu)
 
-    script_data = generate_validated_script(
-        lambda feedback: generate_script(theme, angle_retenu, feedback), prospective=True)
-    prepare_publication(script_data, token, "prospective")
+    script_data, audio_path = generate_validated_narration(
+        lambda feedback: generate_script(theme, angle_retenu, feedback),
+        generate_voice, WORKDIR / "voice.mp3",
+        lambda data: prepare_publication(data, token, "prospective"), prospective=True)
     photo_asset_id = prepare_rachel_image(script_data, "prospective", context=f"{theme}. {angle_retenu}")
     print("[4/7] Script généré : %s" % script_data["titre"])
 
-    audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
-    check_audio_duration(audio_path)
     audio_asset_id = upload_audio_to_heygen(audio_path)
     print("[5/7] Voix générée et uploadée (asset %s)" % audio_asset_id)
 
