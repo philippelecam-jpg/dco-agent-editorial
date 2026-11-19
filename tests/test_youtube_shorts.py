@@ -83,6 +83,26 @@ class YouTubeRules(unittest.TestCase):
                 clock.now.return_value = fixed
                 self.assertFalse(policy.publication_due("statique"))
 
+    def test_forced_prospective_bypasses_weekly_limit_but_not_duplicates(self):
+        existing = "Et si les bureaux disparaissaient ?"
+        listing = {"items": [{"snippet": {
+            "publishedAt": datetime.now(timezone.utc).isoformat(),
+            "title": existing, "resourceId": {"videoId": "previous"},
+        }}]}
+        channels = {"items": [{"contentDetails": {"relatedPlaylists": {"uploads": "uploads"}}}]}
+        def get(token, resource, **kwargs):
+            return channels if resource == "channels" else listing
+        with patch.object(policy, "resolve_playlists", return_value={"Prospective": "playlist"}), \
+             patch.object(policy, "classify_playlist", return_value="Prospective"), \
+             patch.object(policy, "_get", side_effect=get):
+            with patch.dict(os.environ, {"FORCE_PUBLICATION": "false"}):
+                with self.assertRaisesRegex(ValueError, "cette semaine"):
+                    policy.prepare_publication(script(), "token", "prospective")
+            with patch.dict(os.environ, {"FORCE_PUBLICATION": "true"}):
+                self.assertEqual(policy.prepare_publication(script(), "token", "prospective")["id"], "playlist")
+                with self.assertRaisesRegex(ValueError, "Titre proche"):
+                    policy.prepare_publication(dict(script(), titre=existing), "token", "prospective")
+
     def test_probe_rejects_landscape_rotation_and_long_files(self):
         probe = {"streams": [{"codec_type": "video", "width": 1080, "height": 1920,
                               "sample_aspect_ratio": "1:1"}], "format": {"duration": "59.99"}}

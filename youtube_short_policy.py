@@ -506,7 +506,7 @@ def prepare_publication(data, token, kind):
             break
     recent = [row for row in previous if record_date(row) and record_date(row) >= datetime.now(PARIS) - timedelta(days=30)]
     reject_duplicate(data["titre"], recent)
-    if kind == "prospective" and any(
+    if kind == "prospective" and os.environ.get("FORCE_PUBLICATION", "").lower() != "true" and any(
         normal_title(row["titre"]).startswith("et si ") and
         record_date(row).isocalendar()[:2] == datetime.now(PARIS).isocalendar()[:2]
         for row in recent
