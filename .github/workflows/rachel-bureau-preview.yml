@@ -1,0 +1,108 @@
+name: Aperçu Rachel Bureau
+on:
+  push:
+    branches:
+      - test/rachel-bureau-preview-2026-11-19
+    paths:
+      - .github/workflows/rachel-bureau-preview.yml
+permissions:
+  contents: read
+concurrency:
+  group: rachel-bureau-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install requests feedparser pillow
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Générer un Short de test avec HeyGen
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+        run: |
+          python -u - <<'PY'
+          import os
+          from pathlib import Path
+          from agent_short_video_avatar import (
+              download_video, generate_avatar_video, generate_voice, upload_audio_to_heygen,
+          )
+          from rachel_catalogue import ensure_asset, load_catalogue
+          from youtube_short_policy import inspect_video, media_duration, render_avatar_short
+
+          for name in ("HEYGEN_API_KEY", "ELEVENLABS_API_KEY", "ELEVENLABS_VOICE_ID"):
+              if not os.environ.get(name):
+                  raise RuntimeError(f"Secret requis absent : {name}")
+          title = "Un outil IA peut-il vraiment lire vos factures ?"
+          narration = (
+              "Un outil IA peut-il vraiment lire vos factures ? "
+              "Pour le savoir, prenez dix factures dont vous connaissez déjà les montants. "
+              "Demandez à l’outil de relever le fournisseur, le total et la date d’échéance. "
+              "Puis comparez chaque résultat au document d’origine. "
+              "Testez une facture scannée, une devise étrangère et un avoir. "
+              "Ce sont souvent ces cas qui font trébucher l’automatisation. "
+              "Si l’outil hésite, la facture doit revenir à une personne pour vérification. "
+              "Une facture ambiguë mérite de rester en attente."
+          )
+          look = next(look for look in load_catalogue()["looks"] if look["id"] == "bureau")
+          audio = generate_voice(narration, Path("preview-voice.mp3"))
+          duration = media_duration(audio)
+          if not 10 <= duration <= 55:
+              raise ValueError(f"Durée de narration hors plage : {duration:.2f} s")
+          print(f"Voix générée : {duration:.2f} s")
+          image_id = ensure_asset(look)
+          audio_id = upload_audio_to_heygen(audio)
+          print("Portrait Bureau et voix envoyés à HeyGen")
+          video_url = generate_avatar_video(image_id, audio_id, title)
+          raw = download_video(video_url, Path("preview-raw.mp4"))
+          final = render_avatar_short(raw, title, Path("Rachel-Bureau-Test.mp4"), reference_audio=audio)
+          print(f"Rendu vertical vérifié : {inspect_video(final):.2f} s")
+          PY
+      - name: Chiffrer l’aperçu
+        run: |
+          cat > preview-cert.pem <<'PEM'
+          -----BEGIN CERTIFICATE-----
+          MIIEEzCCAnugAwIBAgIUMLRkQM/ouJ5fluj0ljnmiRLRb3IwDQYJKoZIhvcNAQEL
+          BQAwGTEXMBUGA1UEAwwOUmFjaGVsLXByZXZpZXcwHhcNMjYxMTE5MTAzMDUwWhcN
+          MjYxMTIxMTAzMDUwWjAZMRcwFQYDVQQDDA5SYWNoZWwtcHJldmlldzCCAaIwDQYJ
+          KoZIhvcNAQEBBQADggGPADCCAYoCggGBAMg8YotpGkNRZE3UPOJ022vZy2sVk7Jm
+          ZAHdsuN9YZ2yu3EOn6tZFt1I2lLg3MaTHG9GdkzKjmoSoiy0LIKJSxiScGdhOA0v
+          oyKsiKxOE1Tzr4CTg/F34Hde8jPwAjTm6pSWW/vRdwIQwRDOjxq14Y7CKe/yusWV
+          mo5xtrNhLeGzmDS4RJULywG8zQXwYOSs3bo6b7FrLzckBGCJ7bmTl7A22fyMwnSl
+          yPG8JxGk4ormLnPxqVXNlshaCCWaFrnk9cK6VhP0K+EuwtR0WGqF/MQn8lbzkjoJ
+          +u5hDNJYmGTXsyIA7gIg+bk9jFzbNVKJdDl930p+L3NM4siXfyGtmR6wiE4cfDl+
+          Hj+V85t9QXQC6fLavfUkI0J4sXjwknuENBp+HFjlCQ/Eay0lfdOwtGLzWvWSkDN7
+          UuyvZrMPkjAUKNdLYHvbi75aTjdUNl0C6bewJNQ6GCGJ88h/EPOOXRkjFuPQJcpf
+          QINwsHGcafNCWX2zd+cyVcyhTbHR33ZWlwIDAQABo1MwUTAdBgNVHQ4EFgQU1y6Y
+          Vq/va83Ss2rMNEBpbgp8arowHwYDVR0jBBgwFoAU1y6YVq/va83Ss2rMNEBpbgp8
+          arowDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAYEAqGeOUv7e40N9
+          75xClWJRaykQxTeVcWz4ZQ8/DAbimvKRj4gr6U9C4NnptOEyNTYs5Swx/3KzXmSY
+          v+3NfIzPdNW7jgNIR1NK1nG45YDkwhS8H5JT4shtP2VI4E/Z6o6Ssq3UDcLxjSTP
+          scTOuNMnQdDrzAlDIl5YQNb/LJR2ovw35sinEa9T+2W3Q5Vglr+Ed/WlbqFDq2BU
+          ++aydlCIOFP2XRhndtunV6sjO5e8r9oAefPNesTKNEj+QfTyu2hn8n31gYVNCH3D
+          hOwiijjzQBYGIL2oqtdjg7PRSb0+EDlcFczL0oPFuBsBux6QCLrhRCI1OEziu0ki
+          mBimj7N5us2pMR4gsV5NwBVx2r2evRJf8N9odE28/PO5SI01sR9XmEh5bbaujczo
+          51pbVRkC24zzXBaahjS8EgEIya6u0v6o3w8rJ6wpFEefihCOSGmwqmCGqFpixOsn
+          mmNbDyDXgIRtM32c6c9gucByV+d02VO/gk6CBZbV60ssGi53t4zZ
+          -----END CERTIFICATE-----
+          PEM
+          openssl cms -encrypt -binary -aes-256-gcm -outform DER -in Rachel-Bureau-Test.mp4 -out Rachel-Bureau-Test.cms preview-cert.pem
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rachel-bureau-preview
+          path: Rachel-Bureau-Test.cms
+          if-no-files-found: error
+          retention-days: 1
