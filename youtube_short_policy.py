@@ -25,13 +25,22 @@ HISTORIES = (
 )
 API = "https://www.googleapis.com/youtube/v3"
 PARIS = ZoneInfo("Europe/Paris")
+END_PAUSE_SECONDS = 1.0
+MAX_VOICE_SECONDS = 58.0
 SCRIPT_RULES = (
     REGLE_TIRETS + " La première phrase énonce un fait concret documenté, "
     "un nom d'entreprise avec sa conséquence directe, ou une situation métier concrète. "
     "Aucune question abstraite en ouverture. "
     "Le titre nomme le sujet dès le début et contient au maximum 60 caractères. "
-    "La formule Et si est réservée à la prospective. "
-    "Le texte parlé compte 75 à 100 mots, pour une durée cible de 30 à 60 secondes. "
+    "La formule Et si est facultative et réservée à la prospective, après l'accroche ou dans le titre. "
+    "Le texte parlé compte 75 à 100 mots, pour une durée cible de 30 à 55 secondes. "
+    "Varie les ouvertures : scène précise, fait vérifiable, conséquence concrète ou situation inattendue. "
+    "Bannis les formules passe-partout Et si un matin, Imaginez un matin, "
+    "Ce n'est pas de la science-fiction lointaine et les briques existent déjà. "
+    "Relie chaque transition au sujet avec un exemple précis, sans inventer de preuve. "
+    "Varie aussi la conclusion : question ouverte, conséquence précise ou image finale. "
+    "La dernière phrase est courte (18 mots maximum), complète et ponctuée. "
+    "N'ajoute ni points de suspension ni indication de pause à lire : le montage ajoute la respiration finale. "
     "Ajoute au JSON accroche (première phrase, 12 mots maximum), resume "
     "(2 à 3 phrases, mot-clé principal dans la première), et mots_cles "
     "(5 à 8 mots-clés précis liés au sujet). N'invente aucun fait."
@@ -92,6 +101,80 @@ def normal_title(title):
     return " ".join(re.findall(r"[a-z0-9]+", "".join(c for c in text if not unicodedata.combining(c))))
 
 
+def script_edges(data):
+    text = data.get("texte_voix", "").strip()
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    return {
+        "accroche": data.get("accroche") or sentences[0],
+        "conclusion": sentences[-1] if text else data.get("conclusion", ""),
+    }
+
+
+def recent_script_edges(limit=12):
+    # Les anciens historiques sans texte restent utilisables, sans inventer leurs phrases.
+    rows = sorted(records(), key=lambda row: record_date(row) or datetime.min.replace(tzinfo=PARIS), reverse=True)
+    recent, seen = [], set()
+    for row in rows:
+        edges = script_edges(row)
+        identity = row.get("video_id") or row.get("titre")
+        if identity in seen or not any(edges.values()):
+            continue
+        seen.add(identity)
+        recent.append({"titre": row.get("titre", ""), **edges})
+        if len(recent) == limit:
+            break
+    return recent
+
+
+def script_context(feedback=""):
+    context = (
+        "\n\nVarie la construction des premières et dernières phrases par rapport aux publications récentes. "
+        "Ne reprends pas leurs formules, même en changeant simplement le nom de l'entreprise. "
+        "Exemples déjà publiés (à ne pas recopier) :\n"
+        + json.dumps(recent_script_edges(), ensure_ascii=False)
+    )
+    if feedback:
+        context += "\n\nRévision demandée avant toute génération de voix :\n" + feedback
+    return context
+
+
+def check_script_variety(data):
+    spoken = normal_title(data["texte_voix"])
+    for formula in ("et si un matin", "imaginez un matin", "imagine un matin",
+                    "ce n est pas de la science fiction", "les briques existent deja"):
+        if re.search(r"\b" + re.escape(formula) + r"\b", spoken):
+            raise ValueError(f"Formule répétitive à remplacer par un détail propre au sujet : {formula}.")
+    ending = data["texte_voix"].rstrip(' \"\'»”')
+    if not ending.endswith((".", "!", "?")) or ending.endswith("..."):
+        raise ValueError("La narration doit finir par une phrase complète, sans points de suspension.")
+    edges = script_edges(data)
+    if len(edges["conclusion"].split()) > 18:
+        raise ValueError("La dernière phrase doit tenir en 18 mots maximum, avec une chute naturelle.")
+    for row in recent_script_edges():
+        for key, phrase in edges.items():
+            current, previous = normal_title(phrase), normal_title(row.get(key, ""))
+            if previous and SequenceMatcher(None, current, previous).ratio() >= .86:
+                raise ValueError(f"{key.capitalize()} trop proche d'une publication récente : {row[key]}")
+
+
+def generate_validated_script(generate, prospective=False):
+    """Trois essais maximum, avec retour précis, avant les appels voix et vidéo payants."""
+    feedback = ""
+    for attempt in range(3):
+        data = None
+        try:
+            data = generate(feedback)
+            return prepare_script(data, prospective=prospective)
+        except (ValueError, KeyError) as error:
+            if attempt == 2:
+                raise ValueError(f"Script refusé après trois propositions : {error}") from error
+            print(f"[Script] Nouvelle rédaction demandée : {error}")
+            feedback = f"Réécris le script complet en corrigeant ce point : {error}"
+            if isinstance(data, dict):
+                feedback += "\nProposition à corriger : " + json.dumps(
+                    {key: data.get(key) for key in ("titre", "texte_voix")}, ensure_ascii=False)
+
+
 def reject_duplicate(title, rows=None):
     title = normal_title(title)
     for row in unique_recent() if rows is None else rows:
@@ -103,6 +186,8 @@ def reject_duplicate(title, rows=None):
 
 
 def prepare_script(data, prospective=False):
+    if not isinstance(data, dict):
+        raise ValueError("Le script doit être un objet JSON.")
     for key in ("titre", "texte_voix", "accroche", "resume"):
         if not isinstance(data.get(key), str) or not data[key].strip():
             raise ValueError(f"Script incomplet : {key}.")
@@ -120,6 +205,7 @@ def prepare_script(data, prospective=False):
         not isinstance(word, str) or not word.strip() for word in keywords
     ) or len({word.strip().casefold() for word in keywords}) < 5:
         raise ValueError("Cinq à huit mots-clés distincts liés au sujet sont attendus.")
+    check_script_variety(data)
     reject_duplicate(data["titre"])
     return data
 
@@ -144,16 +230,53 @@ def inspect_video(path):
     return duration
 
 
-def check_audio_duration(path):
+def media_duration(path, audio_only=False):
     result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
-         "default=noprint_wrappers=1:nokey=1", str(path)],
+        ["ffprobe", "-v", "error", *(["-select_streams", "a:0"] if audio_only else []),
+         "-show_entries", "stream=duration:format=duration", "-of", "json", str(path)],
         capture_output=True, text=True, check=True,
     )
-    duration = float(result.stdout)
-    if not math.isfinite(duration) or not 30 <= duration <= 59:
-        raise ValueError(f"Voix hors cible 30 à 59 s ({duration} s). Corriger le script avant le rendu.")
+    data = json.loads(result.stdout)
+    streams = data.get("streams", [])
+    if audio_only and not streams:
+        raise ValueError("La vidéo reçue ne contient aucune piste audio.")
+    value = streams[0].get("duration") if audio_only else None
+    duration = float(value if value not in (None, "N/A") else data["format"]["duration"])
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError(f"Durée média invalide : {duration} s.")
     return duration
+
+
+def check_audio_duration(path):
+    duration = media_duration(path)
+    if not 30 <= duration <= MAX_VOICE_SECONDS:
+        raise ValueError(f"Voix hors cible 30 à {MAX_VOICE_SECONDS:g} s ({duration} s). "
+                         "Raccourcir ou allonger le script avant le rendu, sans couper la voix.")
+    return duration
+
+
+def finished_duration(duration):
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError("Durée de narration invalide.")
+    # Arrondi vers le haut à 25 images/s et marge pour le conteneur AAC/MP4.
+    target = math.ceil((duration + END_PAUSE_SECONDS) * 25) / 25
+    if target > 59.9:
+        raise ValueError("Pas assez de place pour la pause finale sous 60 s. "
+                         "Raccourcir le script, jamais tronquer la narration.")
+    return target
+
+
+def render_static_short(image_path, audio_path, output):
+    target = finished_duration(media_duration(audio_path))
+    subprocess.run([
+        "ffmpeg", "-y", "-loop", "1", "-framerate", "25", "-i", str(image_path),
+        "-i", str(audio_path), "-map", "0:v:0", "-map", "1:a:0",
+        "-vf", "scale=1080:1920,setsar=1", "-af", f"apad=whole_dur={target}",
+        "-t", str(target), "-c:v", "libx264", "-tune", "stillimage", "-preset", "fast",
+        "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(output),
+    ], check=True)
+    inspect_video(output)
+    return output
 
 
 def hook_image(text, path, transparent=True):
@@ -182,14 +305,24 @@ def hook_image(text, path, transparent=True):
     return path
 
 
-def render_avatar_short(source, hook, output):
+def render_avatar_short(source, hook, output, reference_audio=None):
     # Un fichier paysage inattendu est rejeté avant tout recadrage.
-    inspect_video(source)
+    duration = inspect_video(source)
+    received_audio = media_duration(source, audio_only=True)
+    if reference_audio is not None:
+        original_audio = media_duration(reference_audio)
+        print(f"[Durée] Voix originale {original_audio:.2f} s, piste HeyGen {received_audio:.2f} s.")
+        if received_audio + .15 < original_audio:
+            raise ValueError("La piste HeyGen est plus courte que la voix originale. "
+                             "Vérifier la fin du rendu avant publication.")
+    target = finished_duration(max(duration, received_audio))
     overlay = hook_image(hook, output.with_suffix(".png"))
     subprocess.run([
         "ffmpeg", "-y", "-i", str(source), "-i", str(overlay),
-        "-filter_complex", "[0:v][1:v]overlay=0:0:enable='lt(t,3)'[v]",
-        "-map", "[v]", "-map", "0:a:0", "-c:v", "libx264", "-preset", "fast",
+        "-filter_complex", "[0:v]fps=25,tpad=stop_mode=clone:stop=-1[held];"
+        "[held][1:v]overlay=0:0:enable='lt(t,3)'[v];"
+        f"[0:a:0]apad=whole_dur={target}[a]",
+        "-map", "[v]", "-map", "[a]", "-t", str(target), "-c:v", "libx264", "-preset", "fast",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", str(output),
     ], check=True)
     inspect_video(output)
@@ -335,6 +468,7 @@ def upload_short(path, data, token, kind):
         "date": datetime.now(timezone.utc).isoformat(), "titre": data["titre"],
         "video_id": video_id, "format": kind, "playlist": playlist_name,
         "playlist_id": playlist_id, "statut": "playlist_en_attente",
+        **script_edges(data),
     })
     save_journal(entries)
     print(f"[YouTube] Vidéo envoyée : https://youtube.com/shorts/{video_id}", flush=True)

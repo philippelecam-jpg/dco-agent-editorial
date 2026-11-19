@@ -1,4 +1,5 @@
 import copy
+from array import array
 import json
 import os
 import subprocess
@@ -33,6 +34,12 @@ def response(data=None, headers=None):
 
 
 class YouTubeRules(unittest.TestCase):
+    def setUp(self):
+        # Les tests de validation ne dépendent pas des futures publications réelles.
+        self.history_patch = patch.object(policy, "records", return_value=[])
+        self.history_patch.start()
+        self.addCleanup(self.history_patch.stop)
+
     def test_metadata_and_description(self):
         result = policy.metadata(script(), avatar=True)
         self.assertEqual(result["snippet"]["categoryId"], "28")
@@ -108,6 +115,8 @@ class YouTubeRules(unittest.TestCase):
                     policy.upload_short(path, data, "token", "avatar")
                 self.assertEqual(json.loads(journal.read_text())[0]["video_id"], "video-published")
                 self.assertEqual(json.loads(journal.read_text())[0]["statut"], "playlist_en_attente")
+                self.assertEqual(json.loads(journal.read_text())[0]["accroche"], data["accroche"])
+                self.assertEqual(json.loads(journal.read_text())[0]["conclusion"], "Voici une conséquence.")
             with patch.object(policy, "JOURNAL", journal), patch.object(policy, "attach_playlist") as attach:
                 policy.retry_playlists("token")
                 attach.assert_called_once_with("token", "video-published", "PL-test")
@@ -162,9 +171,113 @@ class YouTubeRules(unittest.TestCase):
             ], check=True)
             with patch.object(policy.subprocess, "run", wraps=subprocess.run) as run:
                 policy.render_avatar_short(source, "Outlook expose votre messagerie.", output)
-                self.assertGreater(policy.inspect_video(output), 0)
+                self.assertGreaterEqual(policy.inspect_video(output), policy.inspect_video(source) + .98)
+                self.assertLess(policy.inspect_video(output), 2.2)
                 overlay = next(call for call in run.call_args_list if "-filter_complex" in call.args[0])
                 self.assertIn("lt(t,3)", " ".join(overlay.args[0]))
+            self.assert_audio_end_preserved(output)
+
+    def assert_audio_end_preserved(self, output):
+        probe = subprocess.run([
+            "ffprobe", "-v", "error", "-show_entries", "stream=codec_type,duration",
+            "-of", "json", str(output),
+        ], capture_output=True, text=True, check=True)
+        streams = {row["codec_type"]: float(row["duration"]) for row in json.loads(probe.stdout)["streams"]}
+        self.assertGreaterEqual(streams["video"], 1.98)
+        self.assertGreaterEqual(streams["audio"], 1.98)
+
+        def samples(start, length):
+            result = subprocess.run([
+                "ffmpeg", "-v", "error", "-i", str(output), "-ss", str(start), "-t", str(length),
+                "-vn", "-ar", "16000", "-ac", "1", "-f", "s16le", "pipe:1",
+            ], capture_output=True, check=True)
+            return array("h", result.stdout)
+        voiced, silence = samples(.8, .15), samples(1.3, .5)
+        self.assertGreater(len(voiced), 2000)
+        self.assertGreater(max(abs(value) for value in voiced), 1000)
+        self.assertGreater(len(silence), 7000)
+        self.assertLess(max(abs(value) for value in silence), 20)
+
+    def test_actual_static_render_has_silent_tail(self):
+        with tempfile.TemporaryDirectory() as folder:
+            image, audio, output = (Path(folder, name) for name in ("still.png", "tone.wav", "static.mp4"))
+            policy.hook_image("Un fournisseur interrompt les commandes.", image, transparent=False)
+            subprocess.run([
+                "ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i",
+                "sine=frequency=440:duration=1", str(audio),
+            ], check=True)
+            policy.render_static_short(image, audio, output)
+            self.assertGreaterEqual(policy.inspect_video(output), 2.0)
+            self.assertLess(policy.inspect_video(output), 2.2)
+            self.assert_audio_end_preserved(output)
+
+    def test_history_uses_recent_edges_once_and_skips_legacy(self):
+        rows = [{"date": "2026-11-18", "titre": "Ancien titre", "video_id": "legacy"}]
+        for index in range(14):
+            row = {"date": f"2026-11-{index + 1:02}", "titre": f"Titre {index}",
+                   "video_id": str(index), "accroche": f"Début {index}.", "conclusion": f"Fin {index}."}
+            rows.extend([row, dict(row)])  # historique et journal d'upload
+        with patch.object(policy, "records", return_value=rows):
+            recent = policy.recent_script_edges()
+            self.assertEqual(len(recent), 12)
+            self.assertEqual(recent[0]["titre"], "Titre 13")
+            self.assertEqual(recent[-1]["titre"], "Titre 2")
+            self.assertIn("Fin 13.", policy.script_context())
+            self.assertNotIn("Ancien titre", policy.script_context())
+
+    def test_cliches_similar_edges_and_incomplete_endings_are_rejected(self):
+        for text in (
+            "Et si, un matin, votre fournisseur disparaissait ?",
+            "Ce n’est pas de la science-fiction lointaine.",
+            "Les briques existent déjà aujourd'hui.",
+            "Voici une phrase inachevée...", "Voici une phrase inachevée…",
+            "Voici une phrase inachevée",
+        ):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                policy.check_script_variety(dict(script(), texte_voix=text))
+        for row in ({"accroche": "Outlook expose votre messagerie !"},
+                    {"conclusion": "Voici une conséquence !"}):
+            with patch.object(policy, "recent_script_edges", return_value=[row]):
+                with self.assertRaisesRegex(ValueError, "trop proche"):
+                    policy.check_script_variety(script())
+        policy.check_script_variety(script())
+
+    def test_rewrite_receives_reason_and_stops_after_three_attempts(self):
+        bad = dict(script(), texte_voix="Outlook expose votre messagerie. Les briques existent déjà.")
+        generate = Mock(side_effect=[bad, script()])
+        with patch.object(policy, "reject_duplicate"):
+            self.assertEqual(policy.generate_validated_script(generate), script())
+        self.assertEqual(generate.call_count, 2)
+        self.assertIn("les briques existent deja", generate.call_args.args[0])
+        generate = Mock(return_value=bad)
+        with self.assertRaisesRegex(ValueError, "trois propositions"):
+            policy.generate_validated_script(generate)
+        self.assertEqual(generate.call_count, 3)
+
+    def test_duration_budget_never_truncates_narration(self):
+        self.assertEqual(policy.finished_duration(58), 59)
+        with self.assertRaisesRegex(ValueError, "jamais tronquer"):
+            policy.finished_duration(59)
+        with patch.object(policy, "media_duration", return_value=58):
+            self.assertEqual(policy.check_audio_duration(Path("voice.mp3")), 58)
+        with patch.object(policy, "media_duration", return_value=58.01):
+            with self.assertRaisesRegex(ValueError, "sans couper"):
+                policy.check_audio_duration(Path("voice.mp3"))
+        with patch.object(policy, "inspect_video", return_value=59), \
+             patch.object(policy, "media_duration", return_value=59), \
+             patch.object(policy.subprocess, "run") as render:
+            with self.assertRaisesRegex(ValueError, "jamais tronquer"):
+                policy.render_avatar_short(Path("source.mp4"), "Une accroche.", Path("out.mp4"))
+            render.assert_not_called()
+
+    def test_truncated_heygen_audio_blocks_render(self):
+        with patch.object(policy, "inspect_video", return_value=45), \
+             patch.object(policy, "media_duration", side_effect=[44.5, 45]), \
+             patch.object(policy.subprocess, "run") as render:
+            with self.assertRaisesRegex(ValueError, "plus courte"):
+                policy.render_avatar_short(Path("source.mp4"), "Une accroche.", Path("out.mp4"),
+                                           reference_audio=Path("voice.mp3"))
+            render.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -19,3 +19,13 @@ Le journal `youtube_publications.json` est écrit immédiatement après l'upload
 Les vidéos déjà publiées et le nom de la chaîne se gèrent dans YouTube Studio. La première image fait partie du fichier vidéo, indépendamment du choix de miniature proposé par Studio.
 
 La configuration HeyGen v3 utilise `aspect_ratio: 9:16` et `resolution: 1080p`. Les dimensions réelles sont contrôlées sur le fichier reçu.
+
+### Variété des scripts et fin des vidéos
+
+Les trois formats partagent les règles de rédaction de `youtube_short_policy.py`. Les introductions et conclusions varient selon le sujet. La prospective conserve son registre imaginatif, avec une hypothèse clairement distinguée des faits. « Et si » devient facultatif et la transition sur la « science-fiction lointaine » est exclue. La dernière phrase doit être complète, ponctuée et courte (18 mots maximum).
+
+Les accroches et conclusions des douze dernières publications disposant de ces informations sont fournies au rédacteur, tous formats confondus. Une répétition proche ou une formule interdite entraîne une nouvelle rédaction, avec le motif du refus, dans une limite de trois propositions avant tout appel à ElevenLabs ou HeyGen. Les phrases sont conservées dans `youtube_publications.json` dès l'upload, même si l'ajout à la playlist échoue, puis dans les historiques existants en fin d'exécution. Les anciennes entrées restent valides ; leurs phrases absentes ne sont pas reconstituées.
+
+La voix vise 30 à 55 secondes et le contrôle accepte jusqu'à 58 secondes pour réserver la fin. Le montage conserve toute la narration, ajoute une seconde de silence et maintient la dernière image. Aucun fondu ne masque le dernier mot. Si le rendu dépasse la place disponible sous 60 secondes, l'envoi est bloqué au lieu de tronquer la voix. Pour Rachel et la prospective, la durée de la piste HeyGen est comparée à celle du fichier ElevenLabs ; un raccourcissement supérieur à 150 ms bloque l'envoi et apparaît dans les logs. Ce contrôle de durée ne remplace pas l'écoute de la dernière phrase du premier rendu réel.
+
+Les déclencheurs GitHub et les horaires cron-job.org restent inchangés. Vérification locale sans publication : `python -m unittest discover -s tests -v` (ffmpeg et ffprobe requis).

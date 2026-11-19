@@ -65,7 +65,7 @@ import requests
 
 from editorial_style import sans_tirets_longs
 from youtube_short_policy import (
-    SCRIPT_RULES, check_audio_duration, prepare_script,
+    SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
     description as short_description,
     upload_short as publish_youtube_short,
@@ -182,7 +182,7 @@ def _clean_titre_et_texte(script_data):
     return script_data
 
 
-def generate_script_from_news(news_item):
+def generate_script_from_news(news_item, feedback=""):
     api_key = os.environ["ANTHROPIC_API_KEY"]
     system_prompt = (
         "Tu écris le script d'une courte vidéo (30 à 45 secondes) pour "
@@ -216,7 +216,7 @@ def generate_script_from_news(news_item):
             "model": "claude-sonnet-4-6",
             "max_tokens": 1000,
             "system": system_prompt,
-            "messages": [{"role": "user", "content": "Génère le script du jour."}],
+            "messages": [{"role": "user", "content": "Génère le script du jour." + script_context(feedback)}],
         },
         timeout=60,
     )
@@ -226,7 +226,7 @@ def generate_script_from_news(news_item):
     return _clean_titre_et_texte(json.loads(raw_text))
 
 
-def generate_script_evergreen(theme):
+def generate_script_evergreen(theme, feedback=""):
     api_key = os.environ["ANTHROPIC_API_KEY"]
     system_prompt = (
         "Tu écris le script d'une courte vidéo (30 à 45 secondes) pour "
@@ -250,7 +250,7 @@ def generate_script_evergreen(theme):
             "model": "claude-sonnet-4-6",
             "max_tokens": 1000,
             "system": system_prompt,
-            "messages": [{"role": "user", "content": "Génère le script du jour."}],
+            "messages": [{"role": "user", "content": "Génère le script du jour." + script_context(feedback)}],
         },
         timeout=60,
     )
@@ -669,17 +669,16 @@ def main():
 
     if news_item:
         print("[1/6] Actu retenue : %s (%s)" % (news_item["titre"], news_item["source"]))
-        script_data = generate_script_from_news(news_item)
+        script_data = generate_validated_script(lambda feedback: generate_script_from_news(news_item, feedback))
     else:
         import random
         recent = history.get("themes_used", [])[-3:]
         theme = random.choice([t for t in FALLBACK_THEMES if t not in recent] or FALLBACK_THEMES)
         print("[1/6] Aucune actu fraîche -- thème évergreen : %s" % theme)
-        script_data = generate_script_evergreen(theme)
+        script_data = generate_validated_script(lambda feedback: generate_script_evergreen(theme, feedback))
         history.setdefault("themes_used", []).append(theme)
         history["themes_used"] = history["themes_used"][-10:]
 
-    script_data = prepare_script(script_data, prospective=False)
     prepare_publication(script_data, token, "avatar")
     print("[2/6] Script généré : %s" % script_data["titre"])
 
@@ -693,7 +692,8 @@ def main():
     print("[5/6] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
     video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "avatar.mp4")
-    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "avatar-vertical.mp4")
+    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "avatar-vertical.mp4",
+                                     reference_audio=audio_path)
     print("[5/6] Vidéo avatar générée (1080 × 1920, accroche dès la première image)")
 
     description = short_description(script_data)
@@ -708,6 +708,7 @@ def main():
         "source": "actualite" if news_item else "evergreen",
         "titre": script_data["titre"],
         "video_id": video_id,
+        **script_edges(script_data),
     })
     save_history(history)
 

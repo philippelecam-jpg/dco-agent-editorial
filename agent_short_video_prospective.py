@@ -4,7 +4,7 @@ agent_short_video_prospective.py
 -----------------------------------
 Troisième module de dco-agent-editorial, complémentaire à agent_short_video.py
 (fond statique, quotidien) et agent_short_video_avatar.py (avatar Rachel,
-grand public, hebdo mercredi). Génère une vidéo de prospective IA de 1min30 :
+grand public, hebdo mardi). Génère une vidéo de prospective IA de moins d'une minute :
 rotation de 6 grands thèmes -> génération de 3 angles contrastés -> sélection
 anti-répétition -> script au registre "et si" (Gaston Berger) -> voix
 (ElevenLabs) -> vidéo avatar (HeyGen) -> upload YouTube.
@@ -21,16 +21,16 @@ DIFFÉRENCES avec agent_short_video_avatar.py :
       même angle -- forcer la divergence d'abord donne une vraie variété.
     - Registre éditorial : prospective imaginative ("et si..."), scène
       concrète et visualisable, PAS de résolution business proprette --
-      une question ouverte en fin de script. Pas de synthèse de recherche,
+      une conclusion ouverte et variée. Pas de synthèse de recherche,
       pas d'angle "impact dirigeant" explicite (le dirigeant se reconnaît
       de lui-même dans la scène).
-    - Durée cible ~30 à 60 s (vs 30-45s pour les 2 autres formats) : environ
-      190-220 mots de texte voix.
+    - Durée cible de la voix : 30 à 55 s, environ 75 à 100 mots.
+      Le montage réserve une seconde de pause finale sans couper la voix.
     - Identité visuelle de la miniature différente : trajectoires qui
       divergent (symbolisant les futurs multiples), palette bleu-nuit/
       turquoise, expression posée -- pas le registre "punch actu"
       (drapeaux, chiffres, confrontation) des 2 autres formats.
-    - Cadence : hebdomadaire, vendredi (vs mercredi pour l'avatar actu).
+    - Cadence : hebdomadaire, vendredi (vs mardi pour l'avatar actu).
 
 CE QUI EST RÉUTILISÉ TEL QUEL (déjà validé en production) :
     - Génération voix ElevenLabs (même voix Perle que les 2 autres formats)
@@ -70,7 +70,7 @@ import requests
 
 from editorial_style import sans_tirets_longs
 from youtube_short_policy import (
-    SCRIPT_RULES, check_audio_duration, prepare_script,
+    SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
     description as short_description,
     upload_short as publish_youtube_short,
@@ -221,34 +221,32 @@ def _clean_script(script_data: dict) -> dict:
     return script_data
 
 
-def generate_script(theme: str, angle: str) -> dict:
-    """Génère le script de ~30 à 60 s dans le registre prospectif validé :
-    ouverture en scène concrète et visualisable ('et si...'), bascule
-    ('ce n'est pas de la fiction lointaine'), question ouverte en fin --
-    PAS de résolution business proprette, PAS de mention explicite du
-    dirigeant comme cible (il se reconnaît de lui-même)."""
+def generate_script(theme: str, angle: str, feedback="") -> dict:
+    """Prospective incarnée : scène précise, ancrage réel, conclusion variée."""
     system_prompt = (
-        "Tu écris le script d'une vidéo de prospective IA de 30 à 60 secondes "
+        "Tu écris le script d'une vidéo de prospective IA de 30 à 55 secondes "
         "pour Rachel, présentatrice de la chaîne. Le public est constitué "
         "de dirigeants de PME/ETI, mais NE LES NOMME JAMAIS explicitement "
         "comme cible -- ils doivent se reconnaître d'eux-mêmes dans la "
         "scène décrite, sans qu'on leur dise 'pour vous, dirigeant'.\n\n"
         "REGISTRE -- prospective au sens de Gaston Berger, pas pronostic "
         "business : le but est de provoquer l'imaginaire, l'étonnement, "
-        "pas de rassurer avec une conclusion actionnable propre. C'est un "
-        "'et si...', pas un plan d'action.\n\n"
-        "STRUCTURE OBLIGATOIRE :\n"
+        "pas de rassurer avec une conclusion actionnable propre. Explore "
+        "une hypothèse, pas un plan d'action. La formule Et si est facultative.\n\n"
+        "REPÈRES NARRATIFS, SANS RÉPÉTER UNE FORMULE FIXE :\n"
         "1. Ouverture avec une conséquence concrète ou un fait documenté. "
         "La formule Et si peut figurer dans le titre et après l’accroche. Décris une scène à se "
         "représenter mentalement, pas un constat abstrait.\n"
-        "2. Une bascule qui ancre cette scène dans le réel : 'Ce n'est pas "
-        "de la science-fiction lointaine, les briques existent déjà "
-        "aujourd'hui' (ou formulation équivalente).\n"
+        "2. Ancre l'hypothèse dans un usage ou une capacité existante précise, "
+        "en distinguant clairement le fait et le scénario imaginé. "
+        "N'invente ni chiffre, ni entreprise, ni preuve pour rendre le scénario crédible. "
+        "Si un fait ne peut pas être étayé, reste explicitement dans l'hypothèse.\n"
         "3. Une ou deux phrases qui approfondissent la scène ou en "
         "explorent une conséquence inattendue.\n"
-        "4. Termine SUR UNE QUESTION OUVERTE, pas sur une réponse ni un "
-        "conseil pratique. La question doit rester avec la personne après "
-        "la vidéo, pas se résoudre proprement.\n\n"
+        "4. Choisis une chute qui laisse réfléchir : question ouverte courte, "
+        "conséquence inattendue ou dernière image concrète. N'utilise pas "
+        "systématiquement une question, ni une morale ou un conseil générique. "
+        "La dernière phrase est complète et se dit sans précipitation.\n\n"
         "Ton chaleureux mais habité, presque conteur. Phrases courtes, "
         "rythme naturel à l'oral, fait pour être lu à voix haute par "
         "Rachel à la première personne. Environ 75 à 100 mots.\n\n"
@@ -257,7 +255,7 @@ def generate_script(theme: str, angle: str) -> dict:
         'exact : {"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."]} où titre fait moins '
         "de 60 caractères et donne envie de cliquer sans tout dévoiler."
     )
-    user_message = "Grand thème : %s\nAngle retenu : %s" % (theme, angle)
+    user_message = ("Grand thème : %s\nAngle retenu : %s" % (theme, angle)) + script_context(feedback)
     raw = _call_claude(system_prompt, user_message, max_tokens=1000)
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return _clean_script(json.loads(raw))
@@ -554,8 +552,8 @@ def main():
     angle_retenu = select_angle(theme, angles, history)
     print("[3/7] Angle retenu : %s" % angle_retenu)
 
-    script_data = generate_script(theme, angle_retenu)
-    script_data = prepare_script(script_data, prospective=True)
+    script_data = generate_validated_script(
+        lambda feedback: generate_script(theme, angle_retenu, feedback), prospective=True)
     prepare_publication(script_data, token, "prospective")
     print("[4/7] Script généré : %s" % script_data["titre"])
 
@@ -568,7 +566,8 @@ def main():
     print("[6/7] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
     video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "prospective.mp4")
-    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "prospective-vertical.mp4")
+    video_path = render_avatar_short(video_path, script_data["accroche"], WORKDIR / "prospective-vertical.mp4",
+                                     reference_audio=audio_path)
     print("[6/7] Vidéo avatar générée")
 
     description = short_description(script_data)
@@ -583,6 +582,7 @@ def main():
         "angle": angle_retenu,
         "titre": script_data["titre"],
         "video_id": video_id,
+        **script_edges(script_data),
     })
     save_history(history)
 

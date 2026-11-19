@@ -46,7 +46,8 @@ import requests
 
 from editorial_style import sans_tirets_longs
 from youtube_short_policy import (
-    SCRIPT_RULES, check_audio_duration, hook_image, prepare_script,
+    SCRIPT_RULES, check_audio_duration, hook_image, generate_validated_script,
+    render_static_short, script_context, script_edges,
     publication_due, retry_playlists, prepare_publication,
     description as short_description,
     upload_short as publish_youtube_short,
@@ -207,7 +208,7 @@ def select_best_news(candidates: list) -> dict:
         return candidates[0]  # fallback simple si le parsing échoue
 
 
-def generate_script_from_news(news_item: dict) -> dict:
+def generate_script_from_news(news_item: dict, feedback="") -> dict:
     """Retourne {"titre": str, "texte_voix": str, "hashtags": [str, ...]}
     à partir d'une actu réelle, avec l'angle différenciant validé sur le
     module News Flash : jamais un résumé du fait, toujours son implication
@@ -244,7 +245,7 @@ def generate_script_from_news(news_item: dict) -> dict:
             "model": "claude-sonnet-4-6",
             "max_tokens": 1000,
             "system": system_prompt,
-            "messages": [{"role": "user", "content": "Génère le script du jour."}],
+            "messages": [{"role": "user", "content": "Génère le script du jour." + script_context(feedback)}],
         },
         timeout=60,
     )
@@ -261,7 +262,7 @@ def generate_script_from_news(news_item: dict) -> dict:
     return script_data
 
 
-def generate_script(theme: str) -> dict:
+def generate_script(theme: str, feedback="") -> dict:
     """Fallback évergreen — conservé si aucune actu fraîche n'est disponible."""
     api_key = os.environ["ANTHROPIC_API_KEY"]
     system_prompt = (
@@ -290,7 +291,7 @@ def generate_script(theme: str) -> dict:
             "model": "claude-sonnet-4-6",
             "max_tokens": 1000,
             "system": system_prompt,
-            "messages": [{"role": "user", "content": "Génère le script du jour."}],
+            "messages": [{"role": "user", "content": "Génère le script du jour." + script_context(feedback)}],
         },
         timeout=60,
     )
@@ -347,21 +348,8 @@ def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
 # 4. Assemblage vidéo (ffmpeg)
 # ---------------------------------------------------------------------------
 def build_video(image_path: Path, audio_path: Path, duration: float, out_path: Path) -> Path:
-    subprocess.run(
-        [
-            "ffmpeg", "-y",
-            "-loop", "1", "-i", str(image_path),
-            "-i", str(audio_path),
-            "-c:v", "libx264", "-tune", "stillimage",
-            "-c:a", "aac", "-b:a", "192k",
-            "-pix_fmt", "yuv420p",
-            "-t", str(duration + 0.5),
-            "-vf", f"scale={VIDEO_WIDTH}:{VIDEO_HEIGHT}",
-            str(out_path),
-        ],
-        check=True,
-    )
-    return out_path
+    # La durée réelle de la voix est relue par le montage commun.
+    return render_static_short(image_path, audio_path, out_path)
 
 
 # ---------------------------------------------------------------------------
@@ -407,21 +395,19 @@ def main():
 
     if news_item:
         print(f"[1/5] Actu retenue : {news_item['titre']} ({news_item['source']})")
-        script_data = generate_script_from_news(news_item)
+        script_data = generate_validated_script(lambda feedback: generate_script_from_news(news_item, feedback))
     else:
         theme = pick_theme(history)
         print(f"[1/5] Aucune actu fraîche — thème évergreen retenu : {theme}")
-        script_data = generate_script(theme)
+        script_data = generate_validated_script(lambda feedback: generate_script(theme, feedback))
         history["themes_used"].append(theme)
         history["themes_used"] = history["themes_used"][-10:]
 
-    script_data = prepare_script(script_data, prospective=False)
     prepare_publication(script_data, token, "statique")
     print(f"[2/5] Script généré : {script_data['titre']}")
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
-    check_audio_duration(audio_path)
-    duration = get_audio_duration(audio_path)
+    duration = check_audio_duration(audio_path)
     print(f"[3/5] Voix générée ({duration:.1f}s)")
 
     image_path = build_background_image(
@@ -445,6 +431,7 @@ def main():
         "source": "actualite" if news_item else "evergreen",
         "titre": script_data["titre"],
         "video_id": video_id,
+        **script_edges(script_data),
     })
     save_history(history)
 
