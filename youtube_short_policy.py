@@ -469,6 +469,7 @@ def upload_short(path, data, token, kind):
         "video_id": video_id, "format": kind, "playlist": playlist_name,
         "playlist_id": playlist_id, "statut": "playlist_en_attente",
         **script_edges(data),
+        **({"rachel_look": data["_rachel_look"]} if data.get("_rachel_look") else {}),
     })
     save_journal(entries)
     print(f"[YouTube] Vidéo envoyée : https://youtube.com/shorts/{video_id}", flush=True)

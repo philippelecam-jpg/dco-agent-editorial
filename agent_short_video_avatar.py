@@ -64,6 +64,7 @@ from pathlib import Path
 import requests
 
 from editorial_style import sans_tirets_longs
+from rachel_catalogue import prepare_rachel_image
 from youtube_short_policy import (
     SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
@@ -657,10 +658,10 @@ def main():
     retry_playlists(token)
     if not publication_due("avatar"):
         return
-    photo_asset_id = os.environ["RACHEL_PHOTO_ASSET_ID"]
     history = load_history()
 
     news_item = None
+    theme = ""
     try:
         candidates = fetch_candidate_news(history)
         news_item = select_best_news(candidates)
@@ -680,6 +681,7 @@ def main():
         history["themes_used"] = history["themes_used"][-10:]
 
     prepare_publication(script_data, token, "avatar")
+    photo_asset_id = prepare_rachel_image(script_data, "avatar", context=theme)
     print("[2/6] Script généré : %s" % script_data["titre"])
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
@@ -709,6 +711,7 @@ def main():
         "titre": script_data["titre"],
         "video_id": video_id,
         **script_edges(script_data),
+        "rachel_look": script_data["_rachel_look"],
     })
     save_history(history)
 

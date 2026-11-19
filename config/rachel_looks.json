@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "rules": {
+    "selection": "least_recently_published_compatible",
+    "avoid_consecutive": true,
+    "fallback": "RACHEL_PHOTO_ASSET_ID"
+  },
+  "families": {
+    "industrie": {
+      "keywords": [
+        "industrie",
+        "industriel",
+        "industrielle",
+        "usine",
+        "usines",
+        "fabrication",
+        "production",
+        "maintenance",
+        "logistique",
+        "soudure"
+      ]
+    },
+    "formation": {
+      "keywords": [
+        "formation",
+        "formations",
+        "apprendre",
+        "apprentissage",
+        "éducation",
+        "transmission",
+        "pédagogie",
+        "compétences"
+      ]
+    },
+    "cybersecurite": {
+      "keywords": [
+        "cybersécurité",
+        "cyber",
+        "piratage",
+        "piraté",
+        "ransomware",
+        "fraude",
+        "fuite de données",
+        "attaque",
+        "attaques"
+      ]
+    },
+    "organisation": {
+      "keywords": [
+        "travail",
+        "organisation",
+        "management",
+        "manager",
+        "managers",
+        "recrutement",
+        "emploi",
+        "métiers",
+        "équipes",
+        "salariés",
+        "gouvernance"
+      ]
+    },
+    "outils": {
+      "keywords": [
+        "outil",
+        "outils",
+        "logiciel",
+        "logiciels",
+        "agent",
+        "agents",
+        "copilote",
+        "chatbot",
+        "automatisation",
+        "technologie"
+      ]
+    },
+    "prospective": {
+      "keywords": []
+    },
+    "actualite": {
+      "keywords": []
+    }
+  },
+  "playlist_families": {
+    "Agents IA et outils": "outils",
+    "Cybersécurité et incidents": "cybersecurite",
+    "IA et organisation du travail": "organisation",
+    "Prospective : et si… ?": "prospective"
+  },
+  "looks": [
+    {
+      "id": "originale",
+      "label": "Décor original, veste en jean",
+      "image": "assets/rachel/originale.png",
+      "sha256": "867021847186a8c38ec01371fe8c08b6a312026aa606f314b9c87c6e76e8be91",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "industrie",
+        "formation",
+        "cybersecurite",
+        "organisation",
+        "outils",
+        "prospective",
+        "actualite"
+      ],
+      "formats": [
+        "avatar",
+        "prospective"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "bureau",
+      "label": "Bureau lumineux, cardigan bleu",
+      "image": "assets/rachel/bureau.png",
+      "sha256": "42e96b009bf8dbee1895c573ef7efa40385be2ac90eaadcecdd2388d9ed66ca7",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "outils",
+        "organisation",
+        "actualite",
+        "prospective"
+      ],
+      "formats": [
+        "avatar",
+        "prospective"
+      ],
+      "priority": 60
+    },
+    {
+      "id": "studio",
+      "label": "Studio sobre, blazer anthracite",
+      "image": "assets/rachel/studio.png",
+      "sha256": "1454914bdc71bcec30721dd5e8d8945683ab5e474f67a87a017dcf3498518bc8",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "cybersecurite",
+        "actualite",
+        "prospective"
+      ],
+      "formats": [
+        "avatar",
+        "prospective"
+      ],
+      "priority": 70
+    },
+    {
+      "id": "formation",
+      "label": "Salle collaborative, cardigan vert",
+      "image": "assets/rachel/formation.png",
+      "sha256": "61830cedb8cced0a97785ed3e7876b01a63361ca260303db078822e34230d5a5",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "formation",
+        "organisation"
+      ],
+      "formats": [
+        "avatar",
+        "prospective"
+      ],
+      "priority": 80
+    },
+    {
+      "id": "industrie",
+      "label": "Atelier industriel, surchemise olive",
+      "image": "assets/rachel/industrie.png",
+      "sha256": "4a9993ca768416104178218c1f6eeee54496a3345c3a6b1407460ffcba980899",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "industrie"
+      ],
+      "formats": [
+        "avatar",
+        "prospective"
+      ],
+      "priority": 80
+    },
+    {
+      "id": "prospective",
+      "label": "Espace contemporain, blazer taupe",
+      "image": "assets/rachel/prospective.png",
+      "sha256": "4a27cbbc78a80b93c6c672a23f11f5ef96858edc15c5006a994d9f3421d571ee",
+      "enabled": true,
+      "approved": true,
+      "animation_tested": false,
+      "families": [
+        "industrie",
+        "formation",
+        "cybersecurite",
+        "organisation",
+        "outils",
+        "prospective",
+        "actualite"
+      ],
+      "formats": [
+        "prospective"
+      ],
+      "priority": 75
+    }
+  ]
+}

@@ -69,6 +69,7 @@ from pathlib import Path
 import requests
 
 from editorial_style import sans_tirets_longs
+from rachel_catalogue import prepare_rachel_image
 from youtube_short_policy import (
     SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
@@ -555,6 +556,7 @@ def main():
     script_data = generate_validated_script(
         lambda feedback: generate_script(theme, angle_retenu, feedback), prospective=True)
     prepare_publication(script_data, token, "prospective")
+    photo_asset_id = prepare_rachel_image(script_data, "prospective", context=f"{theme}. {angle_retenu}")
     print("[4/7] Script généré : %s" % script_data["titre"])
 
     audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
@@ -562,7 +564,6 @@ def main():
     audio_asset_id = upload_audio_to_heygen(audio_path)
     print("[5/7] Voix générée et uploadée (asset %s)" % audio_asset_id)
 
-    photo_asset_id = os.environ["RACHEL_PHOTO_ASSET_ID"]
     print("[6/7] Génération de la vidéo avatar (peut prendre plusieurs minutes)...")
     video_url = generate_avatar_video(photo_asset_id, audio_asset_id, script_data["titre"])
     video_path = download_video(video_url, WORKDIR / "prospective.mp4")
@@ -583,6 +584,7 @@ def main():
         "titre": script_data["titre"],
         "video_id": video_id,
         **script_edges(script_data),
+        "rachel_look": script_data["_rachel_look"],
     })
     save_history(history)
 

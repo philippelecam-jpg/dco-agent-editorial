@@ -29,3 +29,15 @@ Les accroches et conclusions des douze dernières publications disposant de ces 
 La voix vise 30 à 55 secondes et le contrôle accepte jusqu'à 58 secondes pour réserver la fin. Le montage conserve toute la narration, ajoute une seconde de silence et maintient la dernière image. Aucun fondu ne masque le dernier mot. Si le rendu dépasse la place disponible sous 60 secondes, l'envoi est bloqué au lieu de tronquer la voix. Pour Rachel et la prospective, la durée de la piste HeyGen est comparée à celle du fichier ElevenLabs ; un raccourcissement supérieur à 150 ms bloque l'envoi et apparaît dans les logs. Ce contrôle de durée ne remplace pas l'écoute de la dernière phrase du premier rendu réel.
 
 Les déclencheurs GitHub et les horaires cron-job.org restent inchangés. Vérification locale sans publication : `python -m unittest discover -s tests -v` (ffmpeg et ffprobe requis).
+
+### Variantes visuelles de Rachel
+
+Les six portraits sont dans [`assets/rachel/`](assets/rachel/README.md) et leur référentiel dans [`config/rachel_looks.json`](config/rachel_looks.json). Le module `rachel_catalogue.py` les sélectionne pour les flux avatar et prospective. Les Shorts statiques conservent leur fond graphique.
+
+La sélection réutilise la playlist attribuée au sujet, complétée par les mots-clés du titre, du résumé et du thème prospectif. Parmi les portraits validés compatibles, elle exclut celui de la dernière publication Rachel, tous formats confondus, puis choisit le moins récemment publié. Une image jamais utilisée passe avant une image déjà utilisée ; la priorité du catalogue départage les égalités. Seules les publications ayant un identifiant YouTube font avancer cette rotation.
+
+L'image choisie est envoyée automatiquement à `POST /v3/assets` lors de sa première utilisation. Son identifiant HeyGen et son empreinte sont conservés dans `rachel_assets.json`, sauvegardé par les deux workflows même après un échec. Aucun nouvel identifiant à saisir dans les secrets. Une modification validée de l'image provoque un nouvel upload. Si une image devient indisponible dans HeyGen, supprimer son entrée dans ce cache pour la renvoyer au prochain usage.
+
+Le choix réel est enregistré sous `rachel_look` dans le journal YouTube dès l'upload, puis dans l'historique du format. Si le catalogue ou l'upload d'image est indisponible, le code émet une alerte et utilise le portrait historique via `RACHEL_PHOTO_ASSET_ID`. Cette solution de secours peut exceptionnellement répéter l'image d'origine et est explicitement signalée dans l'historique.
+
+Les horaires et les corps des appels cron-job.org restent identiques. Les images sont intégrées, mais leur premier rendu animé doit encore être contrôlé dans HeyGen ; `animation_tested` permet de suivre ce contrôle dans le catalogue.

@@ -102,6 +102,7 @@ class YouTubeRules(unittest.TestCase):
     def test_uploaded_video_survives_playlist_failure(self):
         data = script()
         data["_publication_plan"] = {"nom": "Cybersécurité et incidents", "id": "PL-test"}
+        data["_rachel_look"] = {"id": "studio", "image": "assets/rachel/studio.png", "fallback": False}
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder, "test.mp4")
             path.write_bytes(b"test")
@@ -117,6 +118,7 @@ class YouTubeRules(unittest.TestCase):
                 self.assertEqual(json.loads(journal.read_text())[0]["statut"], "playlist_en_attente")
                 self.assertEqual(json.loads(journal.read_text())[0]["accroche"], data["accroche"])
                 self.assertEqual(json.loads(journal.read_text())[0]["conclusion"], "Voici une conséquence.")
+                self.assertEqual(json.loads(journal.read_text())[0]["rachel_look"], data["_rachel_look"])
             with patch.object(policy, "JOURNAL", journal), patch.object(policy, "attach_playlist") as attach:
                 policy.retry_playlists("token")
                 attach.assert_called_once_with("token", "video-published", "PL-test")
