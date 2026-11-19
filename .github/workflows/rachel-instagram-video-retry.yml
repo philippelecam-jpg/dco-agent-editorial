@@ -1,0 +1,161 @@
+name: Retester le transfert direct du Reel Rachel Bureau
+on:
+  push:
+    branches:
+      - test/rachel-instagram-connexion-2026-11-19
+    paths:
+      - .github/workflows/rachel-instagram-video-retry.yml
+permissions:
+  actions: read
+jobs:
+  prepare:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Préparer le transfert chiffré temporaire
+        run: |
+          umask 077
+          openssl req -x509 -newkey rsa:3072 -noenc -days 1 -subj /CN=Rachel-Instagram-Apercu -keyout "$RUNNER_TEMP/relay-key.pem" -out "$RUNNER_TEMP/relay-cert.pem" 2>/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rachel-instagram-retry-certificate
+          path: ${{ runner.temp }}/relay-cert.pem
+          retention-days: 1
+      - uses: actions/download-artifact@v4
+        with:
+          name: rachel-bureau-preview
+          repository: ${{ github.repository }}
+          run-id: 44506476994
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/rachel-bureau-preview
+      - name: Vérifier et déchiffrer le MP4 Bureau
+        env:
+          HANDOFF_URL: https://raw.githubusercontent.com/philippelecam-jpg/dco-agent-editorial/refs/heads/test/rachel-instagram-connexion-2026-11-19/.github/test-data/rachel-instagram-retry-key.cms.asc
+        run: |
+          cd "$RUNNER_TEMP"
+          umask 077
+          for attempt in $(seq 1 48); do
+            if curl -fsS --max-time 10 "$HANDOFF_URL" -o handoff.asc 2>/dev/null; then
+              break
+            fi
+            sleep 5
+          done
+          test -s handoff.asc
+          base64 --decode handoff.asc > handoff.cms
+          openssl cms -decrypt -binary -inform DER -in handoff.cms -recip relay-cert.pem -inkey relay-key.pem -out original-key.pem
+          cat > original-cert.pem <<'PEM'
+          -----BEGIN CERTIFICATE-----
+          MIIEEzCCAnugAwIBAgIUMLRkQM/ouJ5fluj0ljnmiRLRb3IwDQYJKoZIhvcNAQEL
+          BQAwGTEXMBUGA1UEAwwOUmFjaGVsLXByZXZpZXcwHhcNMjYxMTE5MTAzMDUwWhcN
+          MjYxMTIxMTAzMDUwWjAZMRcwFQYDVQQDDA5SYWNoZWwtcHJldmlldzCCAaIwDQYJ
+          KoZIhvcNAQEBBQADggGPADCCAYoCggGBAMg8YotpGkNRZE3UPOJ022vZy2sVk7Jm
+          ZAHdsuN9YZ2yu3EOn6tZFt1I2lLg3MaTHG9GdkzKjmoSoiy0LIKJSxiScGdhOA0v
+          oyKsiKxOE1Tzr4CTg/F34Hde8jPwAjTm6pSWW/vRdwIQwRDOjxq14Y7CKe/yusWV
+          mo5xtrNhLeGzmDS4RJULywG8zQXwYOSs3bo6b7FrLzckBGCJ7bmTl7A22fyMwnSl
+          yPG8JxGk4ormLnPxqVXNlshaCCWaFrnk9cK6VhP0K+EuwtR0WGqF/MQn8lbzkjoJ
+          +u5hDNJYmGTXsyIA7gIg+bk9jFzbNVKJdDl930p+L3NM4siXfyGtmR6wiE4cfDl+
+          Hj+V85t9QXQC6fLavfUkI0J4sXjwknuENBp+HFjlCQ/Eay0lfdOwtGLzWvWSkDN7
+          UuyvZrMPkjAUKNdLYHvbi75aTjdUNl0C6bewJNQ6GCGJ88h/EPOOXRkjFuPQJcpf
+          QINwsHGcafNCWX2zd+cyVcyhTbHR33ZWlwIDAQABo1MwUTAdBgNVHQ4EFgQU1y6Y
+          Vq/va83Ss2rMNEBpbgp8arowHwYDVR0jBBgwFoAU1y6YVq/va83Ss2rMNEBpbgp8
+          arowDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAYEAqGeOUv7e40N9
+          75xClWJRaykQxTeVcWz4ZQ8/DAbimvKRj4gr6U9C4NnptOEyNTYs5Swx/3KzXmSY
+          v+3NfIzPdNW7jgNIR1NK1nG45YDkwhS8H5JT4shtP2VI4E/Z6o6Ssq3UDcLxjSTP
+          scTOuNMnQdDrzAlDIl5YQNb/LJR2ovw35sinEa9T+2W3Q5Vglr+Ed/WlbqFDq2BU
+          ++aydlCIOFP2XRhndtunV6sjO5e8r9oAefPNesTKNEj+QfTyu2hn8n31gYVNCH3D
+          hOwiijjzQBYGIL2oqtdjg7PRSb0+EDlcFczL0oPFuBsBux6QCLrhRCI1OEziu0ki
+          mBimj7N5us2pMR4gsV5NwBVx2r2evRJf8N9odE28/PO5SI01sR9XmEh5bbaujczo
+          51pbVRkC24zzXBaahjS8EgEIya6u0v6o3w8rJ6wpFEefihCOSGmwqmCGqFpixOsn
+          mmNbDyDXgIRtM32c6c9gucByV+d02VO/gk6CBZbV60ssGi53t4zZ
+          -----END CERTIFICATE-----
+          PEM
+          openssl cms -decrypt -binary -inform DER -in rachel-bureau-preview/Rachel-Bureau-Test.cms -recip original-cert.pem -inkey original-key.pem -out Rachel-Bureau-Test.mp4
+          printf '%s  %s\n' efc7b5441c57fae1578d72077a9d3c085ba427dc8a56ae4d281ee7a0b03f7252 Rachel-Bureau-Test.mp4 | sha256sum --check
+          rm original-key.pem relay-key.pem
+      - name: Envoyer le fichier à Meta et vérifier le traitement
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          python3 -u - <<'PY'
+          import json
+          import os
+          import sys
+          import time
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlencode, urlsplit
+          from urllib.request import Request, urlopen
+
+          token = os.environ.get("INSTAGRAM_ACCESS_TOKEN", "").strip()
+          if not token:
+              sys.exit("Le secret INSTAGRAM_ACCESS_TOKEN est absent ou vide.")
+          graph = "https://graph.facebook.com/v27.0"
+          auth = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
+
+          def fetch(action, url, *, data=None, headers=auth, timeout=45):
+              try:
+                  with urlopen(Request(url, data=data, headers=headers), timeout=timeout) as response:
+                      return json.load(response)
+              except HTTPError as exc:
+                  try:
+                      error = json.load(exc)
+                  except ValueError:
+                      error = {}
+                  details = error.get("error", {}) if isinstance(error, dict) else {}
+                  details = details if isinstance(details, dict) else {}
+                  code = details.get("code", "inconnu")
+                  subcode = details.get("error_subcode", "inconnu")
+                  code = code if isinstance(code, int) else "inconnu"
+                  subcode = subcode if isinstance(subcode, int) else "inconnu"
+                  debug_info = error.get("debug_info") if isinstance(error, dict) else None
+                  message = details.get("message") or (debug_info.get("message") if isinstance(debug_info, dict) else None)
+                  message = message or (error.get("message") if isinstance(error, dict) else None)
+                  message = message.replace(token, "[masqué]") if isinstance(message, str) else ""
+                  message = " ".join(message.split())[:350]
+                  sys.exit(f"{action} : HTTP {exc.code}, code Meta {code}, sous-code {subcode}. {message}")
+              except (URLError, ValueError, TimeoutError):
+                  sys.exit(f"{action} : problème réseau ou réponse invalide.")
+
+          accounts = fetch("Recherche du compte", f"{graph}/me/assigned_instagram_accounts?fields=id,username&limit=100")["data"]
+          account_id = next((str(account.get("id", "")) for account in accounts if account.get("username", "").casefold() == "decisionsandco"), "")
+          if not account_id.isdecimal():
+              sys.exit("Compte @decisionsandco introuvable ou identifiant invalide.")
+          form = urlencode({
+              "media_type": "REELS",
+              "upload_type": "resumable",
+              "is_ai_generated": "true",
+              "caption": "Un outil IA peut-il vraiment lire vos factures ? Rachel, présentatrice IA de Décisions & Co.",
+          }).encode()
+          container = fetch("Création du conteneur", f"{graph}/{account_id}/media", data=form)
+          container_id = str(container.get("id", ""))
+          if not container_id.isdecimal():
+              sys.exit("Meta n’a pas retourné un identifiant de conteneur valide.")
+          print("Conteneur Reel accepté avec is_ai_generated=true.")
+          body = (Path(os.environ["RUNNER_TEMP"]) / "Rachel-Bureau-Test.mp4").read_bytes()
+          upload_url = container.get("uri", "")
+          endpoint = urlsplit(upload_url)
+          if (endpoint.scheme != "https" or endpoint.netloc != "rupload.facebook.com" or
+                  not endpoint.path.startswith("/ig-api-upload/") or not endpoint.path.endswith(f"/{container_id}")):
+              sys.exit("Meta n’a pas retourné une URL de transfert direct valide pour le conteneur.")
+          response = fetch("Envoi du MP4", upload_url, data=body, timeout=90, headers={
+              "Authorization": f"OAuth {token}",
+              "Content-Type": "application/octet-stream",
+              "offset": "0",
+              "file_size": str(len(body)),
+          })
+          if response.get("success") is not True:
+              sys.exit("Le service de téléversement n’a pas confirmé la réception du MP4.")
+          print("MP4 reçu par Meta.")
+          for index in range(6):
+              status = fetch("Vérification du traitement", f"{graph}/{container_id}?fields=status_code").get("status_code")
+              if status == "FINISHED":
+                  print("FINISHED : le Reel est prêt et aucune publication n’a été demandée.")
+                  break
+              if status != "IN_PROGRESS":
+                  sys.exit(f"Le traitement n’a pas abouti : {status if status in ('ERROR', 'EXPIRED', 'PUBLISHED') else 'état inconnu'}.")
+              if index < 5:
+                  time.sleep(60)
+          else:
+              sys.exit("Meta traite encore le Reel après cinq minutes.")
+          PY
