@@ -15,5 +15,22 @@
       "family": "cybersecurite",
       "fallback": false
     }
+  },
+  {
+    "date": "2026-11-19T16:20:59.610701+00:00",
+    "titre": "Consommer moins, posséder moins : rupture ou tendance ?",
+    "video_id": "iryelWVTSNc",
+    "format": "prospective",
+    "playlist": "Prospective : et si… ?",
+    "playlist_id": "PLNV2Bb7Vod40",
+    "statut": "publié",
+    "accroche": "Une cliente rend son abonnement, garde son vieux téléphone.",
+    "conclusion": "Ce qui ressemble à de la prudence pourrait être le début d'un autre modèle.",
+    "rachel_look": {
+      "id": "prospective",
+      "image": "assets/rachel/prospective.png",
+      "family": "prospective",
+      "fallback": false
+    }
   }
 ]

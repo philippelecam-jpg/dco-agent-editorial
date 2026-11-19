@@ -10,6 +10,11 @@
       "sha256": "61830cedb8cced0a97785ed3e7876b01a63361ca260303db078822e34230d5a5",
       "asset_id": "d8bc131fed4046c7a6ebe7728c196cb8",
       "uploaded_at": "2026-11-19T16:15:16.967836+00:00"
+    },
+    "prospective": {
+      "sha256": "4a27cbbc78a80b93c6c672a23f11f5ef96858edc15c5006a994d9f3421d571ee",
+      "asset_id": "571aef7b74574211a39b99106397e5ca",
+      "uploaded_at": "2026-11-19T16:18:34.866228+00:00"
     }
   }
 }

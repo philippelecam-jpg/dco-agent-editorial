@@ -1,5 +1,5 @@
 {
-  "last_theme_index": 1,
+  "last_theme_index": 2,
   "angles_par_theme": {
     "Travail": [
       "L'organisation du travail face aux reconfigurations technologiques et managériales",
@@ -13,7 +13,8 @@
     ],
     "Économie": [
       "Reconfigurations des modèles de production et de valeur à l'ère des technologies génératives",
-      "Reconfiguration des équilibres géopolitiques autour des flux monétaires, commerciaux et des ressources stratégiques"
+      "Reconfiguration des équilibres géopolitiques autour des flux monétaires, commerciaux et des ressources stratégiques",
+      "Transformations des comportements individuels de consommation, d'épargne et de rapport à la dette"
     ],
     "Social": [
       "Les nouvelles formes de solidarité et de lien communautaire face à l'effritement des structures collectives traditionnelles",
@@ -126,6 +127,21 @@
       "angle": "Les effets systémiques des dépendances technologiques sur la résilience des sociétés face aux crises",
       "titre": "Et si votre prochain problème venait d'un fournisseur que vous ne connaissez pas ?",
       "video_id": "Pjg4FrSTYQQ"
+    },
+    {
+      "date": "2026-11-19T16:21:00.696173",
+      "theme": "Économie",
+      "angle": "Transformations des comportements individuels de consommation, d'épargne et de rapport à la dette",
+      "titre": "Consommer moins, posséder moins : rupture ou tendance ?",
+      "video_id": "iryelWVTSNc",
+      "accroche": "Une cliente rend son abonnement, garde son vieux téléphone.",
+      "conclusion": "Ce qui ressemble à de la prudence pourrait être le début d'un autre modèle.",
+      "rachel_look": {
+        "id": "prospective",
+        "image": "assets/rachel/prospective.png",
+        "family": "prospective",
+        "fallback": false
+      }
     }
   ]
 }
