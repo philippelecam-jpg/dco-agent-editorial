@@ -21,7 +21,8 @@
     "https://www.actuia.com/actualite/pages-daide-de-whatsapp-une-consigne-cachee-interdisait-de-recommander-un-regulateur/",
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
     "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html",
-    "https://www.actuia.com/actualite/la-justice-coreenne-plaide-pour-une-amende-contre-les-faux-arrets-de-lia/"
+    "https://www.actuia.com/actualite/la-justice-coreenne-plaide-pour-une-amende-contre-les-faux-arrets-de-lia/",
+    "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html"
   ],
   "scripts": [
     {
@@ -149,6 +150,20 @@
       "source": "actualite",
       "titre": "Quand l'IA invente des jugements qui n'existent pas",
       "video_id": "nm4nduLUXVA"
+    },
+    {
+      "date": "2026-11-19T16:08:10.702914",
+      "source": "actualite",
+      "titre": "Sites officiels en panne : correctifs d'urgence ou attaque ?",
+      "video_id": "ilwtJg8x2FU",
+      "accroche": "Ce jeudi, impossible d'accéder aux impôts en ligne.",
+      "conclusion": "La vigilance numérique de l'État progresse, même quand elle dérange.",
+      "rachel_look": {
+        "id": "studio",
+        "image": "assets/rachel/studio.png",
+        "family": "cybersecurite",
+        "fallback": false
+      }
     }
   ]
 }
