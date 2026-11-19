@@ -1,0 +1,107 @@
+name: Vérification finale des publications Rachel
+on:
+  push:
+    branches: ['test/rachel-complete-2026-11-19']
+    paths: ['.github/workflows/verify-rachel-delivery-report.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer les outils de vérification
+        run: |
+          python -m pip install requests cryptography
+          command -v ffprobe || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Attendre les publications autorisées
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import os, time, requests
+          for run in [44561870460,44564447305]:
+              for attempt in range(100):
+                  r=requests.get(f"https://api.github.com/repos/philippelecam-jpg/dco-agent-editorial/actions/runs/{run}",headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"]},timeout=30)
+                  r.raise_for_status(); data=r.json()
+                  if data["status"]=="completed":
+                      assert data["conclusion"]=="success", f"Publication {run}: {data['conclusion']}"
+                      break
+                  time.sleep(15)
+              else:
+                  raise TimeoutError("Publication toujours en cours")
+          PY
+          git pull --ff-only origin main
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: '44561870460'
+          name: rachel-reel-44561870460
+          path: archives/avatar
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: '44564447305'
+          name: rachel-reel-44564447305
+          path: archives/prospective
+      - name: Vérifier les vidéos et leurs publications
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          import requests
+          from instagram_reels import Instagram, archive_cipher, GRAPH
+          out=Path("verification");out.mkdir(exist_ok=True)
+          r=requests.post("https://oauth2.googleapis.com/token",data={"client_id":os.environ["YOUTUBE_CLIENT_ID"],"client_secret":os.environ["YOUTUBE_CLIENT_SECRET"],"refresh_token":os.environ["YOUTUBE_REFRESH_TOKEN"],"grant_type":"refresh_token"},timeout=30)
+          r.raise_for_status()
+          headers={"Authorization":"Bearer "+r.json()["access_token"]}
+          meta=Instagram(os.environ["INSTAGRAM_ACCESS_TOKEN"])
+          account=meta.account_id()
+          reports=[]
+          for kind, run in [("avatar","44561870460"),("prospective","44564447305")]:
+              folder=Path("archives")/kind
+              metadata=(folder/"manifest.json").read_bytes()
+              manifest=json.loads(metadata); yt_id=manifest["youtube_id"]
+              cipher=(folder/"reel.enc").read_bytes()
+              video=folder/"video.mp4"
+              video.write_bytes(archive_cipher(os.environ["INSTAGRAM_ACCESS_TOKEN"]).decrypt(cipher[:12],cipher[12:],metadata))
+              probe=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_streams","-show_format","-of","json",str(video)]))
+              vs=next(s for s in probe["streams"] if s["codec_type"]=="video")
+              aus=next(s for s in probe["streams"] if s["codec_type"]=="audio")
+              duration=float(probe["format"]["duration"])
+              assert (vs["width"],vs["height"])==(1080,1920)
+              assert duration<=60 and aus["codec_name"]=="aac" and int(aus["sample_rate"])==48000
+              r=requests.get("https://www.googleapis.com/youtube/v3/videos",headers=headers,params={"part":"snippet,status,contentDetails,processingDetails","id":yt_id},timeout=30)
+              r.raise_for_status(); yt=r.json()["items"][0]
+              assert yt["status"]["privacyStatus"]=="public"
+              assert yt["status"]["uploadStatus"]=="processed"
+              print("Déclaration IA retournée par YouTube :", yt_id, yt["status"].get("containsSyntheticMedia", "champ absent"))
+              entry=json.loads((Path("historique/instagram")/(yt_id+".json")).read_text())
+              assert entry["source_run_id"]==run and entry["account_id"]==account
+              link,label=meta.verify(entry["media_id"]);assert label
+              assert meta.find_published(account,manifest["caption"])==entry["media_id"]
+              for i,sec in enumerate([0,duration/2,max(0,duration-2)]):
+                  subprocess.run(["ffmpeg","-v","error","-y","-ss",str(sec),"-i",str(video),"-frames:v","1","-vf","scale=270:480",str(out/f"{kind}-{i}.jpg")],check=True)
+              row={"format":kind,"title":yt["snippet"]["title"],"youtube_url":"https://youtube.com/shorts/"+yt_id,"instagram_url":link,"duration":duration,"size":[vs["width"],vs["height"]],"audio":aus["codec_name"],"sample_rate":aus["sample_rate"],"youtube_status":yt["status"],"youtube_processing":yt.get("processingDetails",{}),"instagram_label_ia":label,"source_run_id":run}
+              reports.append(row);print(json.dumps(row,ensure_ascii=False))
+          (out/"report.json").write_text(json.dumps(reports,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-publications-rachel
+          path: verification/
+          if-no-files-found: ignore
+          retention-days: 7
