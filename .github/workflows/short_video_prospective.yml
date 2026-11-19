@@ -15,6 +15,8 @@ concurrency:
 jobs:
   short-video-prospective:
     runs-on: ubuntu-latest
+    outputs:
+      instagram_artifact_id: ${{ steps.instagram_archive.outputs.artifact-id }}
     permissions:
       contents: write
     steps:
@@ -32,10 +34,11 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Install Python dependencies
-        run: pip install requests pillow requests_oauthlib
+        run: pip install requests pillow requests_oauthlib cryptography
 
       - name: Run prospective short video agent
         env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
           FORCE_PUBLICATION: ${{ inputs.force_publication && 'true' || 'false' }}
           YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -56,6 +59,17 @@ jobs:
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
         run: python agent_short_video_prospective.py
+
+      - name: Conserver le MP4 chiffré pour Instagram
+        id: instagram_archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: rachel-reel-${{ github.run_id }}
+          path: |
+            tmp_instagram_reel/manifest.json
+            tmp_instagram_reel/reel.enc
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: Commit updated history
         if: always()
@@ -81,3 +95,15 @@ jobs:
         env:
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           MAKE_API_KEY: ${{ secrets.MAKE_API_KEY }}
+
+  instagram:
+    needs: short-video-prospective
+    if: needs.short-video-prospective.outputs.instagram_artifact_id != ''
+    permissions:
+      actions: read
+      contents: write
+    uses: ./.github/workflows/instagram_reels.yml
+    with:
+      source_run_id: ${{ format('{0}', github.run_id) }}
+    secrets:
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}

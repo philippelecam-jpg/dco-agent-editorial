@@ -1,0 +1,70 @@
+name: Rachel / Publication Instagram
+
+on:
+  workflow_call:
+    inputs:
+      source_run_id:
+        description: "Exécution GitHub Actions qui a archivé le MP4"
+        required: true
+        type: string
+    secrets:
+      INSTAGRAM_ACCESS_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Reprise Instagram uniquement : ID de l’exécution qui a archivé le MP4"
+        required: true
+        type: string
+
+concurrency:
+  group: rachel-instagram-publication
+  cancel-in-progress: false
+
+jobs:
+  instagram-reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    env:
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+    steps:
+      - name: Vérifier la référence du montage
+        run: |
+          if ! [[ "$SOURCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Indiquer un identifiant numérique d’exécution GitHub Actions."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer les dépendances
+        run: python -m pip install requests cryptography
+      - name: Récupérer le MP4 archivé
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+          name: rachel-reel-${{ inputs.source_run_id }}
+          path: tmp_instagram_reel
+      - name: Envoyer le MP4 à Meta
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python instagram_reels.py prepare
+      - name: Sauvegarder la demande avant publication
+        run: bash scripts/persist_instagram_journal.sh
+      - name: Publier et vérifier le Reel Instagram
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python instagram_reels.py publish
+      - name: Sauvegarder le résultat
+        if: always()
+        run: |
+          if [ -d historique/instagram ]; then
+            bash scripts/persist_instagram_journal.sh
+          fi

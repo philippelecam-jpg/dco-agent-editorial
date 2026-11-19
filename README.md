@@ -41,3 +41,11 @@ L'image choisie est envoyée automatiquement à `POST /v3/assets` lors de sa pre
 Le choix réel est enregistré sous `rachel_look` dans le journal YouTube dès l'upload, puis dans l'historique du format. Si le catalogue ou l'upload d'image est indisponible, le code émet une alerte et utilise le portrait historique via `RACHEL_PHOTO_ASSET_ID`. Cette solution de secours peut exceptionnellement répéter l'image d'origine et est explicitement signalée dans l'historique.
 
 Les horaires et les corps des appels cron-job.org restent identiques. Les images sont intégrées, mais leur premier rendu animé doit encore être contrôlé dans HeyGen ; `animation_tested` permet de suivre ce contrôle dans le catalogue.
+
+## Reels Instagram de Rachel
+
+Les workflows Avatar et Prospective publient aussi sur [@decisionsandco](https://www.instagram.com/decisionsandco/) après l’envoi YouTube. La cadence reste celle des Shorts Rachel. Le flux statique est exclu. Le Reel réutilise le MP4 vertical, reçoit une légende composée du titre et du résumé, et déclare que Rachel est générée par IA. La publication et son label sont vérifiés auprès de Meta. Le lien est conservé dans `historique/instagram/<id YouTube>.json`.
+
+Le workflow utilise la connexion unifiée Meta et le secret Actions `INSTAGRAM_ACCESS_TOKEN` déjà configuré. L’archive du MP4 est chiffrée avec une clé dérivée de ce jeton et conservée pendant 30 jours. Une rotation du jeton rend les anciennes archives illisibles avec le nouveau jeton.
+
+Pour reprendre un échec Instagram, ouvre **Actions → Rachel / Publication Instagram → Run workflow** et saisis dans `source_run_id` le numéro de l’exécution Avatar ou Prospective qui contient l’archive `rachel-reel-<id exécution>`. Cette reprise réutilise le fichier. Si Meta a reçu une demande de publication dont le résultat reste incertain, le workflow recherche d’abord le Reel par sa légende. Il bloque un nouvel envoi en cas d’ambiguïté. Vérifie alors la présence de la vidéo dans Instagram avant toute autre action.

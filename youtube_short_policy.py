@@ -323,7 +323,8 @@ def render_avatar_short(source, hook, output, reference_audio=None):
         "[held][1:v]overlay=0:0:enable='lt(t,3)'[v];"
         f"[0:a:0]apad=whole_dur={target}[a]",
         "-map", "[v]", "-map", "[a]", "-t", str(target), "-c:v", "libx264", "-preset", "fast",
-        "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", str(output),
+        "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-b:a", "128k",
+        "-movflags", "+faststart", str(output),
     ], check=True)
     inspect_video(output)
     return output
