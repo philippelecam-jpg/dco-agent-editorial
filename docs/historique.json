@@ -1,14 +1,5 @@
 [
   {
-    "date": "Dimanche 25 octobre 2026",
-    "timestamp": "2026-10-25T13:37:06.278180",
-    "theme": "Actualité décryptée",
-    "sujet": "GPT-6 \"Luna\" dans ChatGPT gratuit : ce que ça change vraiment pour une PME",
-    "post_x": "OpenAI vient de déployer GPT-6 dans la version gratuite de ChatGPT. Graphiques, comparatifs, boutons interactifs directement dans la conversation. L'outil devient plus puissant. La vraie question reste la même : à quoi on lui demande de servir, exactement ?",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-25-133614-weekend.png?v=133615"
-  },
-  {
     "date": "Lundi 26 octobre 2026",
     "timestamp": "2026-10-26T06:08:56.194938",
     "theme": "L'Entreprise OS",
@@ -279,5 +270,18 @@
     "post_x": "ChatGPT Wallet peut acheter à votre place. La vraie question n'est pas technique : c'est qui dans votre organisation décide du seuil d'engagement, et est-ce que c'est écrit quelque part ?",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2122934972747014198",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-18-060831.png?v=060831"
+  },
+  {
+    "date": "Jeudi 19 novembre 2026",
+    "timestamp": "2026-11-19T06:09:27.068689",
+    "theme": "Agents et automatisation",
+    "sujet": "Quand un agent a accompli deux actions sur trois : comment reprendre la main sans tout défaire",
+    "angle": "Le cas concret d'une interruption en cours de chaîne. Un agent chargé de traiter une commande fournisseur a envoyé la demande de prix et réservé le créneau de livraison, mais s'est arrêté avant de mettre à jour le stock prévisionnel. L'angle traite de la décision opérationnelle qui s'impose au responsable : valider les deux premières actions, les annuler, ou reprendre à mi-chemin. Comment l'organisation sait-elle que l'agent s'est arrêté, à quel moment, et qui est en charge de décider la suite ? L'exemple est hypothétique, posé comme question de fond sur l'observabilité et les points de reprise dans un enchaînement multi-outils.",
+    "question_metier": "Lorsqu'un agent automatisé s'interrompt après avoir partiellement exécuté une séquence d'actions, qui dans l'organisation détecte l'arrêt, évalue l'état du dossier et décide de la suite sans provoquer d'incohérence entre les systèmes concernés ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "Un agent s'arrête à mi-chemin. La commande est envoyée, le créneau réservé, le stock non mis à jour. Qui le détecte ? Qui décide de la suite ? Ce n'est pas un problème technique. C'est un problème de gouvernance.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2123297367940014131",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-19-060833.png?v=060833"
   }
 ]
