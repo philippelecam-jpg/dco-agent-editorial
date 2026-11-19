@@ -1,0 +1,50 @@
+name: Vérifier la connexion Instagram Rachel
+on:
+  push:
+    branches:
+      - test/rachel-instagram-connexion-2026-11-19
+    paths:
+      - .github/workflows/rachel-instagram-connection.yml
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Vérifier le compte Instagram autorisé
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          token = os.environ.get("INSTAGRAM_ACCESS_TOKEN", "").strip()
+          if not token:
+              sys.exit("Le secret INSTAGRAM_ACCESS_TOKEN est absent ou vide.")
+          request = Request(
+              "https://graph.facebook.com/v27.0/me/assigned_instagram_accounts?fields=id,username&limit=100",
+              headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+          )
+          try:
+              with urlopen(request, timeout=25) as response:
+                  accounts = json.load(response)["data"]
+          except HTTPError as exc:
+              try:
+                  error = json.load(exc).get("error", {})
+              except (ValueError, AttributeError):
+                  error = {}
+              code = error.get("code")
+              subcode = error.get("error_subcode")
+              code = code if isinstance(code, int) else "inconnu"
+              subcode = subcode if isinstance(subcode, int) else "inconnu"
+              sys.exit(f"Meta a refusé la connexion : HTTP {exc.code}, code Meta {code}, sous-code {subcode}.")
+          except (URLError, ValueError, KeyError, TimeoutError):
+              sys.exit("Impossible de vérifier le compte Meta : réseau ou réponse invalide.")
+          if not any(account.get("username", "").casefold() == "decisionsandco" for account in accounts):
+              sys.exit("Le token est accepté, mais @decisionsandco ne figure pas parmi les comptes autorisés.")
+          print("Connexion confirmée pour @decisionsandco. Vérification en lecture seule.")
+          PY
