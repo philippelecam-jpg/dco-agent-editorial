@@ -69,6 +69,7 @@ from pathlib import Path
 import requests
 
 from editorial_style import sans_tirets_longs
+from instagram_reels import stage_reel
 from rachel_catalogue import prepare_rachel_image
 from youtube_short_policy import (
     SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
@@ -587,6 +588,7 @@ def main():
         "rachel_look": script_data["_rachel_look"],
     })
     save_history(history)
+    stage_reel(video_path, script_data, video_id)
 
 
 if __name__ == "__main__":
