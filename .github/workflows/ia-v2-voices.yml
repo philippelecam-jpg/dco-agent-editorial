@@ -1,0 +1,41 @@
+name: Vérifier les voix disponibles pour Mina et Nino
+on:
+  push:
+    branches: ['fix/ia-bureau-controlled-v2']
+    paths: ['.github/workflows/ia-v2-voices.yml']
+permissions:
+  contents: read
+jobs:
+  voices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Lire les voix sans générer de son
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+        run: |
+          python - <<'PY'
+          import os,json,requests
+          voices=[]
+          params={'page_size':100}
+          for _ in range(5):
+              r=requests.get('https://api.elevenlabs.io/v2/voices',headers={'xi-api-key':os.environ['ELEVENLABS_API_KEY']},params=params,timeout=60)
+              if not r.ok: raise RuntimeError('Lecture des voix impossible : HTTP '+str(r.status_code))
+              d=r.json()
+              voices.extend({k:v.get(k) for k in ['voice_id','name','category','labels','description','verified_languages']} for v in d['voices'])
+              if not d.get('has_more') or not d.get('next_page_token'): break
+              params['next_page_token']=d['next_page_token']
+          open('voices.json','w').write(json.dumps({'voices':voices,'rachel_voice_id':os.environ.get('ELEVENLABS_VOICE_ID')},ensure_ascii=False))
+          print('Catalogue vocal récupéré pour revue privée.')
+          PY
+          openssl cms -encrypt -binary -aes-256-gcm -in voices.json -out voices.cms -outform DER pilots/ia_au_bureau/review-public.pem
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voices-private
+          path: voices.cms
+          retention-days: 7
