@@ -1,46 +1,38 @@
-# L'IA au bureau : animation et format réaliste
+# L'IA au bureau : production contrôlée V2
 
-Série française sur l'IA en PME, avec Mina et Nino, deux personnages entièrement fictifs. La génération privée et la publication Instagram des épisodes validés sont deux actions distinctes. Le calendrier récurrent proposé dans [PLANNING.md](PLANNING.md) n'est pas activé. Il n'y a pas de publication YouTube automatique pour cette série.
+La V2 remplace la réalisation libre par un dialogue monté à partir de plans séparés. Mina et Nino disposent chacun d'un portrait de référence et d'une voix française fixe. Le workflow génère une vidéo privée ; il ne publie rien automatiquement.
 
-## Identités
-Mina est une dirigeante pragmatique (carré auburn, lunettes ambrées, veste bleu pétrole). Nino est son collègue curieux (cheveux bouclés noirs, pull ocre). Les personnages sont fictifs, dans un style 2D éditorial adulte. Les identités sont décrites dans chaque demande ; leur stabilité inter-épisodes reste à contrôler visuellement. Des images de référence pourront être nécessaires après ces essais.
+## Produire et reprendre
 
-## Trois pilotes
-1. **Compte rendu** : transformer des notes en actions avec responsable et échéance ; le champ absent reste « non précisée ». Extraction réellement testée sur des notes fictives via Claude. Les cartes illustrent le résultat, sans prétendre être une capture d'un logiciel.
-2. **Réponse fiable** : distinguer une réponse convaincante d'une affirmation vérifiée. Pas de chiffre ni de source inventée.
-3. **Achats autonomes** : fiction explicite sur un assistant préparant une commande sous validation humaine.
+Dans **Actions → IA au bureau - dialogue contrôlé privé**, choisir `realiste` ou `animation`. Le scénario relu est dans `realiste_v2.json` et les quatre portraits dans `assets/ia_bureau/`.
 
-## Chaîne de production
-Le script `scripts/ia_pilots.py submit` vérifie l'accès HeyGen, teste l'extraction, écrit chaque scénario avec Claude et soumet au maximum trois sessions Video Agent. Chaque session est privée. Les scripts comportent quatre à six scènes et deux voix, pour 75 à 105 mots parlés.
+Pour reprendre une exécution interrompue, renseigner `resume_run_id` et le même format. Le workflow restaure l'archive chiffrée avec le secret HeyGen existant. Une rotation de ce secret rend cette archive de reprise illisible ; l'archive CMS de revue reste disponible avec la clé privée conservée hors dépôt. Les archives expirent après 30 jours.
 
-Le mode `poll` récupère les sessions existantes uniquement. Il attend jusqu'à 45 minutes, télécharge les vidéos et mesure durée, ratio et présence audio. Il produit quatre images de contrôle par vidéo. Il ne crée ni ne republie de vidéo.
+Les étapes déjà acceptées ne sont pas soumises à nouveau. Une réponse perdue pendant un appel payant bloque la reprise jusqu'au rapprochement manuel. Ne pas effacer un marqueur `*_submitting` sans vérifier la demande chez le fournisseur.
 
-Le workflow **IA au bureau - génération privée et reprise** propose `animation` (trois scénarios Claude) ou `realiste` (un scénario relu, dans `scripts/ia_realistic.py`). La synthèse vocale et le montage multiscène sont confiés à Video Agent ; Rachel continue d'utiliser ElevenLabs et son montage FFmpeg.
+## Voix et montage
 
-Pour récupérer des rendus existants, renseigner `resume_run_id` et le nom de leur checkpoint. Cette reprise n'appelle pas la génération. Un résultat technique conforme ne vaut pas validation éditoriale : le workflow conserve aussi les vidéos hors cible pour permettre leur revue.
+- Mina : voix publique française féminine Chantal, identifiant fixé dans le scénario.
+- Nino : voix publique française masculine Tanguy, identifiant distinct fixé dans le scénario.
+- Les voix sont produites séparément par HeyGen Voice. Le catalogue ElevenLabs ne pouvait pas être lu avec la clé actuelle (`voices_read` absent). Rachel garde son intégration ElevenLabs.
+- Chaque plan contient un seul personnage et reçoit son fichier audio avant la synchronisation des lèvres.
+- FFmpeg exclut la bande-son du rendu et conserve uniquement la piste vocale source. Les répliques sont concaténées avec 240 ms de respiration, sans superposition ni fondu entre les voix.
+- Les niveaux sont normalisés et la sortie contient une piste mono unique.
+- Une transcription locale avec faster-whisper produit les horaires des sous-titres et compare le dialogue au scénario. Aucun minutage proportionnel inventé. Une différence importante bloque le montage.
+- Les sous-titres sont incrustés une seule fois. Aucun titre géant, voile blanc, bandeau « fictif » ou mention répétée de génération n'est ajouté à l'image.
 
-## Publication Instagram
+## Contrôle avant publication
 
-Le workflow manuel **IA au bureau - publier les pilotes validés sur Instagram** lit `publications.json`. Les trois premiers pilotes ont été autorisés par l'utilisateur pour publication le 20 novembre 2026 ; leurs légendes précisent les limites des démonstrations. Les durées réelles de 38,0 s, 28,0 s et 29,4 s sont acceptées pour ce lot, malgré l'objectif initial de 30–45 s.
+Le rapport conserve `human_review_required: true`. Les contrôles automatiques vérifient le texte transcrit, la durée, les limites des sous-titres et l'unicité de la piste audio. Ils ne prouvent pas la qualité subjective d'une voix, l'absence de tout défaut visuel ni une synchronisation labiale parfaite. Visionner et écouter la vidéo entière avant d'approuver sa publication.
 
-Les épisodes futurs doivent être contrôlés entièrement et ajoutés explicitement au manifeste avec `approved: true`. La vérification automatique porte sur le compte, le format portrait, la piste audio, la durée et la taille ; elle ne contrôle pas le contenu du dialogue ni la qualité des sous-titres. Les voix et sous-titres des premiers pilotes demandent encore une revue humaine complète avant une production récurrente sans supervision.
+La légende de la V2 est courte : accroche, conseil, question et quelques hashtags. Le label IA natif d'Instagram reste activé pour les contenus concernés. La transparence est assurée par la plateforme sans répéter les mêmes mentions dans l'image et la légende.
 
-La publication récupère le MP4 déjà rendu via HeyGen et utilise l'intégration Instagram existante, sans Make. Chaque conteneur est journalisé dans `historique/instagram/ia-bureau-<episode>.json` sur `main` avant l'appel final de publication. Une reprise recherche la légende exacte et refuse de republier une tentative ambiguë. Le lien et le label IA sont vérifiés auprès de Meta. Les vidéos Rachel et les pilotes partagent le même verrou de publication Instagram.
+Les trois premiers pilotes et le réaliste V1 déjà publiés conservent leurs journaux historiques. Le fichier `publications.json` décrit ce lot historique : ne pas en changer les légendes pour tenter de modifier une publication existante. Les corrections de V2 n'altèrent pas les MP4 déjà publiés.
 
-Pour une tentative bloquée, vérifier le Reel dans Instagram et le journal avant toute modification. Ne pas effacer un journal pour forcer une nouvelle publication.
+## Calendrier
 
-## Reprise et confidentialité
-Le workflow conserve un checkpoint dès la soumission des sessions. Une réponse ambiguë lors d'un POST ne déclenche aucune nouvelle soumission automatique. Si un lancement échoue, vérifier ce checkpoint et les sessions HeyGen avant de soumettre les épisodes manquants. Ne pas relancer `submit` pour des épisodes déjà acceptés.
+Mercredi à 12 h 15 : animation. Samedi à 10 h : réaliste. Fuseau Europe/Paris. Il s'agit d'une proposition non activée, détaillée dans [PLANNING.md](PLANNING.md). Le rythme de Rachel n'est pas modifié.
 
-Les MP4, scénarios et captures sont archivés avec chiffrement CMS destiné au certificat public de revue. La clé privée reste hors dépôt. Le checkpoint public ne contient aucun jeton ni URL de téléchargement signée. Les fichiers rendus restent aussi récupérables dans le compte HeyGen.
+## Références visuelles
 
-## Critères d'évaluation
-- Durée réelle 30–45 secondes et ratio 9:16.
-- Identité des personnages, décors variés, animation effective et continuité.
-- Français naturel, deux voix distinctes, fin des phrases préservée.
-- Sous-titres synchronisés, contrastés et hors des commandes des applications.
-- Fidélité au scénario et distinction entre démonstration et fiction.
-- Coût réel et temps de rendu mesurables. La durée cible dans le prompt n'est pas une garantie fournisseur.
-- Revue humaine nécessaire avant toute activation de la publication automatique.
-
-Documentation de l'intégration : https://developers.heygen.com/docs/video-agent et https://developers.heygen.com/reference/create-video-agent-session
+Les portraits ont été générés pour des personnages entièrement fictifs. Les déclinaisons réaliste et animée partagent la même identité. Chaque plan conserve la référence du personnage : une variation de décor future demandera une référence cohérente et une nouvelle revue.

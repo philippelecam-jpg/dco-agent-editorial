@@ -201,4 +201,6 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('mode', choices=['submit','poll'])
     args=parser.parse_args()
-    {'submit':submit,'poll':poll}[args.mode]()
+    if args.mode == 'submit':
+        parser.error('Génération V1 désactivée. Utiliser scripts/ia_controlled.py build.')
+    poll()
