@@ -1,0 +1,53 @@
+name: Coûts et état des trois pilotes IA
+on:
+  push:
+    branches: ['feat/ia-au-bureau-pilots-2026-11-20']
+    paths: ['.github/workflows/ia-pilots-costs.yml']
+permissions:
+  contents: read
+jobs:
+  costs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Lire l'état final et les coûts des pilotes
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+        run: |
+          python - <<'PY'
+          import sys, time, json
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from ia_pilots import heygen
+          ids = ['ffcdbdfe53d04ab98aef923b0ae0eb2c','ada941129c014b9e866b58f2257919a6','0034c87224fa4ba1aae59f379ca482f1']
+          results = {}
+          for attempt in range(60):
+              for vid in ids:
+                  if results.get(vid,{}).get('status') in ('completed','failed'):
+                      continue
+                  v = heygen('GET','/videos/'+vid)
+                  results[vid] = {k:v.get(k) for k in ['status','duration','failure_code','failure_message']}
+              print({k:v['status'] for k,v in results.items()}, flush=True)
+              if all(v['status'] in ('completed','failed') for v in results.values()):
+                  break
+              time.sleep(45)
+          for vid,row in results.items():
+              try:
+                  records = heygen('GET','/requests',params={'start_time':1795187089,'end_time':int(time.time()),'job_id':vid,'limit':100})
+                  row['charges'] = [{k:r.get(k) for k in ['endpoint','charge','charge_recorded','job']} for r in records]
+              except Exception as exc:
+                  row['cost_error'] = str(exc)
+          Path('ia-pilots-costs.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+          PY
+      - name: Chiffrer le rapport
+        run: openssl cms -encrypt -binary -aes-256-gcm -in ia-pilots-costs.json -out ia-pilots-costs.cms -outform DER pilots/ia_au_bureau/review-public.pem
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ia-pilots-costs
+          path: ia-pilots-costs.cms
+          retention-days: 30
