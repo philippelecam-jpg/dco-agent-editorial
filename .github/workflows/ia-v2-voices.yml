@@ -16,22 +16,17 @@ jobs:
       - run: pip install requests
       - name: Lire les voix sans générer de son
         env:
-          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
         run: |
           python - <<'PY'
           import os,json,requests
-          voices=[]
-          params={'page_size':100}
-          for _ in range(5):
-              r=requests.get('https://api.elevenlabs.io/v2/voices',headers={'xi-api-key':os.environ['ELEVENLABS_API_KEY']},params=params,timeout=60)
-              if not r.ok: raise RuntimeError('Lecture des voix : HTTP '+str(r.status_code)+' / '+str(r.json().get('detail',{}).get('status','unknown'))+' / '+str(r.json().get('detail',{}).get('message',''))[:300])
-              d=r.json()
-              voices.extend({k:v.get(k) for k in ['voice_id','name','category','labels','description','verified_languages']} for v in d['voices'])
-              if not d.get('has_more') or not d.get('next_page_token'): break
-              params['next_page_token']=d['next_page_token']
-          open('voices.json','w').write(json.dumps({'voices':voices,'rachel_voice_id':os.environ.get('ELEVENLABS_VOICE_ID')},ensure_ascii=False))
-          print('Catalogue vocal récupéré pour revue privée.')
+          results={}
+          for gender in ['female','male']:
+              r=requests.get('https://api.heygen.com/v3/models/audio/voices',headers={'x-api-key':os.environ['HEYGEN_API_KEY']},params={'type':'public','language':'fr','gender':gender,'limit':10},timeout=60)
+              if not r.ok: raise RuntimeError('HeyGen voix HTTP '+str(r.status_code))
+              results[gender]=r.json()
+          open('voices.json','w').write(json.dumps(results,ensure_ascii=False))
+          print('Voix françaises récupérées pour revue.')
           PY
           openssl cms -encrypt -binary -aes-256-gcm -in voices.json -out voices.cms -outform DER pilots/ia_au_bureau/review-public.pem
       - uses: actions/upload-artifact@v4
