@@ -1,0 +1,61 @@
+name: Publier la V2 réaliste validée
+on:
+  push:
+    branches: ['publish/ia-realiste-v2']
+    paths: ['.github/workflows/publish-realiste-v2-once.yml']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: rachel-instagram-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: pipeline
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install requests cryptography
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: '44776656793'
+          name: controlled-restart
+          path: pipeline
+      - name: Restaurer les plans et voix validés
+        working-directory: pipeline
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+        run: python scripts/ia_controlled.py restore
+      - name: Reconstituer le montage validé sans génération
+        working-directory: pipeline
+        run: |
+          python - <<'PY'
+          import hashlib,json,sys
+          sys.path.insert(0,'scripts')
+          import ia_controlled as c
+          expected={"02-raw.mp4":"84e85b5318f963482bc44f1be3c6e0ffbf50a8099d3a63076cdf5a16ff545e17","01-raw.mp4":"5015e295d1e6e09f2ccc2245893f2135bce0479a18b474748b8278951f73c16a","00-raw.mp4":"04d7621b1ead4d68801f8cd6a15ba283281af23f67f8ea8ff294d8eab7203e94","03-raw.mp4":"493a4b841a58850479d6382499ba3b9406a9ff76466ec8d50e8de49ff1aca5b2","02.wav":"b5903d1d69ff92f8cc225a4391ac6d582d4bc1257892ba9cebc24316249d9d47","01.wav":"6cede500a50e9f5d57bef08b9c63b7dfdb3db535001c8eef0fe1a70933df1f07","03.wav":"efc68b4483eef1bbf7eedb129c6703d290727018d2270546f2581b35413ff482","00.wav":"92c246e82247348abae36b103067125df9a2ba983ca887c39d79e07585c071ca","02-alignment.json":"19af0530666696745fae9e9d276774034ea8e3ab65eb20f4a748d250defb1d61","01-alignment.json":"470c289f6354da6868ff9cfc60748fdfd9020c98f0be30ac46ecbe2c0c25f907","00-alignment.json":"322e590daa28b8a1600e83b477274449f6ad0dbffde139930c712e5ed999ab73","03-alignment.json":"3168f3070248fb3eaf3092753652f4f8e1f1fc160a57ed3b68d9e2e1a918008c"}
+          for name,digest in expected.items():
+              assert hashlib.sha256((c.OUT/name).read_bytes()).hexdigest()==digest,name
+          config=c.load_config()
+          state=json.loads((c.OUT/'checkpoint.json').read_text())
+          c.align_audio(config,state)
+          c.assemble(config,state)
+          PY
+      - name: Publier le Reel autorisé et journaliser
+        working-directory: publication
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python -u ../pipeline/scripts/publish_controlled_v2.py
