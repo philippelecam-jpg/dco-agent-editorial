@@ -2,8 +2,11 @@
   "episode": "02-reponse-fiable",
   "heygen_video_id": "ada941129c014b9e866b58f2257919a6",
   "caption": "Une réponse convaincante n’est pas une preuve 🔎\n\nL’IA au bureau, épisode pilote 2. Avant une décision : ouvrez la source, vérifiez sa date et assurez-vous qu’elle soutient réellement l’affirmation.\n\nPrécision sur le dialogue : la limite temporelle concerne les connaissances apprises du modèle. Une IA connectée à des outils de recherche peut consulter des informations récentes. Il faut vérifier si elle l’a réellement fait et contrôler les sources obtenues.\n\nQuelle vérification faites-vous avant de reprendre une réponse d’IA ?\n\nMina et Nino sont des personnages fictifs. Vidéo et voix créées avec l’IA. Décisions & Co.\n\n#IntelligenceArtificielle #EspritCritique #PME #IAauBureau",
-  "statut": "publication_demandee",
+  "statut": "publie",
   "account_id": "17841462641742654",
   "container_id": "17996184438088059",
-  "tentative": "44767800612:1"
+  "tentative": "44767800612:1",
+  "media_id": "18135791353666391",
+  "permalink": "https://www.instagram.com/reel/Df-BviZINGm/",
+  "label_ia": true
 }
