@@ -1,0 +1,48 @@
+name: Publier le pilote réaliste autorisé
+on:
+  push:
+    branches: ['publish/ia-realiste-2026-11-20']
+    paths: ['.github/workflows/publish-realistic-approved.yml']
+permissions:
+  contents: write
+concurrency:
+  group: rachel-instagram-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: pipeline
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer les dépendances
+        run: |
+          pip install requests
+          command -v ffprobe || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Publier le rendu existant et vérifier le label IA
+        working-directory: publication
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          python -u - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, os.path.abspath('../pipeline/scripts'))
+          import ia_instagram_publish as p
+          item = json.loads("{\"id\":\"04-realiste\",\"video_id\":\"c0ec6589dfcd4929b789a03c3a67a7ab\",\"approved\":true,\"caption\":\"L’IA prépare, nous validons. 📋\\n\\nDix pages de notes après une réunion… et personne ne sait qui fait quoi ? Mina et Nino essaient une méthode : transformer les notes en actions, responsables et échéances.\\n\\nLe réflexe à garder : si une information manque, demander « non précisée », puis vérifier chaque ligne avec les notes d’origine. Une consigne ne garantit pas une réponse juste.\\n\\nEt vous, comment transformez-vous vos comptes rendus en actions ?\\n\\nL’IA au bureau, pilote réaliste. Mina et Nino sont des personnages entièrement fictifs. Images et voix créées avec l’IA. Décisions & Co.\\n\\n#IntelligenceArtificielle #PME #Productivite #IAauBureau\"}")
+          p.validate_manifest({'account': 'decisionsandco', 'episodes': [item]})
+          client = p.Instagram(os.environ['INSTAGRAM_ACCESS_TOKEN'])
+          account = client.account_id()
+          if account != '17841462641742654':
+              raise ValueError('Compte Instagram inattendu')
+          attempt = os.environ['GITHUB_RUN_ID'] + ':' + os.environ['GITHUB_RUN_ATTEMPT']
+          p.publish_item(client, account, item, attempt)
+          PY
