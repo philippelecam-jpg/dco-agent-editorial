@@ -237,6 +237,35 @@ def verify_transcript(expected, heard):
     return ratio
 
 
+def align_written_dialogue(text, recognized):
+    """Conserver l'orthographe du scénario sur les horaires reconnus, sans mot ajouté."""
+    heard = []
+    for word in recognized:
+        word = dict(word)
+        if heard and (word['text'].startswith(("'", '’')) or heard[-1]['text'].endswith(("'", '’'))):
+            heard[-1]['text'] += word['text']
+            heard[-1]['end_time'] = word['end_time']
+        elif normalized_tokens(word['text']):
+            heard.append(word)
+    written = []
+    for token in text.split():
+        if not normalized_tokens(token) and written:
+            written[-1] += ' ' + token
+        else:
+            written.append(token)
+    def canonical(token):
+        value = ''.join(normalized_tokens(token))
+        return {'1': 'un', '2': 'deux', '3': 'trois'}.get(value, value)
+    matcher = SequenceMatcher(None, [canonical(w) for w in written], [canonical(w['text']) for w in heard])
+    aligned = []
+    for op, a, b, c, d in matcher.get_opcodes():
+        if b-a != d-c:
+            raise ValueError('Le nombre de mots diffère : alignement manuel nécessaire.')
+        for source, timing in zip(written[a:b], heard[c:d]):
+            aligned.append({'text': source, 'start_time': timing['start_time'], 'end_time': timing['end_time']})
+    return aligned
+
+
 def align_audio(config, state):
     model = None
     for i, entry in enumerate(state['scenes']):
@@ -252,8 +281,8 @@ def align_audio(config, state):
             save(words, target)
         words = json.loads(target.read_text())
         entry['transcript_match'] = verify_transcript(config['scenes'][i]['text'], ' '.join(w['text'] for w in words))
-        # On utilise les mots reconnus et leurs horaires, jamais une durée estimée.
-        entry['aligned_words'] = words
+        # L'ASR fournit les horaires ; le scénario fournit l'orthographe affichée.
+        entry['aligned_words'] = align_written_dialogue(config['scenes'][i]['text'], words)
         print(f'Plan {i+1} : transcription vérifiée ({entry["transcript_match"]:.0%}).', flush=True)
     save(state, OUT / 'checkpoint.json')
 

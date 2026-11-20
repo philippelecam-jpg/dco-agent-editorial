@@ -49,6 +49,14 @@ class ControlledDialogue(unittest.TestCase):
             with self.assertRaises(ValueError):
                 c.srt_cues(path, 0, 2, 'Cette phrase est totalement différente.')
 
+    def test_written_dialogue_corrects_homophones_without_changing_timing(self):
+        words = [{'text': t, 'start_time': i, 'end_time': i+.5}
+                 for i,t in enumerate(['Le','devis','par','vendredi.'])]
+        result = c.align_written_dialogue('Le devis part vendredi.', words)
+        self.assertEqual(result[2], {'text': 'part', 'start_time': 2, 'end_time': 2.5})
+        with self.assertRaises(ValueError):
+            c.align_written_dialogue('Le devis part vendredi puis samedi.', words)
+
     def test_final_segment_excludes_generated_video_audio(self):
         # Le rendu source porte du silence, le WAV source un signal audible.
         # Le segment doit contenir uniquement le second flux, en mono, sans troncature.
