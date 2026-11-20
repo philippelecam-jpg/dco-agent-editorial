@@ -26,7 +26,7 @@ jobs:
           python-version: '3.11'
       - name: Installer les outils
         run: |
-          pip install requests cryptography
+          pip install requests cryptography faster-whisper
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg fonts-dejavu-core
       - name: Vérifier la référence de reprise

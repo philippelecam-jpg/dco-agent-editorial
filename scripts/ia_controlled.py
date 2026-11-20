@@ -171,7 +171,7 @@ def prepare(config):
                              'No titles, overlays, labels, visual transitions, or white fade.'}))
         entry['video_id'] = result['video_id']
         save(state, checkpoint)
-        print(f'Plan {i+1} : voix de {scene["speaker"]} et animation soumises.', flush=True)
+        print(f'Plan {i+1} : références de voix et animation disponibles pour {scene["speaker"]}.', flush=True)
     return state
 
 
@@ -182,7 +182,7 @@ def poll(state):
         for i, entry in enumerate(state['scenes']):
             path = OUT / f'{i:02d}-raw.mp4'
             subtitles = OUT / f'{i:02d}.srt'
-            if path.exists() and (subtitles.exists() or entry['speech'].get('original_words')):
+            if path.exists():
                 continue
             result = api('GET', '/videos/' + entry['video_id'])
             if result['status'] == 'failed':
@@ -192,8 +192,6 @@ def poll(state):
                     download(result['video_url'], path)
                 if result.get('subtitle_url') and not subtitles.exists():
                     download(result['subtitle_url'], subtitles)
-                if not subtitles.exists() and not entry['speech'].get('original_words'):
-                    raise ValueError(f'Sous-titres horodatés absents au plan {i+1}.')
                 if duration(path) + .15 < entry['audio_duration']:
                     raise ValueError(f'Animation trop courte au plan {i+1}.')
                 print(f'Plan {i+1} récupéré.', flush=True)
@@ -227,6 +225,39 @@ def subtitle_cues(words, offset, clip_duration):
     return result
 
 
+def normalized_tokens(text):
+    text = ''.join(c for c in unicodedata.normalize('NFD', text.lower()) if not unicodedata.combining(c))
+    return re.findall(r'\w+', text)
+
+
+def verify_transcript(expected, heard):
+    ratio = SequenceMatcher(None, normalized_tokens(expected), normalized_tokens(heard)).ratio()
+    if ratio < .88:
+        raise ValueError(f'Dialogue transcrit différent du scénario ({ratio:.0%}). Revue nécessaire.')
+    return ratio
+
+
+def align_audio(config, state):
+    model = None
+    for i, entry in enumerate(state['scenes']):
+        target = OUT / f'{i:02d}-alignment.json'
+        if not target.exists():
+            if model is None:
+                from faster_whisper import WhisperModel
+                model = WhisperModel('small', device='cpu', compute_type='int8')
+            segments, info = model.transcribe(str(OUT / f'{i:02d}.wav'), language='fr',
+                                              beam_size=5, word_timestamps=True, vad_filter=True)
+            words = [{'text': word.word.strip(), 'start_time': word.start, 'end_time': word.end}
+                     for segment in segments for word in segment.words]
+            save(words, target)
+        words = json.loads(target.read_text())
+        entry['transcript_match'] = verify_transcript(config['scenes'][i]['text'], ' '.join(w['text'] for w in words))
+        # On utilise les mots reconnus et leurs horaires, jamais une durée estimée.
+        entry['aligned_words'] = words
+        print(f'Plan {i+1} : transcription vérifiée ({entry["transcript_match"]:.0%}).', flush=True)
+    save(state, OUT / 'checkpoint.json')
+
+
 def ass_time(value):
     ticks = round(value * 100)
     return f'{ticks//360000}:{ticks//6000%60:02d}:{ticks//100%60:02d}.{ticks%100:02d}'
@@ -250,13 +281,9 @@ def srt_cues(path, offset, clip_duration, expected_text):
             raise ValueError('Sous-titres hors limites ou trop longs pour un plan.')
         cues.append((offset + start, offset + min(end, clip_duration), text))
         last_end = end
-    def tokens(text):
-        text = ''.join(c for c in unicodedata.normalize('NFD', text.lower()) if not unicodedata.combining(c))
-        return re.findall(r'\w+', text)
-    heard = tokens(' '.join(c[2] for c in cues))
-    expected = tokens(expected_text)
-    if not cues or SequenceMatcher(None, expected, heard).ratio() < .88:
+    if not cues:
         raise ValueError('La transcription du plan ne correspond pas suffisamment au dialogue prévu.')
+    verify_transcript(expected_text, ' '.join(c[2] for c in cues))
     return cues
 
 
@@ -278,7 +305,9 @@ def assemble(config, state):
         segment = OUT / f'{i:02d}-segment.mkv'
         subprocess.run(segment_command(OUT / f'{i:02d}-raw.mp4', OUT / f'{i:02d}.wav', segment, seconds), check=True)
         segments.append(segment)
-        if entry['speech'].get('original_words'):
+        if entry.get('aligned_words'):
+            cues.extend(subtitle_cues(entry['aligned_words'], offset, entry['audio_duration']))
+        elif entry['speech'].get('original_words'):
             cues.extend(subtitle_cues(entry['speech']['original_words'], offset, entry['audio_duration']))
         else:
             cues.extend(srt_cues(OUT / f'{i:02d}.srt', offset, entry['audio_duration'], config['scenes'][i]['text']))
@@ -331,6 +360,7 @@ def main():
     state = prepare(config) if args.mode == 'build' else json.loads((OUT / 'checkpoint.json').read_text())
     if args.mode == 'build':
         poll(state)
+    align_audio(config, state)
     assemble(config, state)
 
 
