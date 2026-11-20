@@ -2,9 +2,12 @@
   "episode": "compte-rendu-realiste-v2",
   "caption": "Dix pages de notes. Mais qui fait quoi ?\n\nDemandez à l’IA un tableau : action, responsable, échéance. Puis vérifiez chaque ligne.\n\nEt vous, comment préparez-vous l’après-réunion ?\n\n#IntelligenceArtificielle #PME #Productivite",
   "source_run_id": "44776656793",
-  "statut": "publication_demandee",
+  "statut": "publie",
   "video_sha256": "a555cc6b0b9b6149057fd3a32e2ed7e4b26e9a62e12c97b7b2b2ebeeca6034db",
   "account_id": "17841462641742654",
   "container_id": "17996190849088059",
-  "tentative": "44778875271:1"
+  "tentative": "44778875271:1",
+  "media_id": "18099971579668229",
+  "permalink": "https://www.instagram.com/reel/Df-LtqXPLhI/",
+  "label_ia": true
 }
