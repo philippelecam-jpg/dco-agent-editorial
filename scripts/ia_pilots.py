@@ -67,7 +67,7 @@ def generate_story(spec, episode, evidence):
         story = claude(
             "Tu écris des mini-fictions françaises utiles sur l'IA pour dirigeants de PME. "
             "JSON seul : {title, scenes:[{visual, overlay, lines:[{speaker,text}]}]}. "
-            "4 à 6 scènes, 75 à 105 mots parlés au TOTAL, deux voix Mina et Nino, "
+            "EXACTEMENT 4 scènes, chacune avec 20 à 23 mots parlés (donc 80 à 92 mots au TOTAL), deux voix Mina et Nino, "
             "phrases courtes et naturelles. Une accroche concrète immédiate, une démonstration, une chute. "
             "Les scènes décrivent les actions et cadrages, pas des diapositives. "
             "Ne pas inventer de fait, de résultat de test ou d'interface. Respecte les notes fournies. "
@@ -79,7 +79,7 @@ def generate_story(spec, episode, evidence):
         except (ValueError, KeyError, TypeError) as exc:
             if attempt == 2:
                 raise
-            feedback = str(exc)
+            feedback = str(exc) + " Réduis à 85 mots parlés au TOTAL. Voici le JSON précédent à raccourcir sans ajouter de scène : " + json.dumps(story, ensure_ascii=False)
 
 
 def prompt_for(spec, episode, story):
