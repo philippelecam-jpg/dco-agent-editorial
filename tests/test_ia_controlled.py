@@ -41,6 +41,14 @@ class ControlledDialogue(unittest.TestCase):
             c.restore_restart()
             self.assertEqual(json.loads(p.read_text())['render'], 'already-generated')
 
+    def test_video_subtitles_are_checked_against_expected_dialogue(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'captions.srt'
+            path.write_text('1\n00:00:00,200 --> 00:00:01,100\nBonjour Mina.\n')
+            self.assertEqual(c.srt_cues(path, 5, 2, 'Bonjour Mina !'), [(5.2, 6.1, 'Bonjour Mina.')])
+            with self.assertRaises(ValueError):
+                c.srt_cues(path, 0, 2, 'Cette phrase est totalement différente.')
+
     def test_final_segment_excludes_generated_video_audio(self):
         # Le rendu source porte du silence, le WAV source un signal audible.
         # Le segment doit contenir uniquement le second flux, en mono, sans troncature.

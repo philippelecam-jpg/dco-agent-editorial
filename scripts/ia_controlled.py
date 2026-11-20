@@ -9,6 +9,9 @@ import subprocess
 import time
 import io
 import zipfile
+import re
+import unicodedata
+from difflib import SequenceMatcher
 import requests
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -87,6 +90,13 @@ def duration(path):
 
 def load_config():
     config = json.loads(CONFIG.read_text())
+    style = os.environ.get('PILOT_FORMAT', 'realiste')
+    if style not in {'realiste', 'animation'}:
+        raise ValueError('Format inconnu.')
+    if style == 'animation':
+        config['id'] = config['id'].replace('realiste', 'anime')
+        for character in config['characters'].values():
+            character['image'] = character['image'].replace('realiste', 'anime')
     chars = config['characters']
     if chars['Mina']['voice_id'] == chars['Nino']['voice_id']:
         raise ValueError('Les personnages doivent avoir deux voix distinctes.')
@@ -122,7 +132,8 @@ def upload(path):
 
 def prepare(config):
     OUT.mkdir(exist_ok=True)
-    digest = hashlib.sha256(CONFIG.read_bytes()).hexdigest()
+    style = os.environ.get('PILOT_FORMAT', 'realiste')
+    digest = hashlib.sha256(CONFIG.read_bytes() + (b'animation' if style == 'animation' else b'')).hexdigest()
     checkpoint = OUT / 'checkpoint.json'
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text())
@@ -170,13 +181,19 @@ def poll(state):
         pending = False
         for i, entry in enumerate(state['scenes']):
             path = OUT / f'{i:02d}-raw.mp4'
-            if path.exists():
+            subtitles = OUT / f'{i:02d}.srt'
+            if path.exists() and (subtitles.exists() or entry['speech'].get('original_words')):
                 continue
             result = api('GET', '/videos/' + entry['video_id'])
             if result['status'] == 'failed':
                 raise RuntimeError(f'Animation du plan {i+1} échouée.')
             if result['status'] == 'completed':
-                download(result['video_url'], path)
+                if not path.exists():
+                    download(result['video_url'], path)
+                if result.get('subtitle_url') and not subtitles.exists():
+                    download(result['subtitle_url'], subtitles)
+                if not subtitles.exists() and not entry['speech'].get('original_words'):
+                    raise ValueError(f'Sous-titres horodatés absents au plan {i+1}.')
                 if duration(path) + .15 < entry['audio_duration']:
                     raise ValueError(f'Animation trop courte au plan {i+1}.')
                 print(f'Plan {i+1} récupéré.', flush=True)
@@ -215,6 +232,34 @@ def ass_time(value):
     return f'{ticks//360000}:{ticks//6000%60:02d}:{ticks//100%60:02d}.{ticks%100:02d}'
 
 
+def srt_cues(path, offset, clip_duration, expected_text):
+    def seconds(stamp):
+        h, m, s = stamp.replace(',', '.').split(':')
+        return int(h)*3600 + int(m)*60 + float(s)
+    raw = path.read_text(encoding='utf-8-sig').replace('\r\n', '\n')
+    cues, last_end = [], 0
+    for block in re.split(r'\n\s*\n', raw.strip()):
+        lines = block.splitlines()
+        timing = next((i for i,l in enumerate(lines) if '-->' in l), None)
+        if timing is None:
+            continue
+        start_s, end_s = lines[timing].split('-->')
+        start, end = seconds(start_s.strip()), seconds(end_s.strip().split()[0])
+        text = re.sub(r'<[^>]+>', '', ' '.join(lines[timing+1:])).strip()
+        if start < last_end - .05 or end <= start or end > clip_duration + .3 or len(text) > 105:
+            raise ValueError('Sous-titres hors limites ou trop longs pour un plan.')
+        cues.append((offset + start, offset + min(end, clip_duration), text))
+        last_end = end
+    def tokens(text):
+        text = ''.join(c for c in unicodedata.normalize('NFD', text.lower()) if not unicodedata.combining(c))
+        return re.findall(r'\w+', text)
+    heard = tokens(' '.join(c[2] for c in cues))
+    expected = tokens(expected_text)
+    if not cues or SequenceMatcher(None, expected, heard).ratio() < .88:
+        raise ValueError('La transcription du plan ne correspond pas suffisamment au dialogue prévu.')
+    return cues
+
+
 def segment_command(raw, audio, output, seconds):
     # L'audio de HeyGen est explicitement exclu. Pas de mixage ni de fondu entre les voix.
     return ['ffmpeg', '-v', 'error', '-y', '-i', str(raw), '-i', str(audio),
@@ -233,7 +278,10 @@ def assemble(config, state):
         segment = OUT / f'{i:02d}-segment.mkv'
         subprocess.run(segment_command(OUT / f'{i:02d}-raw.mp4', OUT / f'{i:02d}.wav', segment, seconds), check=True)
         segments.append(segment)
-        cues.extend(subtitle_cues(entry['speech'].get('original_words'), offset, entry['audio_duration']))
+        if entry['speech'].get('original_words'):
+            cues.extend(subtitle_cues(entry['speech']['original_words'], offset, entry['audio_duration']))
+        else:
+            cues.extend(srt_cues(OUT / f'{i:02d}.srt', offset, entry['audio_duration'], config['scenes'][i]['text']))
         entry.update(timeline_start=offset, timeline_end=offset + seconds)
         offset += seconds
     if not 25 <= offset <= 60:
@@ -255,7 +303,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         events.append(f'Dialogue: 0,{ass_time(start)},{ass_time(end)},Default,,0,0,0,,{text}')
     (OUT / 'subtitles.ass').write_text(header + '\n'.join(events), encoding='utf-8')
     (OUT / 'concat.txt').write_text('\n'.join("file '" + p.name + "'" for p in segments))
-    final = OUT / 'IA-au-bureau-realiste-V2.mp4'
+    final = OUT / ('IA-au-bureau-' + os.environ.get('PILOT_FORMAT', 'realiste') + '-V2.mp4')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', str(OUT / 'concat.txt'),
                     '-vf', f"ass={OUT / 'subtitles.ass'}", '-map', '0:v:0', '-map', '0:a:0',
                     '-c:v', 'libx264', '-preset', 'fast', '-crf', '19', '-pix_fmt', 'yuv420p',
