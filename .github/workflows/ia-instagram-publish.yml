@@ -1,0 +1,33 @@
+name: IA au bureau - publier les pilotes validés sur Instagram
+on:
+  push:
+    branches: ['feat/ia-au-bureau-pilots-2026-11-20']
+    paths: ['.github/workflows/ia-instagram-publish.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rachel-instagram-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: pipeline
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Publier et journaliser les trois pilotes autorisés
+        working-directory: publication
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python -u ../pipeline/scripts/ia_instagram_publish.py

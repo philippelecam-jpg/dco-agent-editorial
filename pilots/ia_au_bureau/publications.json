@@ -1,0 +1,23 @@
+{
+  "account": "decisionsandco",
+  "episodes": [
+    {
+      "id": "01-compte-rendu",
+      "video_id": "ffcdbdfe53d04ab98aef923b0ae0eb2c",
+      "approved": true,
+      "caption": "Un compte rendu qui débouche sur des actions 📋\n\nL’IA au bureau, épisode pilote 1. Mina et Nino transforment des notes en actions, responsables et échéances.\n\nÀ essayer : « Extrais les actions, leur responsable et leur échéance. Si une information manque, indique non précisée. »\n\nPrécision : la phrase « il n’invente pas » décrit le résultat de notre démonstration, pas une garantie. Une IA peut se tromper même avec cette consigne : comparez chaque ligne aux notes avant de valider. Le tableau prépare la décision, il ne décide pas à votre place.\n\nMina et Nino sont des personnages fictifs. Vidéo et voix créées avec l’IA. Décisions & Co.\n\n#IntelligenceArtificielle #PME #Productivite #IAauBureau"
+    },
+    {
+      "id": "02-reponse-fiable",
+      "video_id": "ada941129c014b9e866b58f2257919a6",
+      "approved": true,
+      "caption": "Une réponse convaincante n’est pas une preuve 🔎\n\nL’IA au bureau, épisode pilote 2. Avant une décision : ouvrez la source, vérifiez sa date et assurez-vous qu’elle soutient réellement l’affirmation.\n\nPrécision sur le dialogue : la limite temporelle concerne les connaissances apprises du modèle. Une IA connectée à des outils de recherche peut consulter des informations récentes. Il faut vérifier si elle l’a réellement fait et contrôler les sources obtenues.\n\nQuelle vérification faites-vous avant de reprendre une réponse d’IA ?\n\nMina et Nino sont des personnages fictifs. Vidéo et voix créées avec l’IA. Décisions & Co.\n\n#IntelligenceArtificielle #EspritCritique #PME #IAauBureau"
+    },
+      {
+      "id": "03-achats-autonomes",
+      "video_id": "0034c87224fa4ba1aae59f379ca482f1",
+      "approved": true,
+      "caption": "Et si votre assistant préparait les commandes ? 📦\n\nL’IA au bureau, épisode pilote 3. Scénario prospectif entièrement fictif : aucune commande réelle, aucun produit démontré, aucun gain de temps mesuré.\n\nL’assistant prépare ; une personne garde la validation. Budget, exceptions, responsabilités : que faut-il fixer avant de déléguer ?\n\nEt vous, quelle décision garderiez-vous toujours en main ?\n\nMina et Nino sont des personnages fictifs. Vidéo et voix créées avec l’IA. Décisions & Co.\n\n#IntelligenceArtificielle #AgentsIA #PME #IAauBureau"
+    }
+  ]
+}
