@@ -1,0 +1,36 @@
+{
+  "series": "L'IA au bureau",
+  "characters": {
+    "Mina": "Dirigeante de PME fictive, 40 ans, carré auburn, lunettes rondes ambrées, veste bleu pétrole sur t-shirt crème. Voix féminine française chaleureuse et directe. Pragmatique, pose les questions concrètes, jamais caricaturée comme ignorante.",
+    "Nino": "Collègue fictif, 32 ans, cheveux noirs courts bouclés, peau mate, pull ocre, pantalon bleu marine. Voix masculine française légère et expressive. Curieux, démontre, reconnaît les limites des outils."
+  },
+  "visual_style": "Animation 2D éditoriale adulte, contours propres, aplats texturés, profondeur légère, palette crème/bleu pétrole/ocre/corail. Mouvements expressifs des personnages, actions sur les objets, alternance plan ensemble et gros plans. Aucun présentateur photoréaliste ni avatar de stock. Garder exactement les mêmes silhouettes, visages, coiffures et vêtements dans les trois épisodes.",
+  "episodes": [
+    {
+      "id": "01-compte-rendu",
+      "format": "astuce",
+      "title": "Un compte rendu qui débouche sur des actions",
+      "setting": "Petite salle de réunion lumineuse. Des feuilles débordent d'un classeur. Mina et Nino transforment les notes en trois cartes décision, responsable, échéance.",
+      "brief": "Mina a trop de notes. Nino montre un prompt qui extrait les actions sans inventer une échéance absente. Montrer la différence entre résumé et tableau d'actions. Chute : la réunion est finie, les actions commencent. Démonstration conceptuelle réelle testée via API, pas une capture d'interface ChatGPT ou d'un logiciel. N'inventer aucun bouton ni aucune intégration.",
+      "demo_notes": "Mina valide le devis. Nino doit envoyer le devis vendredi. Mina appellera le fournisseur, mais aucune date n'a été fixée.",
+      "demo_expected": [
+        {"action": "Envoyer le devis", "responsable": "Nino", "echeance": "vendredi"},
+        {"action": "Appeler le fournisseur", "responsable": "Mina", "echeance": "non précisée"}
+      ]
+    },
+    {
+      "id": "02-reponse-fiable",
+      "format": "duel",
+      "title": "Une réponse convaincante n'est pas une preuve",
+      "setting": "Coin café d'un bureau, tasses et tableau magnétique. Une carte réponse impressionnante se transforme en trois petites cartes source, date, vérification.",
+      "brief": "Mina veut utiliser une réponse bien formulée pour une décision professionnelle. Nino distingue aisance du texte et exactitude. Demander une source ne suffit pas : il faut ouvrir la source, vérifier qu'elle existe et soutient l'affirmation. Ils valident une règle de travail avec contrôle humain avant les décisions importantes. Ne citer aucun chiffre, étude, événement ou produit. Pas de fausse source à l'écran. Dialogue équilibré, léger humour."
+    },
+    {
+      "id": "03-achats-autonomes",
+      "format": "fiction prospective",
+      "title": "Et si votre assistant commandait tout seul ?",
+      "setting": "Atelier de petite entreprise imaginé dans un futur proche, étagères de cartons et bureau de réception. Un assistant fictif prépare une commande ; Mina place un tampon validation avant l'envoi.",
+      "brief": "Fiction explicite dès l'ouverture : imaginons un assistant qui prépare les commandes de l'atelier. Nino voit le temps gagné, Mina demande qui fixe le budget et les exceptions. Montrer un brouillon de commande puis une validation humaine, pas un achat réel. La chute pose la question de ce qu'on délègue et de ce qu'on garde à décider. Ne présenter aucune capacité comme un fait établi sur un produit existant. Afficher Scénario fictif."
+    }
+  ]
+}

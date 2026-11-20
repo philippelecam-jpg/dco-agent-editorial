@@ -1,0 +1,55 @@
+name: L'IA au bureau - trois pilotes privés
+on:
+  push:
+    branches: ['feat/ia-au-bureau-pilots-2026-11-20']
+    paths: ['.github/workflows/ia-au-bureau-pilots.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ia-au-bureau-pilots
+  cancel-in-progress: false
+jobs:
+  pilots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer les outils
+        run: |
+          pip install requests
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Ecrire les scenarios et lancer les trois pilotes
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -u scripts/ia_pilots.py submit
+      - name: Conserver les references de reprise
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ia-pilots-checkpoint
+          path: pilot-output/checkpoint.json
+          retention-days: 30
+          if-no-files-found: ignore
+      - name: Attendre les rendus et verifier les fichiers
+        env:
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+        run: python -u scripts/ia_pilots.py poll
+      - name: Chiffrer les pilotes pour revue privee
+        if: always()
+        run: |
+          if [ -d pilot-output ]; then
+            python -c "import shutil; shutil.make_archive('ia-pilots-private','zip','pilot-output')"
+            openssl cms -encrypt -binary -aes-256-gcm -in ia-pilots-private.zip -out ia-pilots-private.cms -outform DER pilots/ia_au_bureau/review-public.pem
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ia-pilots-private
+          path: ia-pilots-private.cms
+          retention-days: 30
+          if-no-files-found: ignore
