@@ -1,6 +1,6 @@
-# L'IA au bureau — pilotes privés
+# L'IA au bureau : animation et format réaliste
 
-Trois essais de 30 à 45 secondes pour une série animée française sur l'IA en PME. Aucun raccord au calendrier ni aucune publication YouTube/Instagram n'est activé.
+Série française sur l'IA en PME, avec Mina et Nino, deux personnages entièrement fictifs. La génération privée et la publication Instagram des épisodes validés sont deux actions distinctes. Le calendrier récurrent proposé dans [PLANNING.md](PLANNING.md) n'est pas activé. Il n'y a pas de publication YouTube automatique pour cette série.
 
 ## Identités
 Mina est une dirigeante pragmatique (carré auburn, lunettes ambrées, veste bleu pétrole). Nino est son collègue curieux (cheveux bouclés noirs, pull ocre). Les personnages sont fictifs, dans un style 2D éditorial adulte. Les identités sont décrites dans chaque demande ; leur stabilité inter-épisodes reste à contrôler visuellement. Des images de référence pourront être nécessaires après ces essais.
@@ -15,7 +15,19 @@ Le script `scripts/ia_pilots.py submit` vérifie l'accès HeyGen, teste l'extrac
 
 Le mode `poll` récupère les sessions existantes uniquement. Il attend jusqu'à 45 minutes, télécharge les vidéos et mesure durée, ratio et présence audio. Il produit quatre images de contrôle par vidéo. Il ne crée ni ne republie de vidéo.
 
-La publication sociale existante de Rachel n'est pas appelée. La synthèse vocale et le montage multiscène de ces pilotes sont confiés à Video Agent ; la branche Rachel continue d'utiliser ElevenLabs et son montage FFmpeg.
+Le workflow **IA au bureau - génération privée et reprise** propose `animation` (trois scénarios Claude) ou `realiste` (un scénario relu, dans `scripts/ia_realistic.py`). La synthèse vocale et le montage multiscène sont confiés à Video Agent ; Rachel continue d'utiliser ElevenLabs et son montage FFmpeg.
+
+Pour récupérer des rendus existants, renseigner `resume_run_id` et le nom de leur checkpoint. Cette reprise n'appelle pas la génération. Un résultat technique conforme ne vaut pas validation éditoriale : le workflow conserve aussi les vidéos hors cible pour permettre leur revue.
+
+## Publication Instagram
+
+Le workflow manuel **IA au bureau - publier les pilotes validés sur Instagram** lit `publications.json`. Les trois premiers pilotes ont été autorisés par l'utilisateur pour publication le 20 novembre 2026 ; leurs légendes précisent les limites des démonstrations. Les durées réelles de 38,0 s, 28,0 s et 29,4 s sont acceptées pour ce lot, malgré l'objectif initial de 30–45 s.
+
+Les épisodes futurs doivent être contrôlés entièrement et ajoutés explicitement au manifeste avec `approved: true`. La vérification automatique porte sur le compte, le format portrait, la piste audio, la durée et la taille ; elle ne contrôle pas le contenu du dialogue ni la qualité des sous-titres. Les voix et sous-titres des premiers pilotes demandent encore une revue humaine complète avant une production récurrente sans supervision.
+
+La publication récupère le MP4 déjà rendu via HeyGen et utilise l'intégration Instagram existante, sans Make. Chaque conteneur est journalisé dans `historique/instagram/ia-bureau-<episode>.json` sur `main` avant l'appel final de publication. Une reprise recherche la légende exacte et refuse de republier une tentative ambiguë. Le lien et le label IA sont vérifiés auprès de Meta. Les vidéos Rachel et les pilotes partagent le même verrou de publication Instagram.
+
+Pour une tentative bloquée, vérifier le Reel dans Instagram et le journal avant toute modification. Ne pas effacer un journal pour forcer une nouvelle publication.
 
 ## Reprise et confidentialité
 Le workflow conserve un checkpoint dès la soumission des sessions. Une réponse ambiguë lors d'un POST ne déclenche aucune nouvelle soumission automatique. Si un lancement échoue, vérifier ce checkpoint et les sessions HeyGen avant de soumettre les épisodes manquants. Ne pas relancer `submit` pour des épisodes déjà acceptés.

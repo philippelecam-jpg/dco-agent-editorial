@@ -71,6 +71,8 @@ def generate_story(spec, episode, evidence):
             "phrases courtes et naturelles. Une accroche concrète immédiate, une démonstration, une chute. "
             "Les scènes décrivent les actions et cadrages, pas des diapositives. "
             "Ne pas inventer de fait, de résultat de test ou d'interface. Respecte les notes fournies. "
+            "Une consigne ne garantit jamais l'absence d'erreur : prévoir une vérification humaine. "
+            "Distingue les connaissances apprises d'un modèle et les informations récentes accessibles via des outils. "
             "Pas de slogan ni d'introduction de marque. Ne mentionne pas les noms de prestataires.",
             json.dumps({'characters': spec['characters'], 'episode': episode,
                         'demonstration_testee': evidence, 'feedback': feedback}, ensure_ascii=False))
@@ -148,6 +150,8 @@ def poll():
     while time.monotonic() < deadline:
         pending = False
         for item in state['episodes']:
+            if item['status'] == 'downloaded' and not (OUT / (item['id'] + '.mp4')).exists():
+                item['status'] = 'recovering'
             if item['status'] in ('downloaded', 'failed', 'waiting_for_input'):
                 continue
             if not item.get('session_id'):

@@ -1,8 +1,5 @@
 name: IA au bureau - publier les pilotes validés sur Instagram
 on:
-  push:
-    branches: ['feat/ia-au-bureau-pilots-2026-11-20']
-    paths: ['.github/workflows/ia-instagram-publish.yml']
   workflow_dispatch:
 permissions:
   contents: write

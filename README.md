@@ -1,5 +1,9 @@
 # dco-agent-editorial
 
+## L'IA au bureau
+
+Les deux nouveaux workflows manuels produisent des pilotes privés (animation ou rendu réaliste avec personnages fictifs) et publient les épisodes explicitement validés sur Instagram. La génération et la publication sont séparées, avec reprise des rendus et journal antidoublon. Voir [le mode d'emploi](pilots/ia_au_bureau/README.md) et [la proposition de calendrier](pilots/ia_au_bureau/PLANNING.md). Cette nouvelle série n'a pas de récurrence activée.
+
 ## Ponctuation des contenus éditoriaux
 
 Les textes destinés à X, LinkedIn, au site et aux vidéos n'utilisent jamais de tiret cadratin (U+2014). La règle inclut le demi-cadratin (U+2013). Reformuler avec un point, une virgule ou des parenthèses. Conserver les traits d'union nécessaires, les URL et les balises HTML.
