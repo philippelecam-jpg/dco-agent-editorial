@@ -189,7 +189,7 @@ def poll():
     state['balance_after'] = {k:v for k,v in me.items() if any(w in k.lower() for w in ('credit','balance','quota'))}
     save(state)
     print(json.dumps(state, ensure_ascii=False), flush=True)
-    if len(state['episodes']) != 3 or any(x['status']!='downloaded' for x in state['episodes']):
+    if len(state['episodes']) != state.get('expected_episodes', 3) or any(x['status']!='downloaded' for x in state['episodes']):
         raise RuntimeError('Pilotes incomplets ; checkpoint conservé pour reprise sans nouvelle génération.')
 
 
