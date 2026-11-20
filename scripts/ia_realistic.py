@@ -50,4 +50,4 @@ This is a PRIVATE review pilot. Generate realistic synthetic actors and multisce
 
 
 if __name__ == '__main__':
-    submit()
+    raise SystemExit("Génération V1 désactivée. Utiliser scripts/ia_controlled.py build.")

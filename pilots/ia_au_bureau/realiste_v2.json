@@ -1,0 +1,15 @@
+{
+  "id": "compte-rendu-realiste-v2",
+  "title": "Vos notes de réunion deviennent des actions",
+  "caption": "Dix pages de notes. Mais qui fait quoi ?\n\nDemandez à l’IA un tableau : action, responsable, échéance. Puis vérifiez chaque ligne.\n\nEt vous, comment préparez-vous l’après-réunion ?\n\n#IntelligenceArtificielle #PME #Productivite",
+  "characters": {
+    "Mina": {"gender": "female", "language": "fr", "voice_id": "e0390ce7cd64499a8d24f56ccf905437", "voice_name": "Chantal - Warm & Friendly", "image": "assets/ia_bureau/mina-realiste-v2.jpg"},
+    "Nino": {"gender": "male", "language": "fr", "voice_id": "341b4807e5e6455fa88f34bda5d6eeea", "voice_name": "Tanguy - Balanced & Reliable", "image": "assets/ia_bureau/nino-realiste-v2.jpg"}
+  },
+  "scenes": [
+    {"speaker": "Mina", "text": "J’ai dix pages de notes après cette réunion. Mais qui fait quoi, et pour quand ? Je voudrais un plan d’action clair."},
+    {"speaker": "Nino", "text": "Demande à l’IA trois colonnes : action, responsable, échéance. Si une information manque, fais indiquer non précisée. Ensuite, compare le tableau aux notes."},
+    {"speaker": "Mina", "text": "Donc, le devis part vendredi avec toi. J’appelle le fournisseur, mais la date reste à fixer. Et je vérifie avant de valider."},
+    {"speaker": "Nino", "text": "Exactement. Une consigne ne garantit pas une réponse juste. L’IA prépare le tableau ; nous gardons les décisions. Cette fois, les notes servent à agir."}
+  ]
+}

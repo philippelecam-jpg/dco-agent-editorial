@@ -2,7 +2,7 @@
 
 ## L'IA au bureau
 
-Les deux nouveaux workflows manuels produisent des pilotes privés (animation ou rendu réaliste avec personnages fictifs) et publient les épisodes explicitement validés sur Instagram. La génération et la publication sont séparées, avec reprise des rendus et journal antidoublon. Voir [le mode d'emploi](pilots/ia_au_bureau/README.md) et [la proposition de calendrier](pilots/ia_au_bureau/PLANNING.md). Cette nouvelle série n'a pas de récurrence activée.
+La V2 produit un dialogue privé avec deux personnages de référence et deux voix françaises fixes, en format réaliste ou animé. Chaque plan reçoit une seule voix ; le montage FFmpeg garde uniquement les pistes prévues, sans superposition. Les sous-titres sont ajoutés une seule fois à partir d'une transcription horodatée. Une revue complète reste nécessaire avant publication. Voir [le mode d'emploi](pilots/ia_au_bureau/README.md). La récurrence mercredi (animé) et samedi (réaliste) est proposée, pas activée.
 
 ## Ponctuation des contenus éditoriaux
 

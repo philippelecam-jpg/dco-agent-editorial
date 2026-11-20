@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+controlled-output/
+controlled-private.*
+controlled-restart.enc
+pilot-output/
+ia-pilots-private.*
