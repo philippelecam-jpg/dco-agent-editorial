@@ -1,0 +1,33 @@
+{
+  "slides": [
+    {
+      "titre": "Vos réunions produisent-elles vraiment des décisions ?",
+      "texte": "Une réunion peut être productive en apparence et ne déboucher sur aucune action claire. Le test : à la fin, chacun sait-il ce qui a été décidé, par qui et pour quand ?"
+    },
+    {
+      "titre": "1. Séparez discussion et décision",
+      "texte": "Une bonne idée, une piste et une décision ne sont pas la même chose. Inscrivez explicitement ce qui a été tranché et ce qui reste ouvert."
+    },
+    {
+      "titre": "2. Donnez un responsable à chaque action",
+      "texte": "« On va regarder » ne suffit pas. Une action a besoin d'une personne responsable, d'un résultat attendu et d'une date de suivi."
+    },
+    {
+      "titre": "3. Rendez les arbitrages visibles",
+      "texte": "Quand deux priorités se concurrencent, notez le compromis choisi. Sans trace, les mêmes débats reviennent à la réunion suivante."
+    },
+    {
+      "titre": "4. Limitez le compte rendu à l'utile",
+      "texte": "Un résumé exhaustif ne garantit pas l'exécution. Mettez en tête : décisions, actions, responsables, échéances et questions en suspens."
+    },
+    {
+      "titre": "5. Utilisez l'IA comme assistant, pas comme décideur",
+      "texte": "L'IA peut proposer une synthèse ou extraire des actions. Un humain doit vérifier les décisions et confirmer les engagements avant diffusion."
+    },
+    {
+      "titre": "Une réunion réussie se voit après la réunion",
+      "texte": "À votre prochaine réunion, terminez par deux minutes de validation des décisions et des responsables. Pour structurer vos processus, pré-diagnostic en bio."
+    }
+  ],
+  "legende": "Une réunion peut mobiliser toute une équipe sans faire avancer une seule décision.\n\nLe problème n'est pas toujours la durée. C'est parfois l'absence de décision explicite, de responsable ou d'échéance.\n\nVoici cinq pratiques simples pour transformer les échanges en actions suivies. L'IA peut aider à synthétiser, mais la validation humaine reste indispensable.\n\nEt dans votre entreprise, qui vérifie qu'une décision devient une action ?"
+}
