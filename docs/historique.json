@@ -1,14 +1,5 @@
 [
   {
-    "date": "Lundi 26 octobre 2026",
-    "timestamp": "2026-10-26T06:08:56.194938",
-    "theme": "L'Entreprise OS",
-    "sujet": "L'Entreprise OS : la fonction Traiter, le cerveau de l'organisation",
-    "post_x": "Une organisation ne manque pas d'informations. Elle manque de décisions structurées. C'est ce que fait la fonction Traiter de l'Entreprise OS : transformer la connaissance stockée en décisions et processus augmentés.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2114599929842692214",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-26-060802.png?v=060803"
-  },
-  {
     "date": "Mardi 27 octobre 2026",
     "timestamp": "2026-10-27T06:08:47.325205",
     "theme": "Terrain et missions clients",
@@ -283,5 +274,19 @@
     "post_x": "Un agent s'arrête à mi-chemin. La commande est envoyée, le créneau réservé, le stock non mis à jour. Qui le détecte ? Qui décide de la suite ? Ce n'est pas un problème technique. C'est un problème de gouvernance.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2123297367940014131",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-19-060833.png?v=060833"
+  },
+  {
+    "date": "Dimanche 22 novembre 2026",
+    "timestamp": "2026-11-22T09:25:25.502298",
+    "theme": "Fournisseurs et résilience",
+    "format": "Regard de fond",
+    "sujet": "Quand 40 % des TPE-PME déclarent utiliser une solution IA : ce que personne ne leur demande sur la continuité si ce service tombe",
+    "angle": "Regard de fond. La progression de l'adoption (40 % des TPE-PME selon France Num 2026, 53 % chez les PME) masque une question rarement posée : ces organisations ont-elles identifié quelles fonctions reposent désormais sur un service IA externe, et ce qu'elles feraient si ce service devenait indisponible ? L'angle part de cette dépendance silencieuse pour traiter une décision concrète de résilience : cartographier les fonctions métier qui s'appuient sur un fournisseur IA, distinguer celles qui peuvent fonctionner en mode dégradé de celles qui s'arrêtent, et décider lesquelles doivent conserver un mode de secours documenté. Exemple hypothétique d'un service client PME dont la moitié des réponses aux demandes standard transite par un assistant externe, sans procédure de bascule définie.",
+    "question_metier": "Quelles fonctions de votre organisation reposent aujourd'hui sur un fournisseur IA externe, et lesquelles doivent disposer d'un mode de fonctionnement de secours si ce service est indisponible ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "40 % des TPE-PME utilisent une solution IA. Combien ont identifié ce qui s'arrête si ce service tombe demain ? La dépendance est silencieuse. La question, elle, est concrète.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2124434041269063790",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-22-092434-weekend.png?v=092435"
   }
 ]
