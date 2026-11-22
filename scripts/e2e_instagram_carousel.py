@@ -26,7 +26,7 @@ def commit_checkpoint(message):
     if status.returncode != 1:
         raise RuntimeError("Impossible de verifier les changements Git.")
     subprocess.run(["git", "commit", "-m", message], check=True)
-    branch = os.environ["GITHUB_REF_NAME"]
+    branch = os.environ["E2E_TARGET_BRANCH"]
     subprocess.run(["git", "push", "origin", f"HEAD:refs/heads/{branch}"], check=True)
 
 
