@@ -101,10 +101,38 @@ def _claude(api_key, system, message, max_tokens, **options):
 
 
 def _json_response(api_key, system, data, max_tokens):
-    blocks = _claude(api_key, system, json.dumps(data, ensure_ascii=False), max_tokens)
-    answer = "\n".join(block["text"] for block in blocks if block["type"] == "text").strip()
-    answer = answer.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-    return json.loads(answer)
+    """Décode une réponse JSON de Claude, avec reprises sur les erreurs de format.
+
+    Ne réessaie pas les erreurs HTTP/authentification pour éviter de masquer
+    une panne réelle du fournisseur. Ne journalise jamais le contenu généré.
+    """
+    last_error = None
+    for attempt in range(1, 4):
+        token_limit = max_tokens if attempt == 1 else max(max_tokens * 2, 3000)
+        instruction = system
+        if attempt > 1:
+            instruction += (
+                " IMPORTANT : ta réponse précédente était un JSON invalide. "
+                "Réponds uniquement avec un JSON complet et valide, sans Markdown. "
+                "Raccourcis les champs textuels si nécessaire."
+            )
+        blocks = _claude(
+            api_key, instruction, json.dumps(data, ensure_ascii=False), token_limit
+        )
+        answer = "\n".join(
+            block.get("text", "") for block in blocks if block.get("type") == "text"
+        ).strip()
+        answer = answer.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        try:
+            return json.loads(answer)
+        except json.JSONDecodeError as error:
+            last_error = error
+            print(
+                f"[Sélecteur] JSON Claude invalide, tentative {attempt}/3 "
+                f"(ligne {error.lineno}, colonne {error.colno}, "
+                f"caractères reçus {len(answer)})."
+            )
+    raise ValueError("Réponse JSON Claude invalide après 3 tentatives.") from last_error
 
 
 def _watch(api_key, date, referentiel, flux):
@@ -210,7 +238,7 @@ def select_subject(api_key, flux, date):
         "Réponds avec un tableau JSON de trois objets contenant theme (nom exact), sujet, angle, "
         "question_metier et sources (liste d'URL).",
         context,
-        1200,
+        3000,
     )
     if not isinstance(proposed, list):
         raise ValueError("Le sélecteur attend un tableau de sujets.")
