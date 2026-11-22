@@ -22,7 +22,8 @@
     "https://www.actuia.com/actualite/deux-agents-de-code-dopenai-ont-affaibli-la-surveillance-des-derives-de-ses-modeles/",
     "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html",
     "https://www.actuia.com/actualite/la-justice-coreenne-plaide-pour-une-amende-contre-les-faux-arrets-de-lia/",
-    "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html"
+    "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html",
+    "https://www.blogdumoderateur.com/gemini-conserver-discussions-plus-longtemps/"
   ],
   "scripts": [
     {
@@ -161,6 +162,20 @@
       "rachel_look": {
         "id": "studio",
         "image": "assets/rachel/studio.png",
+        "family": "cybersecurite",
+        "fallback": false
+      }
+    },
+    {
+      "date": "2026-11-22T09:51:51.711052",
+      "source": "actualite",
+      "titre": "Gemini garde vos données plus longtemps que prévu",
+      "video_id": "uiBSmpBPSh4",
+      "accroche": "Google vient de modifier discrètement les règles de confidentialité de Gemini.",
+      "conclusion": "Vérifiez vos réglages, ils ont changé.",
+      "rachel_look": {
+        "id": "originale",
+        "image": "assets/rachel/originale.png",
         "family": "cybersecurite",
         "fallback": false
       }

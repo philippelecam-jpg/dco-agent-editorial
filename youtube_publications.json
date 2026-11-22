@@ -32,5 +32,22 @@
       "family": "prospective",
       "fallback": false
     }
+  },
+  {
+    "date": "2026-11-22T09:51:51.008337+00:00",
+    "titre": "Gemini garde vos données plus longtemps que prévu",
+    "video_id": "uiBSmpBPSh4",
+    "format": "avatar",
+    "playlist": "Cybersécurité et incidents",
+    "playlist_id": "PLJtdOy-siWm8",
+    "statut": "publié",
+    "accroche": "Google vient de modifier discrètement les règles de confidentialité de Gemini.",
+    "conclusion": "Vérifiez vos réglages, ils ont changé.",
+    "rachel_look": {
+      "id": "originale",
+      "image": "assets/rachel/originale.png",
+      "family": "cybersecurite",
+      "fallback": false
+    }
   }
 ]
