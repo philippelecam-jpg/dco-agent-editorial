@@ -202,10 +202,12 @@ def generate_script_from_news(news_item, feedback=""):
         "Résumé : %s\n\n"
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "enjeu_pme": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
         " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel, "
         "commence naturellement comme si Rachel parlait), titre fait moins "
-        "de 60 caractères, et hashtags contient 3 à 5 tags sans le symbole #."
+        "de 60 caractères, enjeu_pme est une phrase de 25 mots maximum "
+        "qui dit concrètement ce que cette actualité change pour une PME ou "
+        "une ETI, et hashtags contient 3 à 5 tags sans le symbole #."
     ) % (news_item["titre"], news_item["resume"][:400])
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
@@ -237,9 +239,11 @@ def generate_script_evergreen(theme, feedback=""):
         "personne, fait pour être lu à voix haute. Thème du jour : " + theme + ". "
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "enjeu_pme": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
         " où texte_voix fait entre 75 et 100 mots, titre fait moins de 60 "
-        "caractères, et hashtags contient 3 à 5 tags sans le symbole #."
+        "caractères, enjeu_pme est une phrase de 25 mots maximum qui dit "
+        "concrètement ce que ce thème change pour une PME ou une ETI, et "
+        "hashtags contient 3 à 5 tags sans le symbole #."
     )
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
