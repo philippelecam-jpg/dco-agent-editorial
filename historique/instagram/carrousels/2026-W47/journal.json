@@ -1,0 +1,38 @@
+{
+  "source": "articles/drafts/2026-11-18-ce-que-votre-agent-achats-ne-peut-pas-deviner-tout-seul/article.md",
+  "source_sha256": "8f81c32fffbf328334ae0cbe428b705dfb14b8d36948dffe13c4b189818e58cb",
+  "package": {
+    "slides": [
+      {
+        "titre": "Votre agent IA achats obéit aux règles qu'on lui donne. Et les vôtres ?",
+        "texte": "Dans la plupart des PME, les vraies règles achats ne sont écrites nulle part. Elles vivent dans la tête de deux ou trois personnes. Tant que des humains décidaient, ça fonctionnait. Un agent IA, lui, s'arrête aux paramètres qu'on lui fournit. Pas par défaillance : par conception."
+      },
+      {
+        "titre": "La connaissance implicite, un risque opérationnel concret",
+        "texte": "Un engagement déclenché par erreur reste un engagement. Un fournisseur contacté hors circuit crée une tension difficile à dénouer. Un cumul de petites commandes peut franchir un seuil réglementaire sans que personne ne l'ait vu venir. L'implicite doit devenir explicite avant d'automatiser."
+      },
+      {
+        "titre": "3 personnes, 3 seuils de validation différents pour les mêmes achats",
+        "texte": "Dans une ETI de conseil hypothétique, trois valideurs interrogés sur leurs seuils d'autorisation donnent trois réponses : 2 000 €, 1 500 €, et « ça dépend du type d'achat ». Aucune n'avait tort. Chacune appliquait une règle apprise oralement, jamais vérifiée collectivement. Situation courante en PME."
+      },
+      {
+        "titre": "Éliciter, c'est faire sortir ce qui est dans les têtes",
+        "texte": "L'élicitation ne s'improvise pas avec un formulaire. Elle demande des questions concrètes : Quel est le dernier achat que vous avez bloqué, et pourquoi ? Y a-t-il des fournisseurs soumis à accord spécifique ? Regardez-vous le total annuel ou seulement la commande en cours ?"
+      },
+      {
+        "titre": "Codifier les règles réelles, c'est un acte de gouvernance",
+        "texte": "Traduire les règles élicitées en paramètres — seuils par catégorie, fournisseurs soumis à validation, plafonds cumulés sur période glissante — oblige à arbitrer entre règles qui se contredisaient sans que personne ne le sache. Cet alignement était inutile tant que l'implicite suffisait."
+      },
+      {
+        "titre": "L'agent devient fiable quand on lui donne une base solide",
+        "texte": "Un agent IA achats n'est pas fiable parce qu'il est intelligent. Il est fiable parce que la connaissance a été structurée, les règles ancrées, le cadre défini. L'automatisation peut alors opérer sans créer de dégâts. La technologie n'est pas le sujet. La gouvernance l'est."
+      },
+      {
+        "titre": "Combien de désaccords surgiraient si vous formalisiez vos règles achats aujourd'hui ?",
+        "texte": "Avant de toucher au moindre paramètre d'un agent, répondez honnêtement à cette question. Si vous ne savez pas par où commencer, le pré-diagnostic en bio est fait pour ça."
+      }
+    ],
+    "legende": "Vous songez à confier une partie de vos achats à un agent IA. Moins de friction, des commandes déclenchées au bon moment, une charge administrative réduite. L'idée est séduisante.\n\nMais avant de toucher au moindre paramètre, une question s'impose : où sont écrites vos règles achats réelles ?\n\nPas la politique officielle. Les règles réelles. Celles qui disent qu'on ne commande jamais chez ce fournisseur sans en parler au DAF. Que certains engagements pluriannuels sont tolérés sous un certain seuil cumulé. Que les prestations intellectuelles passent par la direction générale, même si la note interne dit autre chose.\n\nCes règles-là ne figurent dans aucun document. Elles vivent dans la tête de deux ou trois personnes depuis des années.\n\nQuand un humain décide, il les mobilise sans y penser. Quand un agent décide, il s'arrête aux paramètres qu'on lui a fournis. Pas par défaillance : par conception.\n\nCe carousel détaille la démarche pour transformer cet implicite en base solide : éliciter les règles réelles auprès des bonnes personnes, identifier les contradictions, puis codifier ce qui gouverne vraiment vos achats.\n\nUn engagement déclenché par erreur reste un engagement. Un cumul de petites commandes peut franchir un seuil réglementaire sans que personne ne l'ait vu se tracer.\n\nL'automatisation peut opérer dans un cadre maîtrisé — à condition que ce cadre existe.\n\nLe pré-diagnostic en bio est le point de départ si vous souhaitez faire ce travail avant de vous lancer."
+  },
+  "caption": "Vous songez à confier une partie de vos achats à un agent IA. Moins de friction, des commandes déclenchées au bon moment, une charge administrative réduite. L'idée est séduisante.\n\nMais avant de toucher au moindre paramètre, une question s'impose : où sont écrites vos règles achats réelles ?\n\nPas la politique officielle. Les règles réelles. Celles qui disent qu'on ne commande jamais chez ce fournisseur sans en parler au DAF. Que certains engagements pluriannuels sont tolérés sous un certain seuil cumulé. Que les prestations intellectuelles passent par la direction générale, même si la note interne dit autre chose.\n\nCes règles-là ne figurent dans aucun document. Elles vivent dans la tête de deux ou trois personnes depuis des années.\n\nQuand un humain décide, il les mobilise sans y penser. Quand un agent décide, il s'arrête aux paramètres qu'on lui a fournis. Pas par défaillance : par conception.\n\nCe carousel détaille la démarche pour transformer cet implicite en base solide : éliciter les règles réelles auprès des bonnes personnes, identifier les contradictions, puis codifier ce qui gouverne vraiment vos achats.\n\nUn engagement déclenché par erreur reste un engagement. Un cumul de petites commandes peut franchir un seuil réglementaire sans que personne ne l'ait vu se tracer.\n\nL'automatisation peut opérer dans un cadre maîtrisé — à condition que ce cadre existe.\n\nLe pré-diagnostic en bio est le point de départ si vous souhaitez faire ce travail avant de vous lancer.\n\n→ Votre pré-diagnostic IA : lien en bio\n#IAenEntreprise #PME #TransformationIA #DecisionsAndCo"
+}
