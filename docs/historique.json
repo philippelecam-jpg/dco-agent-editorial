@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mardi 27 octobre 2026",
-    "timestamp": "2026-10-27T06:08:47.325205",
-    "theme": "Terrain et missions clients",
-    "sujet": "Terrain : quand le client veut automatiser, mais ne sait pas ce qu'il automatise",
-    "post_x": "Une ETI nous a contactés pour automatiser son reporting. Deux jours sur place. Résultat : trois définitions différentes du mot \"marge\" selon les services. L'IA attendait. La clarté, elle, était urgente.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2114962320837501068",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-27-060803.png?v=060803"
-  },
-  {
     "date": "Mercredi 28 octobre 2026",
     "timestamp": "2026-10-28T06:08:56.990015",
     "theme": "Méthode Cartographier → Éliciter → Codifier",
@@ -288,5 +279,19 @@
     "post_x": "40 % des TPE-PME utilisent une solution IA. Combien ont identifié ce qui s'arrête si ce service tombe demain ? La dépendance est silencieuse. La question, elle, est concrète.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2124434041269063790",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-22-092434-weekend.png?v=092435"
+  },
+  {
+    "date": "Dimanche 22 novembre 2026",
+    "timestamp": "2026-11-22T16:57:39.198670",
+    "theme": "ROI et déploiement",
+    "format": "Regard de fond",
+    "sujet": "65 % des DAF peinent à relier l'IA à des résultats métier précis : ce que ce chiffre révèle sur la qualité des mesures en place avant le déploiement",
+    "angle": "Regard de fond. L'étude Esker Global Finance AI Trust Index (septembre 2026) indique que 65 % des DAF interrogés déclarent ne pas réussir à relier leurs usages IA à des résultats métier précis. Ce chiffre n'est pas un problème de communication. Il révèle une lacune de méthode en amont : l'organisation n'a pas mesuré le coût des exceptions, le temps réel consacré aux tâches ciblées, ni le volume d'erreurs avant de déployer. L'angle traite de la décision de mesure préalable, souvent perçue comme un frein au lancement, mais qui conditionne la capacité à justifier un passage à l'échelle. Exemple hypothétique d'un DAF d'ETI qui, six mois après le déploiement d'un automatisme de rapprochement bancaire, ne peut ni confirmer ni infirmer le gain annoncé faute de référence initiale documentée.",
+    "question_metier": "Quelles mesures votre organisation doit-elle réaliser avant de déployer un automatisme IA pour être en mesure, six mois plus tard, de démontrer ou d'infirmer le gain réel sans s'appuyer sur des impressions déclaratives ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "65 % des DAF ne savent pas si leur IA fonctionne vraiment.\n\nPas un problème de communication. Un problème de méthode : personne n'a mesuré avant de déployer.\n\nSans référence initiale, il n'y a rien à comparer. Juste des impressions.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2124547852860899630",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-22-165650-weekend.png?v=165650"
   }
 ]
