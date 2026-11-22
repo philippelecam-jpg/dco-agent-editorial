@@ -21,14 +21,36 @@ ARCHIVE_CONTEXT = b"dco-rachel-instagram-reel-v1"
 MP4_LIMIT = 100_000_000
 
 
+CTA = "→ Votre pré-diagnostic IA : lien en bio"
+SOCLE_HASHTAGS = ("IAenEntreprise", "PME", "TransformationIA", "DecisionsAndCo")
+MAX_HASHTAGS = 6
+
+
+def hashtags_for(script):
+    """Hashtags du script puis socle D&Co, sans doublon (insensible à la casse), 6 au plus."""
+    tags, seen = [], set()
+    for raw in list(script.get("hashtags") or []) + list(SOCLE_HASHTAGS):
+        tag = re.sub(r"[^\wÀ-ÿ]", "", str(raw).lstrip("#"))
+        if tag and tag.lower() not in seen:
+            seen.add(tag.lower())
+            tags.append(tag)
+    # Le socle passe avant les tags du script au-delà de la limite.
+    socle = [t for t in tags if t.lower() in {s.lower() for s in SOCLE_HASHTAGS}]
+    autres = [t for t in tags if t not in socle][:MAX_HASHTAGS - len(socle)]
+    return " ".join("#" + t for t in autres + socle)
+
+
 def caption_for(script):
     title = sans_tirets_longs(script["titre"]).strip()
     summary = sans_tirets_longs(script["resume"]).strip()
+    enjeu = sans_tirets_longs(script.get("enjeu_pme") or "").strip()
+    takeaway = "\n\nCe que ça change pour une PME : " + enjeu if enjeu else ""
     signature = "\n\nRachel, présentatrice IA de Décisions & Co."
-    available = 2200 - len(title) - len(signature) - 2
+    footer = "\n\n" + CTA + "\n" + hashtags_for(script)
+    available = 2200 - len(title) - len(takeaway) - len(signature) - len(footer) - 2
     if len(summary) > available:
         summary = summary[:available - 1].rsplit(" ", 1)[0] + "…"
-    return title + "\n\n" + summary + signature
+    return title + "\n\n" + summary + takeaway + signature + footer
 
 
 def archive_cipher(token):

@@ -94,3 +94,25 @@ class RachelInstagramTests(unittest.TestCase):
         index = next(i for i, step in enumerate(steps) if step.get("run") == "python instagram_reels.py publish")
         self.assertIn("persist_instagram_journal", steps[index - 1]["run"])
         self.assertEqual(steps[index + 1]["if"], "always()")
+
+
+class CaptionTests(unittest.TestCase):
+    def test_caption_adds_takeaway_cta_and_hashtags(self):
+        caption = reel.caption_for({
+            "titre": "Sites en panne", "resume": "Des correctifs urgents.",
+            "enjeu_pme": "Vérifiez la continuité de vos outils en ligne.",
+            "hashtags": ["Cybersécurité", "#pme"]})
+        self.assertIn("Ce que ça change pour une PME : Vérifiez", caption)
+        self.assertIn(reel.CTA, caption)
+        self.assertTrue(caption.rstrip().endswith("#DecisionsAndCo"))
+        self.assertEqual(caption.lower().count("#pme"), 1)
+        self.assertIn("#Cybersécurité", caption)
+
+    def test_caption_without_takeaway_stays_valid_and_capped(self):
+        caption = reel.caption_for({"titre": "T", "resume": "x " * 3000,
+                                    "hashtags": ["a", "b", "c", "d", "e"]})
+        self.assertNotIn("Ce que ça change", caption)
+        self.assertLessEqual(len(caption), 2200)
+        self.assertLessEqual(caption.count("#"), reel.MAX_HASHTAGS)
+        for tag in reel.SOCLE_HASHTAGS:
+            self.assertIn("#" + tag, caption)
