@@ -1,7 +1,11 @@
-"""Génère un aperçu local du carrousel de test, sans aucun appel à Instagram."""
+"""Génère un aperçu local du carrousel de test, sans appel à Instagram."""
 import argparse
 import json
 from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 from instagram_carousel import render, validate
 
 def main():
