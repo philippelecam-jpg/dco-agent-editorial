@@ -44,3 +44,27 @@
 - Suivre 30 à 50 comptes ciblés : Bpifrance, French Tech et écosystème nantais, France Num, clients et partenaires, médias PME et IA.
 - Relayer chaque carrousel dans la communauté WhatsApp de dirigeants et sur LinkedIn.
 - Répondre aux commentaires dans les 24 h.
+
+## Production autonome des carrousels
+
+Le workflow `instagram_carousel.yml` produit sept slides JPEG de 1080 × 1350
+à partir du dernier article archivé depuis moins de quatorze jours. Le créneau
+retenu est le jeudi à 12 h, heure de Paris. Une vérification quotidienne reprend
+les échecs ou attend un article arrivé en retard, avec un carrousel par semaine
+et un article utilisé une seule fois. GitHub Actions peut démarrer avec du retard.
+
+Le journal et les slides sont archivés dans `historique/instagram/carrousels`.
+Meta récupère les images dans le dépôt public à une révision immuable. Le jeton
+Instagram et la clé Anthropic existants sont réutilisés. Une erreur déclenche
+l’alerte Make existante. Une publication dont le résultat est incertain est
+rapprochée du compte avant toute reprise pour prévenir les doublons.
+
+Commande locale de prévisualisation facultative, avec la clé Anthropic disponible
+et les dépendances requests, Pillow et les polices DejaVu installées
+
+```sh
+python instagram_carousel.py --preview --force
+```
+
+La mise en production doit vérifier le premier carrousel via Meta. Les tests
+locaux couvrent le rendu et les reprises avec des réponses API simulées.
