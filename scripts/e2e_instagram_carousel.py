@@ -32,9 +32,11 @@ def commit_checkpoint(message):
 
 def main():
     run_id = os.environ["GITHUB_RUN_ID"]
-    branch = os.environ["GITHUB_REF_NAME"]
+    branch = os.environ["E2E_TARGET_BRANCH"]
     if branch != "test/carrousel-decisions-reunions-2026-11":
-        raise RuntimeError("Le test E2E ne peut tourner que sur sa branche de test.")
+        raise RuntimeError("La branche cible du test E2E est incorrecte.")
+    if os.environ.get("GITHUB_REF_NAME") != "main":
+        raise RuntimeError("Le workflow E2E doit etre declenche depuis main.")
     source = SOURCE.read_text(encoding="utf-8")
     folder = ROOT / f"e2e-{run_id}"
     journal = folder / "journal.json"
