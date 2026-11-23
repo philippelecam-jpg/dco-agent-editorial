@@ -39,6 +39,7 @@ import os
 import json
 import random
 import subprocess
+import textwrap
 from datetime import datetime
 from pathlib import Path
 
@@ -46,7 +47,7 @@ import requests
 
 from editorial_style import sans_tirets_longs
 from youtube_short_policy import (
-    SCRIPT_RULES, check_audio_duration, hook_image, generate_validated_script,
+    SCRIPT_RULES, check_audio_duration, generate_validated_script,
     render_static_short, script_context, script_edges,
     publication_due, retry_playlists, prepare_publication,
     description as short_description,
@@ -341,7 +342,90 @@ def get_audio_duration(audio_path: Path) -> float:
 # 3. Fond visuel brandé statique (PIL)
 # ---------------------------------------------------------------------------
 def build_background_image(titre: str, hashtags: list, out_path: Path) -> Path:
-    return hook_image(titre, out_path, transparent=False)
+    palette = get_palette()
+    img = Image.new("RGB", (VIDEO_WIDTH, VIDEO_HEIGHT), palette["bg"])
+    draw = ImageDraw.Draw(img)
+
+    try:
+        font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 72)
+        font_tags = ImageFont.truetype("DejaVuSans.ttf", 40)
+        font_rubrique = ImageFont.truetype("DejaVuSans-Bold.ttf", 30)
+    except OSError:
+        font_title = ImageFont.load_default()
+        font_tags = ImageFont.load_default()
+        font_rubrique = ImageFont.load_default()
+
+    # Bande d'accent en haut
+    draw.rectangle([(0, 0), (VIDEO_WIDTH, 16)], fill=palette["accent"])
+
+    # Titre centré, wrap automatique
+    wrapped = textwrap.wrap(titre, width=22)
+    y = VIDEO_HEIGHT // 2 - (len(wrapped) * 90) // 2
+    for line in wrapped:
+        bbox = draw.textbbox((0, 0), line, font=font_title)
+        w = bbox[2] - bbox[0]
+        draw.text(((VIDEO_WIDTH - w) / 2, y), line, font=font_title, fill=palette["text"])
+        y += 90
+
+    # Hashtags en bas, avec retour à la ligne automatique (évite le
+    # dépassement hors cadre observé en V1 sur les listes de 4-5 tags).
+    MARGIN = 60
+    max_line_width = VIDEO_WIDTH - 2 * MARGIN
+
+    def text_width(s, font):
+        bbox = draw.textbbox((0, 0), s, font=font)
+        return bbox[2] - bbox[0]
+
+    tags_with_hash = [f"#{t}" for t in hashtags]
+    tag_lines = []
+    current_line = ""
+    for tag in tags_with_hash:
+        candidate = f"{current_line}  {tag}".strip()
+        if text_width(candidate, font_tags) <= max_line_width:
+            current_line = candidate
+        else:
+            if current_line:
+                tag_lines.append(current_line)
+            current_line = tag
+    if current_line:
+        tag_lines.append(current_line)
+
+    y_tags = VIDEO_HEIGHT - 60 - (len(tag_lines) * 55)
+    for line in tag_lines:
+        w = text_width(line, font_tags)
+        draw.text(((VIDEO_WIDTH - w) / 2, y_tags), line, font=font_tags, fill=palette["subtext"])
+        y_tags += 55
+
+    # Logo si le module de branding est disponible — on journalise
+    # explicitement les cas d'échec plutôt que de les avaler silencieusement,
+    # pour pouvoir diagnostiquer depuis les logs GitHub Actions sans avoir à
+    # reproduire le run en local.
+    logo_bottom_y = 120  # valeur de repli si le logo ne se charge pas, pour
+                          # que la rubrique reste correctement positionnée
+    try:
+        logo_raw = Image.open(LOGO_PATH).convert("RGBA")
+        logo = recolor_logo(logo_raw, palette["text"])
+        logo.thumbnail((260, 260))
+        logo_y = 120
+        img.paste(logo, (VIDEO_WIDTH // 2 - logo.width // 2, logo_y), logo)
+        logo_bottom_y = logo_y + logo.height
+    except FileNotFoundError:
+        print(f"[build_background_image] Logo non trouvé à {LOGO_PATH} — "
+              "vérifier que ce chemin existe bien dans le repo.")
+    except Exception as e:
+        print(f"[build_background_image] Logo non appliqué : {e}")
+
+    # Rubrique fixe sous le logo — donne une identité de "série" reconnaissable
+    # d'un short à l'autre, indépendante du sujet du jour.
+    rubrique = "30 SECONDES, 1 ACTU IA"
+    rubrique_w = text_width(rubrique, font_rubrique)
+    draw.text(
+        ((VIDEO_WIDTH - rubrique_w) / 2, logo_bottom_y + 20),
+        rubrique, font=font_rubrique, fill=palette["accent"],
+    )
+
+    img.save(out_path)
+    return out_path
 
 
 # ---------------------------------------------------------------------------
@@ -411,7 +495,7 @@ def main():
     print(f"[3/5] Voix générée ({duration:.1f}s)")
 
     image_path = build_background_image(
-        script_data["accroche"], script_data.get("hashtags", []), WORKDIR / "background.png"
+        script_data["titre"], script_data.get("hashtags", []), WORKDIR / "background.png"
     )
     video_path = build_video(image_path, audio_path, duration, WORKDIR / "short.mp4")
     print("[4/5] Vidéo assemblée")
