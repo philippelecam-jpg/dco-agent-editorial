@@ -1,14 +1,5 @@
 [
   {
-    "date": "Mercredi 28 octobre 2026",
-    "timestamp": "2026-10-28T06:08:56.990015",
-    "theme": "Méthode Cartographier → Éliciter → Codifier",
-    "sujet": "Méthode Cartographier → Éliciter → Codifier : pourquoi l'ordre compte",
-    "post_x": "Éliciter avant de cartographier, c'est interroger des gens sans savoir ce qu'on cherche. Codifier avant d'éliciter, c'est graver dans le marbre ce que personne n'a encore dit. L'ordre n'est pas une préférence. C'est la méthode.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2115324703284035834",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-28-060801.png?v=060802"
-  },
-  {
     "date": "Jeudi 29 octobre 2026",
     "timestamp": "2026-10-29T06:09:03.041975",
     "theme": "Gouvernance et réglementation IA",
@@ -293,5 +284,18 @@
     "post_x": "65 % des DAF ne savent pas si leur IA fonctionne vraiment.\n\nPas un problème de communication. Un problème de méthode : personne n'a mesuré avant de déployer.\n\nSans référence initiale, il n'y a rien à comparer. Juste des impressions.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2124547852860899630",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-22-165650-weekend.png?v=165650"
+  },
+  {
+    "date": "Lundi 23 novembre 2026",
+    "timestamp": "2026-11-23T06:09:22.110394",
+    "theme": "Usages métier",
+    "sujet": "Devis préparé par IA : à quel moment les hypothèses de prix deviennent-elles invisibles ?",
+    "angle": "Terrain et missions clients. Un commercial prépare un devis avec un assistant IA : l'outil assemble les lignes, propose des remises cohérentes avec l'historique et génère un document présentable en quelques minutes. Le problème surgit deux semaines plus tard, quand le prix d'un composant a bougé ou qu'une condition tarifaire fournisseur a changé. Personne ne sait plus quelles hypothèses ont servi de base, ni si elles ont été vérifiées avant envoi. L'angle traite de la décision concrète que doit prendre le responsable commercial : à quelle étape du processus de devis les hypothèses de prix doivent-elles être rendues explicites, qui les valide, et comment l'organisation s'assure que l'assistant n'a pas utilisé une donnée périmée. Exemple hypothétique d'une PME de services techniques dont les devis IA incorporent des tarifs fournisseurs mis à jour trimestriellement, sans que le commercial sache quelle version a été utilisée.",
+    "question_metier": "À quel moment du processus de préparation d'un devis assisté par IA votre organisation doit-elle rendre visibles les hypothèses de prix utilisées, et qui est responsable de leur validation avant envoi au client ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "Un devis généré par IA en 3 minutes. Deux semaines plus tard, personne ne sait quels tarifs fournisseurs ont été utilisés ni s'ils étaient à jour. Le problème n'est pas l'outil. C'est l'hypothèse invisible.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2124746940868931791",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-23-060838.png?v=060838"
   }
 ]
