@@ -91,7 +91,8 @@
     "https://www.01net.com/actualites/panne-microsoft-chatgpt-et-claude-egalement-touches-et-ils-ne-sont-pas-les-seuls.html",
     "https://www.01net.com/actualites/1-h-30-de-plus-par-jour-lia-devait-vous-faire-gagner-du-temps-mais-ce-nest-finalement-pas-le-cas.html",
     "https://www.blogdumoderateur.com/meilleurs-modeles-piloter-agents-ia-novembre-2026/",
-    "https://www.blogdumoderateur.com/chatgpt-wallet-agents-ia-openai-achats-en-ligne/"
+    "https://www.blogdumoderateur.com/chatgpt-wallet-agents-ia-openai-achats-en-ligne/",
+    "https://www.blogdumoderateur.com/entreprise-fidelite-modeles-ia/"
   ],
   "scripts": [
     {
@@ -639,6 +640,14 @@
       "source": "actualite",
       "titre": "Vos clients vont acheter sans cliquer",
       "video_id": "Hnh5KjYfhBQ"
+    },
+    {
+      "date": "2026-11-23T18:55:03.967723",
+      "source": "actualite",
+      "titre": "IA en entreprise : la fidélité aux modèles s'effrite",
+      "video_id": "Ibr1v-Nrtfg",
+      "accroche": "Les entreprises changent de modèle d'IA toutes les quelques semaines.",
+      "conclusion": "Les cycles raccourcissent, vos engagements ne doivent pas s'allonger."
     }
   ]
 }

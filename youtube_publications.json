@@ -49,5 +49,16 @@
       "family": "cybersecurite",
       "fallback": false
     }
+  },
+  {
+    "date": "2026-11-23T18:55:03.022269+00:00",
+    "titre": "IA en entreprise : la fidélité aux modèles s'effrite",
+    "video_id": "Ibr1v-Nrtfg",
+    "format": "statique",
+    "playlist": "Agents IA et outils",
+    "playlist_id": "PLSA1kBoe79Mk",
+    "statut": "publié",
+    "accroche": "Les entreprises changent de modèle d'IA toutes les quelques semaines.",
+    "conclusion": "Les cycles raccourcissent, vos engagements ne doivent pas s'allonger."
   }
 ]
