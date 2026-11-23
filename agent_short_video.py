@@ -228,7 +228,7 @@ def generate_script_from_news(news_item: dict, feedback="") -> dict:
         f"Résumé : {news_item['resume'][:400]}\n\n"
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        '{"titre": "...", "texte_voix": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
         " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel), "
         "titre fait moins de 60 caractères, et hashtags contient 3 à 5 tags "
         "pertinents sans le symbole #."
@@ -274,7 +274,7 @@ def generate_script(theme: str, feedback="") -> dict:
         "Thème du jour : " + theme + ". "
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
-        '{"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
+        '{"titre": "...", "texte_voix": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
         " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel), "
         "titre fait moins de 60 caractères, et hashtags contient 3 à 5 tags "
         "pertinents sans le symbole #."

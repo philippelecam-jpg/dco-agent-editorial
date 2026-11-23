@@ -255,7 +255,7 @@ def generate_script(theme: str, angle: str, feedback="") -> dict:
         "Rachel à la première personne. Environ 75 à 100 mots.\n\n"
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format "
-        'exact : {"titre": "...", "texte_voix": "...", "accroche": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."]} où titre fait moins '
+        'exact : {"titre": "...", "texte_voix": "...", "resume": "...", "mots_cles": ["...", "...", "...", "...", "..."]} où titre fait moins '
         "de 60 caractères et donne envie de cliquer sans tout dévoiler."
     )
     user_message = ("Grand thème : %s\nAngle retenu : %s" % (theme, angle)) + script_context(feedback)

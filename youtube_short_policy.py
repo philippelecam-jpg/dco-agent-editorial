@@ -41,7 +41,9 @@ SCRIPT_RULES = (
     "Varie aussi la conclusion : question ouverte, conséquence précise ou image finale. "
     "La dernière phrase est courte (18 mots maximum), complète et ponctuée. "
     "N'ajoute ni points de suspension ni indication de pause à lire : le montage ajoute la respiration finale. "
-    "Ajoute au JSON accroche (première phrase, 12 mots maximum), resume "
+    "La première phrase de texte_voix sert d'accroche à l'écran. "
+    "Elle doit être complète, affirmative et tenir en 12 mots maximum. "
+    "Ajoute au JSON resume "
     "(2 à 3 phrases, mot-clé principal dans la première), et mots_cles "
     "(5 à 8 mots-clés précis liés au sujet). N'invente aucun fait."
 )
@@ -214,7 +216,7 @@ def reject_duplicate(title, rows=None):
 def prepare_script(data, prospective=False):
     if not isinstance(data, dict):
         raise ValueError("Le script doit être un objet JSON.")
-    for key in ("titre", "texte_voix", "accroche", "resume"):
+    for key in ("titre", "texte_voix", "resume"):
         if not isinstance(data.get(key), str) or not data[key].strip():
             raise ValueError(f"Script incomplet : {key}.")
         data[key] = sans_tirets_longs(data[key]).strip()
@@ -222,10 +224,17 @@ def prepare_script(data, prospective=False):
         raise ValueError("Le titre dépasse 60 caractères.")
     if not prospective and re.match(r"et si\b", data["titre"], re.I):
         raise ValueError("La formule Et si est réservée à la prospective.")
-    if len(data["accroche"].split()) > 12 or "?" in data["accroche"]:
-        raise ValueError("L’accroche doit être une phrase concrète de 12 mots maximum.")
-    if not normal_title(data["texte_voix"]).startswith(normal_title(data["accroche"])):
-        raise ValueError("L’accroche doit reprendre le début exact du texte parlé.")
+    opening = re.match(
+        r'''.+?[.!?]+(?:[^\S\r\n]*[»”"])?(?=\s|$)''',
+        data["texte_voix"],
+        flags=re.DOTALL,
+    )
+    hook = opening.group() if opening else ""
+    if (not normal_title(hook) or len(hook.strip(' «»“”"').split()) > 12
+            or any(mark in hook for mark in ("?", "...", "…"))):
+        raise ValueError("La première phrase de texte_voix doit être concrète, affirmative "
+                         "et complète, en 12 mots maximum.")
+    data["accroche"] = hook
     keywords = data.get("mots_cles")
     if not isinstance(keywords, list) or not 5 <= len(keywords) <= 8 or any(
         not isinstance(word, str) or not word.strip() for word in keywords
