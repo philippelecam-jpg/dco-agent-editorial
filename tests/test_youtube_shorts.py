@@ -69,6 +69,32 @@ class YouTubeRules(unittest.TestCase):
             with self.assertRaises(ValueError):
                 policy.prepare_script(invalid)
 
+    def test_hook_comes_from_narration_on_first_attempt(self):
+        hook = "La Poste encadre l’usage de l’IA."
+        for legacy_hook in (None, "Les postiers gardent le dernier mot."):
+            with self.subTest(legacy_hook=legacy_hook):
+                data = dict(script(), texte_voix=f"{hook} Voici ce que cela change.")
+                if legacy_hook is None:
+                    del data["accroche"]
+                else:
+                    data["accroche"] = legacy_hook
+                generate = Mock(return_value=data)
+                result = policy.generate_validated_script(generate)
+                self.assertEqual(result["accroche"], hook)
+                generate.assert_called_once_with("")
+
+    def test_hook_checks_use_the_actual_first_sentence(self):
+        for opening in (
+            "La Poste encadre l’IA ?",
+            "La Poste signe son premier accord sur l’intelligence artificielle pour encadrer les décisions automatisées.",
+            "La Poste encadre l’IA...",
+        ):
+            with self.subTest(opening=opening), self.assertRaisesRegex(ValueError, "première phrase"):
+                policy.prepare_script(dict(script(), texte_voix=f"{opening} Voici la suite."))
+        hook = "« La Poste encadre l’IA. »"
+        data = policy.prepare_script(dict(script(), texte_voix=f"{hook} Voici la suite."))
+        self.assertEqual(data["accroche"], hook)
+
     def test_weekly_cadence_and_force(self):
         with tempfile.TemporaryDirectory() as folder:
             fixed = datetime(2026, 11, 23, 12, tzinfo=policy.PARIS)
