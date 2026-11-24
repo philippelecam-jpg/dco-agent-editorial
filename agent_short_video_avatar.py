@@ -59,6 +59,7 @@ import io
 import re
 import time
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 import requests
@@ -67,7 +68,7 @@ from editorial_style import sans_tirets_longs
 from instagram_reels import stage_reel
 from rachel_catalogue import prepare_rachel_image
 from youtube_short_policy import (
-    SCRIPT_RULES, check_audio_duration, generate_validated_script, script_context, script_edges,
+    SCRIPT_RULES, generate_validated_narration, script_context, script_edges,
     publication_due, render_avatar_short, retry_playlists, prepare_publication,
     description as short_description,
     upload_short as publish_youtube_short,
@@ -203,8 +204,7 @@ def generate_script_from_news(news_item, feedback=""):
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "resume": "...", "enjeu_pme": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
-        " où texte_voix fait entre 75 et 100 mots (30-45s à débit naturel, "
-        "commence naturellement comme si Rachel parlait), titre fait moins "
+        " où texte_voix commence naturellement comme si Rachel parlait, titre fait moins "
         "de 60 caractères, enjeu_pme est une phrase de 25 mots maximum "
         "qui dit concrètement ce que cette actualité change pour une PME ou "
         "une ETI, et hashtags contient 3 à 5 tags sans le symbole #."
@@ -240,7 +240,7 @@ def generate_script_evergreen(theme, feedback=""):
         f"{SCRIPT_RULES} "
         "Réponds UNIQUEMENT en JSON valide, sans texte autour, au format exact : "
         '{"titre": "...", "texte_voix": "...", "resume": "...", "enjeu_pme": "...", "mots_cles": ["...", "...", "...", "...", "..."], "hashtags": ["...", "..."]}'
-        " où texte_voix fait entre 75 et 100 mots, titre fait moins de 60 "
+        " où titre fait moins de 60 "
         "caractères, enjeu_pme est une phrase de 25 mots maximum qui dit "
         "concrètement ce que ce thème change pour une PME ou une ETI, et "
         "hashtags contient 3 à 5 tags sans le symbole #."
@@ -675,22 +675,22 @@ def main():
 
     if news_item:
         print("[1/6] Actu retenue : %s (%s)" % (news_item["titre"], news_item["source"]))
-        script_data = generate_validated_script(lambda feedback: generate_script_from_news(news_item, feedback))
+        generate = partial(generate_script_from_news, news_item)
     else:
         import random
         recent = history.get("themes_used", [])[-3:]
         theme = random.choice([t for t in FALLBACK_THEMES if t not in recent] or FALLBACK_THEMES)
         print("[1/6] Aucune actu fraîche -- thème évergreen : %s" % theme)
-        script_data = generate_validated_script(lambda feedback: generate_script_evergreen(theme, feedback))
+        generate = partial(generate_script_evergreen, theme)
         history.setdefault("themes_used", []).append(theme)
         history["themes_used"] = history["themes_used"][-10:]
 
-    prepare_publication(script_data, token, "avatar")
+    script_data, audio_path = generate_validated_narration(
+        generate, generate_voice, WORKDIR / "voice.mp3",
+        lambda data: prepare_publication(data, token, "avatar"),
+    )
     photo_asset_id = prepare_rachel_image(script_data, "avatar", context=theme)
     print("[2/6] Script généré : %s" % script_data["titre"])
-
-    audio_path = generate_voice(script_data["texte_voix"], WORKDIR / "voice.mp3")
-    check_audio_duration(audio_path)
     print("[3/6] Voix générée")
 
     audio_asset_id = upload_audio_to_heygen(audio_path)
