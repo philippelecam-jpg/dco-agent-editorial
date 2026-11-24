@@ -20,6 +20,11 @@
       "sha256": "867021847186a8c38ec01371fe8c08b6a312026aa606f314b9c87c6e76e8be91",
       "asset_id": "7d7d04b5f45e40b7a67e726f43f4d81b",
       "uploaded_at": "2026-11-22T09:29:06.405696+00:00"
+    },
+    "bureau": {
+      "sha256": "42e96b009bf8dbee1895c573ef7efa40385be2ac90eaadcecdd2388d9ed66ca7",
+      "asset_id": "a7fda59380cb4ceb99f4abb699ef201a",
+      "uploaded_at": "2026-11-24T18:02:29.273138+00:00"
     }
   }
 }
