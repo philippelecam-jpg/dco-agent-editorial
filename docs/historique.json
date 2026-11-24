@@ -1,14 +1,5 @@
 [
   {
-    "date": "Jeudi 29 octobre 2026",
-    "timestamp": "2026-10-29T06:09:03.041975",
-    "theme": "Gouvernance et réglementation IA",
-    "sujet": "AI Act : ce que ça change concrètement pour une PME",
-    "post_x": "L'AI Act est entré en vigueur. La plupart des PME pensent que ça ne les concerne pas. C'est exactement ce qu'ont pensé les entreprises avec le RGPD en 2018.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2115687120845353014",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-29-060809.png?v=060809"
-  },
-  {
     "date": "Vendredi 30 octobre 2026",
     "timestamp": "2026-10-30T06:08:48.558103",
     "theme": "Formation et culture IA",
@@ -297,5 +288,22 @@
     "post_x": "Un devis généré par IA en 3 minutes. Deux semaines plus tard, personne ne sait quels tarifs fournisseurs ont été utilisés ni s'ils étaient à jour. Le problème n'est pas l'outil. C'est l'hypothèse invisible.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2124746940868931791",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-23-060838.png?v=060838"
+  },
+  {
+    "date": "Mardi 24 novembre 2026",
+    "timestamp": "2026-11-24T06:09:25.247107",
+    "theme": "Gouvernance et sécurité",
+    "sujet": "IA générative et RGPD : ce que la CNIL attend concrètement de votre PME en 2026",
+    "angle": "Terrain et missions clients. La CNIL a précisé ses positions en 2025 et inscrit l'IA générative dans son programme de contrôles 2026. L'angle part d'une situation concrète : un responsable RH d'une PME utilise un LLM tiers pour préparer des synthèses d'entretiens annuels. Il ignore qu'il est, aux yeux de la CNIL, responsable du traitement, et non le fournisseur du modèle. La décision métier traitée est celle du DSI ou du DG qui doit décider quels usages intègrent des données personnelles, quels documents de base sont requis (base légale, registre, contrat de sous-traitance), et qui dans l'organisation valide ces choix avant le déploiement. Exemple hypothétique d'une ETI de services qui découvre, lors d'un audit préparatoire, que quatre usages IA en production n'ont jamais fait l'objet d'une analyse de traitement.",
+    "question_metier": "Quels usages IA en production dans votre organisation impliquent des données personnelles, et qui est désigné pour vérifier que chacun dispose d'une base légale documentée avant que la CNIL ne frappe à votre porte ?",
+    "sources": [
+      "https://itsocial.fr/cybersecurite/cybersecurite-actualites/conformite-ia-les-chantiers-que-la-cnil-inscrit-au-programme-de-ses-controles-2026/",
+      "https://proactiveacademy.fr/blog/ia/cnil-ia/",
+      "https://www.ringover.fr/blog/ia-rgpd"
+    ],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "Utiliser ChatGPT pour synthétiser des entretiens annuels : vous êtes responsable du traitement, pas OpenAI. La CNIL a inscrit l'IA générative dans ses contrôles 2026. Avez-vous une base légale documentée pour chaque usage en production ?",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2125109339807703352",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-24-060840.png?v=060840"
   }
 ]
