@@ -60,5 +60,22 @@
     "statut": "publié",
     "accroche": "Les entreprises changent de modèle d'IA toutes les quelques semaines.",
     "conclusion": "Les cycles raccourcissent, vos engagements ne doivent pas s'allonger."
+  },
+  {
+    "date": "2026-11-24T19:31:23.865988+00:00",
+    "titre": "1 000 créneaux la nuit : Huawei entraîne ses voitures",
+    "video_id": "KMpZNlHde1g",
+    "format": "avatar",
+    "playlist": "Agents IA et outils",
+    "playlist_id": "PLSA1kBoe79Mk",
+    "statut": "publié",
+    "accroche": "Des voitures électriques tournent seules dans des parkings chinois la nuit.",
+    "conclusion": "Les constructeurs créent désormais des défis pour que leurs utilisateurs entraînent l'IA à leur place.",
+    "rachel_look": {
+      "id": "bureau",
+      "image": "assets/rachel/bureau.png",
+      "family": "outils",
+      "fallback": false
+    }
   }
 ]

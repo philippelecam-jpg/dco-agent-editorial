@@ -23,7 +23,8 @@
     "https://www.01net.com/actualites/une-banque-francaise-vient-detre-piratee-100-millions-deuros-voles-suite-a-des-operations-frauduleuses.html",
     "https://www.actuia.com/actualite/la-justice-coreenne-plaide-pour-une-amende-contre-les-faux-arrets-de-lia/",
     "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html",
-    "https://www.blogdumoderateur.com/gemini-conserver-discussions-plus-longtemps/"
+    "https://www.blogdumoderateur.com/gemini-conserver-discussions-plus-longtemps/",
+    "https://www.01net.com/actualites/1000-creneaux-24h-pourquoi-voitures-electriques-chinoises-tournent-rond-dans-parkings-nuit.html"
   ],
   "scripts": [
     {
@@ -177,6 +178,20 @@
         "id": "originale",
         "image": "assets/rachel/originale.png",
         "family": "cybersecurite",
+        "fallback": false
+      }
+    },
+    {
+      "date": "2026-11-24T19:31:24.746401",
+      "source": "actualite",
+      "titre": "1 000 créneaux la nuit : Huawei entraîne ses voitures",
+      "video_id": "KMpZNlHde1g",
+      "accroche": "Des voitures électriques tournent seules dans des parkings chinois la nuit.",
+      "conclusion": "Les constructeurs créent désormais des défis pour que leurs utilisateurs entraînent l'IA à leur place.",
+      "rachel_look": {
+        "id": "bureau",
+        "image": "assets/rachel/bureau.png",
+        "family": "outils",
         "fallback": false
       }
     }
