@@ -1,14 +1,6 @@
 [
   {
     "date": "Mardi 25 août 2026",
-    "timestamp": "2026-08-25T14:52:46.855653",
-    "theme": "Terrain et missions clients",
-    "titre": "Ce que nous avons trouvé dans les tiroirs d'un directeur industriel",
-    "dossier": "articles/drafts/2026-08-25-ce-que-nous-avons-trouve-dans-les-tiroirs-d-un-directeur-ind",
-    "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/3"
-  },
-  {
-    "date": "Mardi 25 août 2026",
     "timestamp": "2026-08-25T15:12:46.579499",
     "theme": "Formation et culture IA",
     "titre": "Pourquoi la formation IA ne change rien dans la plupart des entreprises",
@@ -171,5 +163,18 @@
     "titre": "Ce que votre agent achats ne peut pas deviner tout seul",
     "dossier": "articles/drafts/2026-11-18-ce-que-votre-agent-achats-ne-peut-pas-deviner-tout-seul",
     "pr_site": "https://github.com/Decisions-Co/DecisionsandCo.com/pull/47"
+  },
+  {
+    "date": "Mercredi 25 novembre 2026",
+    "sujet": "Dépendance SaaS IA : quelles fonctions documenter avant que le fournisseur ne change ses conditions",
+    "angle": "Angle réversibilité. Une PME ou ETI qui s'appuie sur un service IA externe pour une fonction métier clé (recherche documentaire, synthèse contractuelle, qualification de leads) n'a souvent aucune réponse claire à cette question : si ce fournisseur modifie son modèle de tarification, dégrade ses performances ou coupe l'accès, que faut-il exporter, reconstruire ou remplacer en urgence ? Cet article traite de la décision de cartographie préalable, distincte de la question de continuité déjà abordée : il s'agit ici d'identifier ce que l'organisation a confié à un tiers sans le savoir, notamment les données de calibrage, les historiques de requêtes, les connecteurs personnalisés et les règles métier encodées dans les paramètres. Exemple hypothétique d'une ETI de conseil qui, face à un changement de modèle tarifaire de son fournisseur de recherche documentaire, réalise qu'elle ne peut ni exporter ses indexes thématiques ni reproduire ailleurs les filtres sectoriels configurés depuis dix-huit mois.",
+    "question_metier": "Pour chaque service IA externe que votre organisation utilise en production, que faut-il être capable d'exporter, de reproduire ou de remplacer dans un délai acceptable si ce fournisseur change ses conditions ou devient inaccessible ?",
+    "sources": [],
+    "statut": "brouillon enregistré",
+    "timestamp": "2026-11-25T06:16:31.712873",
+    "theme": "Fournisseurs et résilience",
+    "titre": "Ce que vous avez confié à un tiers sans le savoir",
+    "dossier": "articles/drafts/2026-11-25-ce-que-vous-avez-confie-a-un-tiers-sans-le-savoir",
+    "pr_site": null
   }
 ]
