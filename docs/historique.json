@@ -1,14 +1,5 @@
 [
   {
-    "date": "Vendredi 30 octobre 2026",
-    "timestamp": "2026-10-30T06:08:48.558103",
-    "theme": "Formation et culture IA",
-    "sujet": "Formation IA : ce qu'elle change vraiment, et ce qu'elle ne change pas",
-    "post_x": "Former vos équipes à l'IA sans avoir structuré votre connaissance métier, c'est apprendre à conduire vite sur une route qui n'existe pas encore.",
-    "tweet_url": "https://twitter.com/DecisionsAndco/status/2116049447356408185",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-30-060754.png?v=060754"
-  },
-  {
     "date": "Samedi 31 octobre 2026",
     "timestamp": "2026-10-31T09:25:15.325421",
     "theme": "Actualité décryptée",
@@ -305,5 +296,18 @@
     "post_x": "Utiliser ChatGPT pour synthétiser des entretiens annuels : vous êtes responsable du traitement, pas OpenAI. La CNIL a inscrit l'IA générative dans ses contrôles 2026. Avez-vous une base légale documentée pour chaque usage en production ?",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2125109339807703352",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-24-060840.png?v=060840"
+  },
+  {
+    "date": "Mercredi 25 novembre 2026",
+    "timestamp": "2026-11-25T06:09:37.029135",
+    "theme": "Usages métier",
+    "sujet": "Réclamations client traitées par assistant IA : où placer la ligne entre réponse automatique et escalade humaine",
+    "angle": "Terrain et missions clients. Un responsable service client d'une PME de distribution configure un assistant pour traiter les demandes entrantes. Il découvre rapidement que certaines réclamations, en apparence simples, cachent un litige commercial ou une situation client à risque que l'assistant traite comme une demande standard. La décision concrète à prendre est la suivante : quelles catégories de réclamations l'assistant peut-il clore sans intervention humaine, lesquelles doivent systématiquement remonter, et sur quel critère la distinction est-elle codifiée. L'angle traite du moment de conception de ces règles, qui les pose, qui les valide avec le responsable métier, et comment l'organisation détecte les cas où l'assistant a mal classé une demande. Exemple hypothétique d'une ETI de services B2B dont l'assistant traite 70 % des tickets entrants mais génère un taux de réouverture anormalement élevé sur les réclamations de clients grands comptes, sans que personne n'ait défini de règle d'exclusion pour ce segment.",
+    "question_metier": "Quelles demandes au service client votre assistant IA peut-il clore sans escalade, et qui dans l'organisation est légitime pour définir et réviser ces règles de classification avant qu'un client important ne reçoive une réponse inadaptée ?",
+    "sources": [],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "Un assistant IA qui clôt des réclamations sans règle d'exclusion, c'est un commercial grand compte qui reçoit la même réponse qu'un client anonyme. La classification se conçoit avant le déploiement, pas après le premier litige.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2125471777317114120",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-25-060851.png?v=060852"
   }
 ]
