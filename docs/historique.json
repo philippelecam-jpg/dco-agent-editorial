@@ -1,15 +1,6 @@
 [
   {
     "date": "Samedi 31 octobre 2026",
-    "timestamp": "2026-10-31T09:25:15.325421",
-    "theme": "Actualité décryptée",
-    "sujet": "Les agents IA s'installent dans les entreprises : ce que le signal UBS révèle aux PME et ETI françaises",
-    "post_x": "UBS : 12 700 agents IA en production. Gartner : 40 % des apps d'entreprise avec agents IA d'ici fin 2026. Ce n'est plus réservé aux grandes banques. La vraie question pour une PME : un agent amplifie ce qui existe. Vous avez quoi à lui donner ?",
-    "tweet_url": "",
-    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-10-31-092415-weekend.png?v=092416"
-  },
-  {
-    "date": "Samedi 31 octobre 2026",
     "timestamp": "2026-10-31T15:08:51.005651",
     "theme": "Actualité décryptée",
     "sujet": "Oracle + OpenAI lancent un bundle IA tout-en-un pour les PME : ce que ça ne résout pas",
@@ -309,5 +300,20 @@
     "post_x": "Un assistant IA qui clôt des réclamations sans règle d'exclusion, c'est un commercial grand compte qui reçoit la même réponse qu'un client anonyme. La classification se conçoit avant le déploiement, pas après le premier litige.",
     "tweet_url": "https://twitter.com/DecisionsAndco/status/2125471777317114120",
     "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-25-060851.png?v=060852"
+  },
+  {
+    "date": "Jeudi 26 novembre 2026",
+    "timestamp": "2026-11-26T06:09:31.016281",
+    "theme": "Gouvernance et sécurité",
+    "sujet": "MesServicesCyber ANSSI : ce que le lancement de ce parcours révèle sur les angles morts de cybersécurité dans les PME qui déploient l'IA",
+    "angle": "Terrain et missions clients. Le 23 novembre 2026, l'ANSSI a annoncé deux parcours d'accompagnement gratuits sur sa plateforme MesServicesCyber, ouverts aux entreprises y compris aux sous-traitants de la défense, pour organiser leur protection numérique sans attendre la transposition de NIS 2. Le fait est directement actionnable pour un DSI ou un DG de PME. L'angle traite d'une décision concrète souvent omise : quand une organisation déploie un usage IA en production, elle crée de nouveaux points d'entrée (connecteurs, API, comptes de service) qui ne figurent pas dans le périmètre de protection initial. La question n'est pas de savoir si l'ANSSI propose un bon outil, mais de savoir qui, dans l'organisation, est responsable de journaliser les événements liés aux usages IA et de mettre à jour le périmètre de sécurité à chaque nouveau déploiement. Exemple hypothétique d'une ETI industrielle dont le DSI découvre, lors du parcours d'audit, que trois connecteurs IA installés par des équipes métier en dix-huit mois n'ont jamais été déclarés dans le registre des accès.",
+    "question_metier": "Lorsque votre organisation déploie un nouvel usage IA en production, qui est responsable de mettre à jour le périmètre de sécurité, de journaliser les nouveaux points d'accès et de vérifier que ces éléments sont couverts par votre dispositif de protection existant ?",
+    "sources": [
+      "https://armees.com/anssi-messervicescyber-parcours-cybersecurite-nis2/"
+    ],
+    "statut": "publié sur X, transmis à Make",
+    "post_x": "Chaque déploiement IA crée de nouveaux points d'entrée dans votre SI. Connecteurs, API, comptes de service. Qui les déclare ? Qui les journalise ? Si la réponse est floue, le périmètre de sécurité ne couvre plus ce que vous croyez.",
+    "tweet_url": "https://twitter.com/DecisionsAndco/status/2125834139148456133",
+    "visuel_url": "https://philippelecam-jpg.github.io/dco-agent-editorial/visuels/2026-11-26-060845.png?v=060846"
   }
 ]
